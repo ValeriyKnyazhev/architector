@@ -1,0 +1,21 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    ext {
+        springBootVersion = "2.0.3.RELEASE"
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+group = "valeriy.knyazhev"
+version '0.0.1-SNAPSHOT'
+
+allprojects {
+
+    repositories {
+        mavenCentral()
+    }
+}
