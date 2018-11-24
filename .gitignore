@@ -22,3 +22,7 @@ out
 *.aux
 *.toc
 *.synctex.gz
+
+# BIM files
+*.exp
+*.ifc
