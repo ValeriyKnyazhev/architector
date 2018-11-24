@@ -17,3 +17,8 @@ out
 *.ipr
 *.iml
 *.iws
+
+# Diploma text
+*.aux
+*.toc
+*.synctex.gz
