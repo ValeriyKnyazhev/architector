@@ -9,17 +9,22 @@ dependencyManagement {
 	dependencies {
 		dependency "com.google.code.findbugs:jsr305:3.0.2"
 		dependency "org.opensourcebim:ifcplugins:0.0.34"
+		dependency "org.projectlombok:lombok:1.16.18"
 	}
 }
 
 dependencies {
+
+	compileOnly "com.google.code.findbugs:jsr305"
+	compileOnly "org.projectlombok:lombok"
+
 	compile "com.google.code.gson:gson:2.8.2"
 	compile "org.springframework.boot:spring-boot-devtools"
 	compile "org.springframework.boot:spring-boot-starter"
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile "org.springframework.boot:spring-boot-starter-web"
 	compile "org.opensourcebim:ifcplugins"
-
-	compileOnly "com.google.code.findbugs:jsr305"
-
+	compile("com.h2database:h2")
+	
 	testCompile "org.springframework.boot:spring-boot-starter-test"
 }
