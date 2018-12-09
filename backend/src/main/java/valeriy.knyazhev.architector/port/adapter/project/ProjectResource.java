@@ -36,7 +36,7 @@ public class ProjectResource {
     @PostMapping(value = "/projects",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> importDataFromUrl(@RequestBody ReadProjectCommand command) {
+    public ResponseEntity<Object> importDataFromUrl(@RequestBody CreateProjectCommand command) {
         Args.notNull(command, "Read project command is required.");
         try {
             URL projectUrl = new URL(command.projectUrl());

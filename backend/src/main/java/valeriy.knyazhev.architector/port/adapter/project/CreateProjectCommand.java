@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev
  */
-public class ReadProjectCommand {
+public class CreateProjectCommand {
 
     @Nonnull
     private String projectUrl;
