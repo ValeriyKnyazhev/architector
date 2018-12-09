@@ -1,15 +1,16 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.NoArgsConstructor;
-import org.bimserver.emf.Schema;
+import valeriy.knyazhev.architector.domain.model.project.file.File;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
-import static org.bimserver.emf.Schema.IFC2X3TC1;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -36,49 +37,35 @@ public class Project {
     @Nonnull
     private LocalDateTime updatedDate;
 
+    @OneToMany
     @Nonnull
-    private Schema schema = IFC2X3TC1;
-
-    @AttributeOverrides({
-            @AttributeOverride(name = "description",
-                    column = @Column(name = "description")),
-            @AttributeOverride(name = "implementationLevel",
-                    column = @Column(name = "implementation_level"))
-    })
-    @Embedded
-    @Nonnull
-    private ProjectDescription description;
-
-    @AttributeOverrides({
-            @AttributeOverride(name = "name",
-                    column = @Column(name = "name")),
-            @AttributeOverride(name = "timestamp",
-                    column = @Column(name = "timestamp")),
-            @AttributeOverride(name = "author",
-                    column = @Column(name = "author")),
-            @AttributeOverride(name = "organization",
-                    column = @Column(name = "organization")),
-            @AttributeOverride(name = "preprocessorVersion",
-                    column = @Column(name = "preprocessor_version")),
-            @AttributeOverride(name = "originatingSystem",
-                    column = @Column(name = "originating_system")),
-            @AttributeOverride(name = "authorisation",
-                    column = @Column(name = "authorisation"))
-    })
-    @Embedded
-    @Nonnull
-    private ProjectMetadata metadata;
+    private List<File> files = new ArrayList<>();
 
     @Nonnull
     @Version
     private long concurrencyVersion;
 
-    public Project(@Nonnull ProjectId projectId, @Nonnull ProjectDescription description,
-                   @Nonnull ProjectMetadata metadata, @Nonnull Schema schema) {
+    private Project(@Nonnull ProjectId projectId, @Nonnull List<File> files) {
         this.projectId = projectId;
-        this.description = description;
-        this.metadata = metadata;
-        this.schema = schema;
+        this.files = files;
+    }
+
+    @Nonnull
+    public static ProjectConstructor constructor() {
+        return new ProjectConstructor();
+    }
+
+    @Nonnull
+    public ProjectId projectId() {
+        return this.projectId;
+    }
+
+    private void addFile(@Nonnull File file) {
+        this.files.add(file);
+    }
+
+    private void removeFile(@Nonnull File file) {
+        this.files.remove(file);
     }
 
     void setCreatedDate(@Nonnull LocalDateTime date) {
@@ -87,6 +74,36 @@ public class Project {
 
     void setUpdatedDate(@Nonnull LocalDateTime date) {
         this.updatedDate = date;
+    }
+
+    public static class ProjectConstructor {
+
+        private ProjectId projectId;
+
+        private List<File> files = new ArrayList<>();
+
+        ProjectConstructor() {
+        }
+
+        public ProjectConstructor projectId(@Nonnull ProjectId projectId) {
+            this.projectId = projectId;
+            return this;
+        }
+
+        public ProjectConstructor withFiles(@Nonnull List<File> files) {
+            this.files.addAll(files);
+            return this;
+        }
+
+        public ProjectConstructor withFile(@Nonnull File file) {
+            this.files.add(file);
+            return this;
+        }
+
+        public Project construct() {
+            return new Project(projectId, files);
+        }
+
     }
 
 }

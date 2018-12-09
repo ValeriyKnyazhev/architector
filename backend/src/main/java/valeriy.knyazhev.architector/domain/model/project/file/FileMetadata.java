@@ -1,24 +1,25 @@
-package valeriy.knyazhev.architector.domain.model.project;
+package valeriy.knyazhev.architector.domain.model.project.file;
 
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
+import java.time.LocalDate;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProjectMetadata {
+public class FileMetadata {
 
     @Nonnull
     private String name;
 
     @Nonnull
-    private String timestamp;
+    private LocalDate timestamp;
 
     @Nonnull
     private String author;
@@ -35,10 +36,10 @@ public class ProjectMetadata {
     @Nonnull
     private String authorisation;
 
-    @Builder(builderMethodName = "constructor", buildMethodName = "construct")
-    private ProjectMetadata(@Nonnull String name, @Nonnull String timestamp, @Nonnull String author,
-                            @Nonnull String organization, @Nonnull String preprocessorVersion,
-                            @Nonnull String originatingSystem, @Nonnull String authorisation) {
+    @Builder
+    private FileMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull String author,
+                         @Nonnull String organization, @Nonnull String preprocessorVersion,
+                         @Nonnull String originatingSystem, @Nonnull String authorisation) {
         this.name = name;
         this.timestamp = timestamp;
         this.author = author;

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import valeriy.knyazhev.architector.application.IFCProjectReader;
+import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -33,8 +34,9 @@ public class ProjectResource {
         Args.notNull(command, "Read project command is required.");
         try {
             URL projectUrl = new URL(command.projectUrl());
-            this.projectReader.readProjectFromUrl(projectUrl);
-            return ResponseEntity.ok().body(new ResponseMessage().info("Project is read."));
+            Project project = this.projectReader.readProjectFromUrl(projectUrl);
+            return ResponseEntity.ok()
+                    .body(new ResponseMessage().info("Project " + project.projectId().id() + "is read."));
         } catch (MalformedURLException e) {
             return ResponseEntity.badRequest().body(new ResponseMessage().error(e.getMessage()));
         }

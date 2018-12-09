@@ -8,6 +8,7 @@ import org.bimserver.ifc.step.deserializer.Ifc2x3tc1StepDeserializer;
 import org.bimserver.models.ifc2x3tc1.Ifc2x3tc1Package;
 import org.bimserver.plugins.deserializers.DeserializeException;
 import org.springframework.stereotype.Service;
+import valeriy.knyazhev.architector.domain.model.project.Project;
 
 import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
@@ -31,17 +32,19 @@ public class IFCProjectReader {
         this.deserializer.init(packageMetaData);
     }
 
-    public void readProjectFromUrl(@Nonnull URL projectUrl) {
+    @Nonnull
+    public Project readProjectFromUrl(@Nonnull URL projectUrl) {
         try {
             InputStream projectStream = projectUrl.openStream();
-            readProjectStream(projectStream);
+            return readProjectStream(projectStream);
         } catch (IOException e) {
             throw new ProjectReadingException(projectUrl.getRef());
         }
 
     }
 
-    private void readProjectStream(@Nonnull InputStream projectStream) {
+    @Nonnull
+    private Project readProjectStream(@Nonnull InputStream projectStream) {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         try {
             IOUtils.copy(projectStream, byteStream);
@@ -50,6 +53,7 @@ public class IFCProjectReader {
         }
         try {
             IfcModelInterface model = this.deserializer.read(new ByteArrayInputStream(byteStream.toByteArray()), "", byteStream.size(), null);
+            return ProjectBuilder.buildProject(model);
         } catch (DeserializeException e) {
             throw new IllegalStateException("Unable to deserialize project.");
         }
