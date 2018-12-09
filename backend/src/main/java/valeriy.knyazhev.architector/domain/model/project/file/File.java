@@ -42,8 +42,8 @@ public class File {
     private Schema schema = IFC2X3TC1;
 
     @AttributeOverrides({
-            @AttributeOverride(name = "description",
-                    column = @Column(name = "description")),
+            @AttributeOverride(name = "descriptions",
+                    column = @Column(name = "descriptions")),
             @AttributeOverride(name = "implementationLevel",
                     column = @Column(name = "implementation_level"))
     })
@@ -56,10 +56,10 @@ public class File {
                     column = @Column(name = "name")),
             @AttributeOverride(name = "timestamp",
                     column = @Column(name = "timestamp")),
-            @AttributeOverride(name = "author",
-                    column = @Column(name = "author")),
-            @AttributeOverride(name = "organization",
-                    column = @Column(name = "organization")),
+            @AttributeOverride(name = "authors",
+                    column = @Column(name = "authors")),
+            @AttributeOverride(name = "organizations",
+                    column = @Column(name = "organizations")),
             @AttributeOverride(name = "preprocessorVersion",
                     column = @Column(name = "preprocessor_version")),
             @AttributeOverride(name = "originatingSystem",

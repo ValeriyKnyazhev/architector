@@ -34,7 +34,7 @@ public final class ProjectMapper {
 
     @Nonnull
     private static FileDescriptionModel constructFileDescription(@Nonnull FileDescription description) {
-        return new FileDescriptionModel(description.description(), description.implementationLevel());
+        return new FileDescriptionModel(description.descriptions(), description.implementationLevel());
     }
 
     @Nonnull
@@ -42,8 +42,8 @@ public final class ProjectMapper {
         return FileMetadataModel.builder()
                 .name(metadata.name())
                 .timestamp(metadata.timestamp())
-                .author(metadata.author())
-                .organization(metadata.organization())
+                .authors(metadata.authors())
+                .organizations(metadata.organizations())
                 .preprocessorVersion(metadata.preprocessorVersion())
                 .originatingSystem(metadata.originatingSystem())
                 .authorisation(metadata.authorisation())

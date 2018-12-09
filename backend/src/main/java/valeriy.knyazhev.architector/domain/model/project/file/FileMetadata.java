@@ -6,6 +6,11 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+
+import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.extractValues;
+import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.mapValue;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -20,10 +25,10 @@ public class FileMetadata {
     private LocalDate timestamp;
 
     @Nonnull
-    private String author;
+    private String authors;
 
     @Nonnull
-    private String organization;
+    private String organizations;
 
     @Nonnull
     private String preprocessorVersion;
@@ -35,13 +40,13 @@ public class FileMetadata {
     private String authorisation;
 
     @Builder
-    private FileMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull String author,
-                         @Nonnull String organization, @Nonnull String preprocessorVersion,
+    private FileMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull Collection<String> authors,
+                         @Nonnull Collection<String> organizations, @Nonnull String preprocessorVersion,
                          @Nonnull String originatingSystem, @Nonnull String authorisation) {
         this.name = name;
         this.timestamp = timestamp;
-        this.author = author;
-        this.organization = organization;
+        this.authors = mapValue(authors);
+        this.organizations = mapValue(organizations);
         this.preprocessorVersion = preprocessorVersion;
         this.originatingSystem = originatingSystem;
         this.authorisation = authorisation;
@@ -58,13 +63,13 @@ public class FileMetadata {
     }
 
     @Nonnull
-    public String author() {
-        return this.author;
+    public List<String> authors() {
+        return extractValues(this.authors);
     }
 
     @Nonnull
-    public String organization() {
-        return this.organization;
+    public List<String> organizations() {
+        return extractValues(this.organizations);
     }
 
     @Nonnull

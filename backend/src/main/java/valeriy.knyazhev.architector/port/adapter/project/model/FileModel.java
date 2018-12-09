@@ -7,6 +7,7 @@ import org.bimserver.emf.Schema;
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static org.bimserver.emf.Schema.IFC2X3TC1;
@@ -51,13 +52,13 @@ public class FileModel {
     public static class FileDescriptionModel {
 
         @Nonnull
-        private String description;
+        private List<String> descriptions;
 
         @Nonnull
         private String implementationLevel;
 
-        public FileDescriptionModel(@Nonnull String description, @Nonnull String implementationLevel) {
-            this.description = description;
+        public FileDescriptionModel(@Nonnull List<String> descriptions, @Nonnull String implementationLevel) {
+            this.descriptions = descriptions;
             this.implementationLevel = implementationLevel;
         }
     }
@@ -72,10 +73,10 @@ public class FileModel {
         private LocalDate timestamp;
 
         @Nonnull
-        private String author;
+        private List<String> authors;
 
         @Nonnull
-        private String organization;
+        private List<String> organizations;
 
         @Nonnull
         private String preprocessorVersion;
@@ -87,13 +88,13 @@ public class FileModel {
         private String authorisation;
 
         @Builder
-        private FileMetadataModel(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull String author,
-                                  @Nonnull String organization, @Nonnull String preprocessorVersion,
+        private FileMetadataModel(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
+                                  @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
                                   @Nonnull String originatingSystem, @Nonnull String authorisation) {
             this.name = name;
             this.timestamp = timestamp;
-            this.author = author;
-            this.organization = organization;
+            this.authors = authors;
+            this.organizations = organizations;
             this.preprocessorVersion = preprocessorVersion;
             this.originatingSystem = originatingSystem;
             this.authorisation = authorisation;

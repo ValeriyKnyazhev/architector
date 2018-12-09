@@ -43,8 +43,7 @@ public final class ProjectBuilder {
 
     @Nonnull
     private static FileDescription extractDescription(@Nonnull IfcHeader header) {
-        String fullDescription = String.join(" ", header.getDescription());
-        return FileDescription.of(fullDescription, header.getImplementationLevel());
+        return FileDescription.of(header.getDescription(), header.getImplementationLevel());
     }
 
     @Nonnull
@@ -54,8 +53,8 @@ public final class ProjectBuilder {
         return FileMetadata.builder()
                 .name(header.getFilename())
                 .timestamp(date)
-//                .author(header.getAuthor())
-//                .organization(header.getOrganization())
+                .authors(header.getAuthor())
+                .organizations(header.getOrganization())
                 .preprocessorVersion(header.getPreProcessorVersion())
                 .originatingSystem(header.getOriginatingSystem())
                 .authorisation(header.getAuthorization())
