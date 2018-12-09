@@ -1,6 +1,8 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -8,10 +10,12 @@ import java.util.UUID;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
+
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class ProjectId {
 
-
+    @Nonnull
     private String id;
 
     private ProjectId(@Nonnull String id) {

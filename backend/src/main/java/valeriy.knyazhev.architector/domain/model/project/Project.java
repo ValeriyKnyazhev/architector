@@ -37,7 +37,9 @@ public class Project {
     @Nonnull
     private LocalDateTime updatedDate;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "project_id", nullable = false)
+    @OrderColumn(name = "file_order")
     @Nonnull
     private List<File> files = new ArrayList<>();
 

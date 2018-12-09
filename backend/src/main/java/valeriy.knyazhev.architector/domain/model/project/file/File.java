@@ -38,6 +38,7 @@ public class File {
     private LocalDateTime updatedDate;
 
     @Nonnull
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private Schema schema = IFC2X3TC1;
 
@@ -76,7 +77,8 @@ public class File {
     private long concurrencyVersion;
 
     @Builder
-    private File(@Nonnull FileId fileId, @Nonnull FileDescription description,
+    private File(@Nonnull FileId fileId,
+                 @Nonnull FileDescription description,
                  @Nonnull FileMetadata metadata) {
         this.fileId = fileId;
         this.description = description;
