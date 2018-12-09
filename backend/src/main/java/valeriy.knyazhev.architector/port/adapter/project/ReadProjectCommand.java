@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.port.adapter;
+package valeriy.knyazhev.architector.port.adapter.project;
 
 import org.apache.http.util.Args;
 

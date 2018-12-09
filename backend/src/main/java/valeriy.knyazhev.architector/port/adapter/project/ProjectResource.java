@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.port.adapter;
+package valeriy.knyazhev.architector.port.adapter.project;
 
 import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,7 @@ import java.net.URL;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static valeriy.knyazhev.architector.port.adapter.project.model.ProjectMapper.mapToModel;
 
 /**
  * @author Valeriy Knyazhev
@@ -58,7 +59,7 @@ public class ProjectResource {
             return ResponseEntity.status(NOT_FOUND)
                     .body(new ResponseMessage().error("Project with identifier " + qProjectId + " not found."));
         }
-        return ResponseEntity.ok(project);
+        return ResponseEntity.ok(mapToModel(project));
     }
 
 }

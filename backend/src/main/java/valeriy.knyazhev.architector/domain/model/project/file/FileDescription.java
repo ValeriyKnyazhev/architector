@@ -29,4 +29,14 @@ public class FileDescription {
         return new FileDescription(description, implementationLevel);
     }
 
+    @Nonnull
+    public String description() {
+        return this.description;
+    }
+
+    @Nonnull
+    public String implementationLevel() {
+        return this.implementationLevel;
+    }
+
 }

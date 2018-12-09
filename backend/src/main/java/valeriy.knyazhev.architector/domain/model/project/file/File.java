@@ -39,7 +39,6 @@ public class File {
 
     @Nonnull
     @Enumerated(EnumType.STRING)
-    @Builder.Default
     private Schema schema = IFC2X3TC1;
 
     @AttributeOverrides({
@@ -83,6 +82,31 @@ public class File {
         this.fileId = fileId;
         this.description = description;
         this.metadata = metadata;
+    }
+
+    @Nonnull
+    public FileId fileId() {
+        return this.fileId;
+    }
+
+    @Nonnull
+    public FileDescription description() {
+        return this.description;
+    }
+
+    @Nonnull
+    public FileMetadata metadata() {
+        return this.metadata;
+    }
+
+    @Nonnull
+    public LocalDateTime createdDate() {
+        return this.createdDate;
+    }
+
+    @Nonnull
+    public LocalDateTime updatedDate() {
+        return this.updatedDate;
     }
 
     void setCreatedDate(@Nonnull LocalDateTime date) {

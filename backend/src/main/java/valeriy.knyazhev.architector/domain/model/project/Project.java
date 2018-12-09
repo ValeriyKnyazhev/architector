@@ -62,6 +62,21 @@ public class Project {
         return this.projectId;
     }
 
+    @Nonnull
+    public LocalDateTime createdDate() {
+        return this.createdDate;
+    }
+
+    @Nonnull
+    public LocalDateTime updatedDate() {
+        return this.updatedDate;
+    }
+
+    @Nonnull
+    public List<File> files() {
+        return this.files;
+    }
+
     private void addFile(@Nonnull File file) {
         this.files.add(file);
     }
