@@ -1,7 +1,7 @@
 package valeriy.knyazhev.architector.application;
 
 import lombok.RequiredArgsConstructor;
-import org.bimserver.emf.IfcModelInterface;
+import org.bimserver.emf.ModelMetaData;
 import org.bimserver.models.store.IfcHeader;
 import org.springframework.stereotype.Service;
 import valeriy.knyazhev.architector.domain.model.project.Project;
@@ -14,6 +14,7 @@ import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 /**
  * @author Valeriy Knyazhev
@@ -23,17 +24,18 @@ import java.time.ZoneId;
 public final class ProjectBuilder {
 
     @Nonnull
-    public static Project buildProject(@Nonnull IfcModelInterface ifcModel) {
+    public static Project buildProject(@Nonnull ModelMetaData metadata,
+                                       @Nonnull List<String> contentItems) {
 
         return Project.constructor()
                 .projectId(ProjectId.nextId())
-                .withFile(buildFile(ifcModel))
+                .withFile(buildFile(metadata))
                 .construct();
     }
 
     @Nonnull
-    private static File buildFile(@Nonnull IfcModelInterface ifcModel) {
-        IfcHeader headerSummary = ifcModel.getModelMetaData().getIfcHeader();
+    private static File buildFile(@Nonnull ModelMetaData metadata) {
+        IfcHeader headerSummary = metadata.getIfcHeader();
         return File.builder()
                 .fileId(FileId.nextId())
                 .description(extractDescription(headerSummary))

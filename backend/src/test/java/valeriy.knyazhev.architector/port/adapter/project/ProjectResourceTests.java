@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import valeriy.knyazhev.architector.application.IFCProjectReader;
@@ -39,7 +38,7 @@ public class ProjectResourceTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private static Project sampleProject(@NonNull ProjectId projectId) {
+    private static Project sampleProject(ProjectId projectId) {
         return Project.constructor()
                 .projectId(projectId)
                 .construct();
