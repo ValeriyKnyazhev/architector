@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
-import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
+import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
 import javax.annotation.Nonnull;
@@ -25,21 +26,22 @@ public final class ProjectBuilder {
 
     @Nonnull
     public static Project buildProject(@Nonnull ModelMetaData metadata,
-                                       @Nonnull List<String> contentItems) {
+                                       @Nonnull List<String> content) {
 
         return Project.constructor()
                 .projectId(ProjectId.nextId())
-                .withFile(buildFile(metadata))
+                .withFile(buildFile(metadata, content))
                 .construct();
     }
 
     @Nonnull
-    private static File buildFile(@Nonnull ModelMetaData metadata) {
+    private static File buildFile(@Nonnull ModelMetaData metadata, @Nonnull List<String> content) {
         IfcHeader headerSummary = metadata.getIfcHeader();
         return File.builder()
                 .fileId(FileId.nextId())
                 .description(extractDescription(headerSummary))
                 .metadata(extractMetadata(headerSummary))
+                .content(FileContent.of(content))
                 .build();
     }
 
