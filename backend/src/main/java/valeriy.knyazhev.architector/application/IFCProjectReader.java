@@ -58,7 +58,6 @@ public class IFCProjectReader {
         String isoId = null;
         StringBuilder header = new StringBuilder();
         List<String> contentItems = new ArrayList<>();
-        StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(projectStream))) {
 
             boolean isHeader = false;
@@ -93,9 +92,7 @@ public class IFCProjectReader {
         }
 
         try {
-            String resultHeader = isoId + "\nHEADER;\n" + header.toString() + "ENDSEC;\nDATA;\n" +
-                    String.join("\n", contentItems)
-                    + "\nENDSEC;\nEND-" + isoId;
+            String resultHeader = isoId + "\nHEADER;\n" + header.toString() + "ENDSEC;\nDATA;\nENDSEC;\nEND-" + isoId;
             ByteArrayInputStream headerStream = new ByteArrayInputStream(resultHeader.getBytes(StandardCharsets.UTF_8));
 
             IfcModelInterface model = this.deserializer.read(headerStream, "", headerStream.available(), null);
