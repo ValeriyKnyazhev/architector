@@ -77,11 +77,11 @@ public class Project {
         return this.files;
     }
 
-    private void addFile(@Nonnull File file) {
+    public void addFile(@Nonnull File file) {
         this.files.add(file);
     }
 
-    private void removeFile(@Nonnull File file) {
+    public void removeFile(@Nonnull File file) {
         this.files.remove(file);
     }
 

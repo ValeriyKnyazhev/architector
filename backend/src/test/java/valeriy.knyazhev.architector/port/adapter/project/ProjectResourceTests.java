@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import valeriy.knyazhev.architector.application.IFCProjectReader;
+import valeriy.knyazhev.architector.application.IFCFileReader;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ProjectResourceTests {
 
     @MockBean
-    private IFCProjectReader projectReader;
+    private IFCFileReader projectReader;
 
     @MockBean
     private ProjectRepository projectRepository;
@@ -50,11 +50,11 @@ public class ProjectResourceTests {
         // given
         String projectUrl = "https://test.projects.ru/example.ifc";
         String createCommand = "{\"projectUrl\": \"" + projectUrl + "\"}";
-        CreateProjectCommand expectedCommand = new CreateProjectCommand();
+        AddFileCommand expectedCommand = new AddFileCommand();
         expectedCommand.setProjectUrl(projectUrl);
         ProjectId projectId = ProjectId.nextId();
         Project project = sampleProject(projectId);
-        when(this.projectReader.readProjectFromUrl(any())).thenReturn(project);
+        when(this.projectReader.readFileFromUrl(any())).thenReturn(project);
 
         // expect
         this.mockMvc.perform(post("/projects")

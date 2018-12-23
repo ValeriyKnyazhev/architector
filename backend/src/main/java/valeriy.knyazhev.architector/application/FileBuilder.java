@@ -22,20 +22,10 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public final class ProjectBuilder {
+public final class FileBuilder {
 
     @Nonnull
-    public static Project buildProject(@Nonnull ModelMetaData metadata,
-                                       @Nonnull List<String> content) {
-
-        return Project.constructor()
-                .projectId(ProjectId.nextId())
-                .withFile(buildFile(metadata, content))
-                .construct();
-    }
-
-    @Nonnull
-    private static File buildFile(@Nonnull ModelMetaData metadata, @Nonnull List<String> content) {
+    public static File buildFile(@Nonnull ModelMetaData metadata, @Nonnull List<String> content) {
         IfcHeader headerSummary = metadata.getIfcHeader();
         return File.builder()
                 .fileId(FileId.nextId())

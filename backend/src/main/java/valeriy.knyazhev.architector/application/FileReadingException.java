@@ -7,13 +7,13 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev
  */
-public class ProjectReadingException extends IllegalStateException {
+public class FileReadingException extends IllegalStateException {
 
-    public ProjectReadingException(@Nonnull String projectPath) {
+    public FileReadingException(@Nonnull String projectPath) {
         super("Unable to read project " + Args.notNull(projectPath, "Project path is required.") + ".");
     }
 
-    public ProjectReadingException() {
+    public FileReadingException() {
         super("Unable to read project.");
     }
 

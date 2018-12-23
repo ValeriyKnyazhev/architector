@@ -7,7 +7,7 @@ import org.bimserver.ifc.step.deserializer.Ifc2x3tc1StepDeserializer;
 import org.bimserver.models.ifc2x3tc1.Ifc2x3tc1Package;
 import org.bimserver.plugins.deserializers.DeserializeException;
 import org.springframework.stereotype.Service;
-import valeriy.knyazhev.architector.domain.model.project.Project;
+import valeriy.knyazhev.architector.domain.model.project.file.File;
 
 import javax.annotation.Nonnull;
 import java.io.*;
@@ -18,27 +18,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static valeriy.knyazhev.architector.application.FileBuilder.buildFile;
+
 /**
  * @author Valeriy Knyazhev
  */
 @Service
-public class IFCProjectReader {
+public class IFCFileReader {
 
     private Ifc2x3tc1StepDeserializer deserializer;
 
-    public IFCProjectReader() {
+    public IFCFileReader() {
         this.deserializer = new Ifc2x3tc1StepDeserializer();
         PackageMetaData packageMetaData = new PackageMetaData(Ifc2x3tc1Package.eINSTANCE, Schema.IFC2X3TC1, Paths.get("tmp"));
         this.deserializer.init(packageMetaData);
     }
 
     @Nonnull
-    public Project readProjectFromUrl(@Nonnull URL projectUrl) {
+    public File readFileFromUrl(@Nonnull URL fileUrl) {
         try {
-            InputStream projectStream = projectUrl.openStream();
-            return readProjectStream(projectStream);
+            InputStream fileStream = fileUrl.openStream();
+            return readFileStream(fileStream);
         } catch (IOException e) {
-            throw new ProjectReadingException(projectUrl.getRef());
+            throw new FileReadingException(fileUrl.getRef());
         }
 
     }
@@ -54,11 +56,11 @@ public class IFCProjectReader {
     }
 
     @Nonnull
-    private Project readProjectStream(@Nonnull InputStream projectStream) {
+    private File readFileStream(@Nonnull InputStream fileStream) {
         String isoId = null;
         StringBuilder header = new StringBuilder();
         List<String> contentItems = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(projectStream))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream))) {
 
             boolean isHeader = false;
             boolean isData = false;
@@ -96,9 +98,9 @@ public class IFCProjectReader {
             ByteArrayInputStream headerStream = new ByteArrayInputStream(resultHeader.getBytes(StandardCharsets.UTF_8));
 
             IfcModelInterface model = this.deserializer.read(headerStream, "", headerStream.available(), null);
-            return ProjectBuilder.buildProject(model.getModelMetaData(), contentItems);
+            return buildFile(model.getModelMetaData(), contentItems);
         } catch (DeserializeException e) {
-            throw new IllegalStateException("Unable to deserialize project.");
+            throw new IllegalStateException("Unable to deserialize file.");
         }
     }
 
