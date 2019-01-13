@@ -1,10 +1,13 @@
 package valeriy.knyazhev.architector.application;
 
+import lombok.RequiredArgsConstructor;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.emf.PackageMetaData;
 import org.bimserver.emf.Schema;
 import org.bimserver.ifc.step.deserializer.Ifc2x3tc1StepDeserializer;
+import org.bimserver.ifc.step.deserializer.IfcHeaderParser;
 import org.bimserver.models.ifc2x3tc1.Ifc2x3tc1Package;
+import org.bimserver.models.store.IfcHeader;
 import org.bimserver.plugins.deserializers.DeserializeException;
 import org.springframework.stereotype.Service;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
@@ -14,6 +17,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,15 +28,8 @@ import static valeriy.knyazhev.architector.application.FileBuilder.buildFile;
  * @author Valeriy Knyazhev
  */
 @Service
+@RequiredArgsConstructor
 public class IFCFileReader {
-
-    private Ifc2x3tc1StepDeserializer deserializer;
-
-    public IFCFileReader() {
-        this.deserializer = new Ifc2x3tc1StepDeserializer();
-        PackageMetaData packageMetaData = new PackageMetaData(Ifc2x3tc1Package.eINSTANCE, Schema.IFC2X3TC1, Paths.get("tmp"));
-        this.deserializer.init(packageMetaData);
-    }
 
     @Nonnull
     private static String readNextLine(@Nonnull BufferedReader reader) {
@@ -83,7 +80,9 @@ public class IFCFileReader {
                 }
 
                 if (isData) {
-                    contentItems.add(readFullLine(line, reader));
+                    String itemLine = readFullLine(line, reader);
+                    int startIndexItem = itemLine.indexOf("=");
+                    contentItems.add(itemLine.substring(startIndexItem));
                 }
 
                 if (line.equalsIgnoreCase("HEADER;")) {
@@ -99,13 +98,16 @@ public class IFCFileReader {
         }
 
         try {
-            String resultHeader = isoId + "\nHEADER;\n" + header.toString() + "ENDSEC;\nDATA;\nENDSEC;\nEND-" + isoId;
-            ByteArrayInputStream headerStream = new ByteArrayInputStream(resultHeader.getBytes(StandardCharsets.UTF_8));
-
-            IfcModelInterface model = this.deserializer.read(headerStream, "", headerStream.available(), null);
-            return buildFile(model.getModelMetaData(), contentItems);
+//            String resultHeader = isoId + "\nHEADER;\n" + header.toString() + "ENDSEC;\nDATA;\nENDSEC;\nEND-" + isoId;
+//            ByteArrayInputStream headerStream = new ByteArrayInputStream(resultHeader.getBytes(StandardCharsets.UTF_8));
+            IfcHeader resultHeader = new IfcHeaderParser().parseFileName(header.toString());
+//            IfcModelInterface model = this.deserializer.read(headerStream, "", headerStream.available(), null);
+//            return buildFile(model.getModelMetaData(), contentItems);
+            return buildFile(resultHeader, contentItems);
         } catch (DeserializeException e) {
             throw new IllegalStateException("Unable to deserialize file.");
+        } catch (ParseException e) {
+            throw new IllegalStateException("Unable to read header file.");
         }
     }
 
