@@ -3,6 +3,7 @@ package valeriy.knyazhev.architector.port.adapter.project;
 import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -10,8 +11,13 @@ import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static valeriy.knyazhev.architector.port.adapter.project.model.ProjectMapper.mapToModel;
 
 /**
@@ -29,7 +35,7 @@ public class ProjectResource {
     @PostMapping(value = "/projects",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> importDataFromUrl() {
+    public ResponseEntity<ResponseMessage> importProjectFromUrl() {
         Project project = Project.constructor().projectId(ProjectId.nextId()).construct();
         projectRepository.save(project);
         return ResponseEntity.ok().body(new ResponseMessage()

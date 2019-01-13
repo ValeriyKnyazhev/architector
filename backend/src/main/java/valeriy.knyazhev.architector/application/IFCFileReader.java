@@ -35,7 +35,17 @@ public class IFCFileReader {
     }
 
     @Nonnull
-    public File readFileFromUrl(@Nonnull URL fileUrl) {
+    private static String readNextLine(@Nonnull BufferedReader reader) {
+        try {
+            return Optional.ofNullable(reader.readLine())
+                    .orElseThrow(() -> new IllegalStateException("Unable to read next line of the content stream."));
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read stream.", e);
+        }
+    }
+
+    @Nonnull
+    public File readFromUrl(@Nonnull URL fileUrl) {
         try {
             InputStream fileStream = fileUrl.openStream();
             return readFileStream(fileStream);
@@ -46,13 +56,8 @@ public class IFCFileReader {
     }
 
     @Nonnull
-    private static String readNextLine(@Nonnull BufferedReader reader) {
-        try {
-            return Optional.ofNullable(reader.readLine())
-                    .orElseThrow(() -> new IllegalStateException("Unable to read next line of the content stream."));
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to read stream.", e);
-        }
+    public File readFromFile(@Nonnull InputStream fileContent) {
+        return readFileStream(fileContent);
     }
 
     @Nonnull

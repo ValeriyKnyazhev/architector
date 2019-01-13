@@ -3,21 +3,24 @@ package valeriy.knyazhev.architector.port.adapter.project.file;
 import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.IFCFileReader;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.project.AddFileCommand;
+import valeriy.knyazhev.architector.port.adapter.project.AddFileFromUrlCommand;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static valeriy.knyazhev.architector.port.adapter.project.file.FileMapper.mapToModel;
 
 /**
@@ -61,13 +64,13 @@ public class FileResource {
         return ResponseEntity.ok(mapToModel(foundFile));
     }
 
-    @PostMapping(value = "/projects/{qProjectId}/files",
+    @PostMapping(value = "/projects/{qProjectId}/files/source",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
-                                                 @RequestBody AddFileCommand command) {
+                                                 @RequestBody AddFileFromUrlCommand command) {
         Args.notNull(qProjectId, "Project identifier is required.");
-        Args.notNull(command, "Add file command is required.");
+        Args.notNull(command, "Add file from url command is required.");
         try {
             Project project = this.projectRepository.findByProjectId(ProjectId.of(qProjectId))
                     .orElse(null);
@@ -76,13 +79,38 @@ public class FileResource {
                         .error("Project with identifier " + qProjectId + " not found."));
             }
             URL fileUrl = new URL(command.fileUrl());
-            File file = this.fileReader.readFileFromUrl(fileUrl);
+            File file = this.fileReader.readFromUrl(fileUrl);
             project.addFile(file);
             projectRepository.save(project);
             return ResponseEntity.ok().body(new ResponseMessage()
                     .info("File " + file.fileId().id() + " was added to project " + qProjectId));
         } catch (MalformedURLException e) {
             return ResponseEntity.badRequest().body(new ResponseMessage().error(e.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/projects/{qProjectId}/files/import",
+            consumes = MULTIPART_FORM_DATA_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,
+                                                           @RequestParam("file") MultipartFile multipartFile) {
+        try {
+            Project project = this.projectRepository.findByProjectId(ProjectId.of(qProjectId))
+                    .orElse(null);
+            if (project == null) {
+                return ResponseEntity.badRequest().body(new ResponseMessage()
+                        .error("Project with identifier " + qProjectId + " not found."));
+            }
+            File file = this.fileReader.readFromFile(multipartFile.getInputStream());
+            project.addFile(file);
+            projectRepository.save(project);
+            return ResponseEntity.ok().body(new ResponseMessage()
+                    .info("File " + file.fileId().id() + " was added to project " + qProjectId));
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().body(new ResponseMessage().error(e.getMessage()));
+        } catch (IOException ex) {
+            return ResponseEntity.badRequest().body(new ResponseMessage()
+                    .error("Unexpected IO error: try to import file " + multipartFile.getOriginalFilename() + " one more time."));
         }
     }
 

@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev
  */
-public class AddFileCommand {
+public class AddFileFromUrlCommand {
 
     @Nonnull
     private String fileUrl;

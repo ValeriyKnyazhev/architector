@@ -2,7 +2,7 @@ server.port: 8080
 
 spring.jpa:
   hibernate:
-    ddl-auto: create
+    ddl-auto: create-drop
   properties.hibernate:
     dialect: org.hibernate.dialect.PostgreSQL95Dialect
     temp.use_jdbc_metadata_defaults: false
