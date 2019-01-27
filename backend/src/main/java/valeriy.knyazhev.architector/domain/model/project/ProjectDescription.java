@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project.file;
+package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -16,7 +16,7 @@ import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.map
  */
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FileDescription {
+public class ProjectDescription {
 
     @Nonnull
     private String descriptions;
@@ -24,14 +24,14 @@ public class FileDescription {
     @Nonnull
     private String implementationLevel;
 
-    private FileDescription(@Nonnull String descriptions, @Nonnull String implementationLevel) {
+    private ProjectDescription(@Nonnull String descriptions, @Nonnull String implementationLevel) {
         this.descriptions = descriptions;
         this.implementationLevel = implementationLevel;
     }
 
     @Nonnull
-    public static FileDescription of(@Nonnull Collection<String> descriptions, @Nonnull String implementationLevel) {
-        return new FileDescription(mapValue(descriptions), implementationLevel);
+    public static ProjectDescription of(@Nonnull Collection<String> descriptions, @Nonnull String implementationLevel) {
+        return new ProjectDescription(mapValue(descriptions), implementationLevel);
     }
 
     @Nonnull

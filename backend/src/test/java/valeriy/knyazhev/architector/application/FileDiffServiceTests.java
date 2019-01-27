@@ -1,14 +1,17 @@
 package valeriy.knyazhev.architector.application;
 
 import org.assertj.core.api.SoftAssertions;
-import org.bimserver.plugins.deserializers.DeserializeException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import valeriy.knyazhev.architector.application.FileDiffService.ChangedItem;
-import valeriy.knyazhev.architector.domain.model.project.file.*;
+import valeriy.knyazhev.architector.domain.model.project.ProjectDescription;
+import valeriy.knyazhev.architector.domain.model.project.ProjectMetadata;
+import valeriy.knyazhev.architector.domain.model.project.file.File;
+import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
+import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -32,8 +35,8 @@ public class FileDiffServiceTests {
     private FileDiffService fileDiffService;
 
     private static File sampleFile(List<String> content) {
-        FileDescription description = FileDescription.of(emptyList(), "");
-        FileMetadata metadata = FileMetadata.builder()
+        ProjectDescription description = ProjectDescription.of(emptyList(), "");
+        ProjectMetadata metadata = ProjectMetadata.builder()
                 .name("File name")
                 .timestamp(LocalDate.now())
                 .authors(emptyList())

@@ -4,17 +4,17 @@ import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import valeriy.knyazhev.architector.application.IFCProjectReader;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
-
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -28,18 +28,45 @@ public class ProjectResource {
 
     private final ProjectRepository projectRepository;
 
-    public ProjectResource(@Nonnull ProjectRepository projectRepository) {
-        this.projectRepository = Args.notNull(projectRepository, "Project repository");
+    private final IFCProjectReader projectReader;
+
+    public ProjectResource(@Nonnull ProjectRepository projectRepository,
+                           @Nonnull IFCProjectReader projectReader) {
+        this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
+        this.projectReader = Args.notNull(projectReader, "Project reader is required.");
     }
 
-    @PostMapping(value = "/projects",
+    @PostMapping(value = "/projects/source",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseMessage> importProjectFromUrl() {
-        Project project = Project.constructor().projectId(ProjectId.nextId()).construct();
-        projectRepository.save(project);
-        return ResponseEntity.ok().body(new ResponseMessage()
-                .info("Project " + project.projectId().id() + " was created."));
+    public ResponseEntity<Object> createFromUrl(@RequestBody AddFileFromUrlCommand command) {
+        Args.notNull(command, "Create project from url command is required.");
+        try {
+            URL projectUrl = new URL(command.fileUrl());
+            Project project = this.projectReader.readFromUrl(projectUrl);
+            projectRepository.save(project);
+            return ResponseEntity.ok().body(new ResponseMessage()
+                    .info("Project " + project.projectId().id() + " was created from source URL."));
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().body(new ResponseMessage().error(e.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/projects/import",
+            consumes = MULTIPART_FORM_DATA_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseMessage> createFromFile(@RequestParam("file") MultipartFile multipartFile) {
+        try {
+            Project project = this.projectReader.readFromFile(multipartFile.getInputStream());
+            projectRepository.save(project);
+            return ResponseEntity.ok().body(new ResponseMessage()
+                    .info("Project " + project.projectId().id() + " was created from received file."));
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().body(new ResponseMessage().error(e.getMessage()));
+        } catch (IOException ex) {
+            return ResponseEntity.badRequest().body(new ResponseMessage()
+                    .error("Unexpected IO error: try to import project " + multipartFile.getOriginalFilename() + " one more time."));
+        }
     }
 
     @GetMapping(value = "/projects/{qProjectId}",

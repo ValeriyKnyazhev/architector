@@ -1,6 +1,7 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.NoArgsConstructor;
+import org.bimserver.emf.Schema;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 
 import javax.annotation.Nonnull;
@@ -9,8 +10,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
+import static org.bimserver.emf.Schema.IFC2X3TC1;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -37,6 +40,41 @@ public class Project {
     @Nonnull
     private LocalDateTime updatedDate;
 
+    @Nonnull
+    @Enumerated(EnumType.STRING)
+    private Schema schema = IFC2X3TC1;
+
+    @AttributeOverrides({
+            @AttributeOverride(name = "descriptions",
+                    column = @Column(name = "descriptions")),
+            @AttributeOverride(name = "implementationLevel",
+                    column = @Column(name = "implementation_level"))
+    })
+    @Embedded
+    @Nonnull
+    private ProjectDescription description;
+
+    @AttributeOverrides({
+            @AttributeOverride(name = "name",
+                    column = @Column(name = "name")),
+            @AttributeOverride(name = "timestamp",
+                    column = @Column(name = "timestamp")),
+            @AttributeOverride(name = "authors",
+                    column = @Column(name = "authors")),
+            @AttributeOverride(name = "organizations",
+                    column = @Column(name = "organizations")),
+            @AttributeOverride(name = "preprocessorVersion",
+                    column = @Column(name = "preprocessor_version")),
+            @AttributeOverride(name = "originatingSystem",
+                    column = @Column(name = "originating_system")),
+            @AttributeOverride(name = "authorisation",
+                    column = @Column(name = "authorisation"))
+    })
+    @Embedded
+    @Nonnull
+    private ProjectMetadata metadata;
+
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id", nullable = false)
     @OrderColumn(name = "file_order")
@@ -47,8 +85,13 @@ public class Project {
     @Version
     private long concurrencyVersion;
 
-    private Project(@Nonnull ProjectId projectId, @Nonnull List<File> files) {
+    private Project(@Nonnull ProjectId projectId,
+                    @Nonnull ProjectDescription description,
+                    @Nonnull ProjectMetadata metadata,
+                    @Nonnull List<File> files) {
         this.projectId = projectId;
+        this.description = description;
+        this.metadata = metadata;
         this.files = files;
     }
 
@@ -73,16 +116,35 @@ public class Project {
     }
 
     @Nonnull
+    public Schema schema() {
+        return this.schema;
+    }
+
+    @Nonnull
+    public ProjectDescription description() {
+        return this.description;
+    }
+
+    @Nonnull
+    public ProjectMetadata metadata() {
+        return this.metadata;
+    }
+
+    @Nonnull
     public List<File> files() {
         return this.files;
     }
 
-    public void addFile(@Nonnull File file) {
-        this.files.add(file);
+    public void updateDescription(@Nonnull ProjectDescription description) {
+        this.description = description;
     }
 
-    public void removeFile(@Nonnull File file) {
-        this.files.remove(file);
+    public void updateMetadata(@Nonnull ProjectMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public void addFile(@Nonnull File file) {
+        this.files.add(file);
     }
 
     void setCreatedDate(@Nonnull LocalDateTime date) {
@@ -97,28 +159,42 @@ public class Project {
 
         private ProjectId projectId;
 
-        private List<File> files = new ArrayList<>();
+        private ProjectDescription description;
+
+        private ProjectMetadata metadata;
+
+        private File file;
 
         ProjectConstructor() {
         }
 
+        @Nonnull
         public ProjectConstructor projectId(@Nonnull ProjectId projectId) {
             this.projectId = projectId;
             return this;
         }
 
-        public ProjectConstructor withFiles(@Nonnull List<File> files) {
-            this.files.addAll(files);
+        @Nonnull
+        public ProjectConstructor withDescription(@Nonnull ProjectDescription description) {
+            this.description = description;
             return this;
         }
 
+        @Nonnull
+        public ProjectConstructor withMetadata(@Nonnull ProjectMetadata metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
+        @Nonnull
         public ProjectConstructor withFile(@Nonnull File file) {
-            this.files.add(file);
+            this.file = file;
             return this;
         }
 
+        @Nonnull
         public Project construct() {
-            return new Project(projectId, files);
+            return new Project(this.projectId, this.description, this.metadata, singletonList(this.file));
         }
 
     }

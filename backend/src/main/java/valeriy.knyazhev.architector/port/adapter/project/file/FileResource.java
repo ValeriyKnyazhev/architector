@@ -114,27 +114,4 @@ public class FileResource {
         }
     }
 
-    @DeleteMapping(value = "/projects/{qProjectId}/files/{qFileId}",
-            produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> removeFile(@PathVariable String qProjectId,
-                                             @PathVariable String qFileId) {
-        Args.notNull(qProjectId, "Project identifier is required.");
-        Args.notNull(qFileId, "File identifier is required.");
-        ProjectId projectId = ProjectId.of(qProjectId);
-        FileId fileId = FileId.of(qFileId);
-        Project project = this.projectRepository.findByProjectId(projectId)
-                .orElse(null);
-        if (project == null) {
-            return ResponseEntity.status(NOT_FOUND).body(new ResponseMessage()
-                    .error("Project with identifier " + qProjectId + " not found."));
-        }
-        project.files().stream()
-                .filter(file -> fileId.equals(file.fileId()))
-                .findFirst()
-                .ifPresent(project::removeFile);
-        this.projectRepository.save(project);
-        return ResponseEntity.ok(new ResponseMessage()
-                .info("File with identifier " + qFileId + " was deleted from project " + qProjectId));
-    }
-
 }

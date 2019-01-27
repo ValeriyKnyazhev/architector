@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project.file;
+package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.map
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FileMetadata {
+public class ProjectMetadata {
 
     @Nonnull
     private String name;
@@ -40,9 +40,9 @@ public class FileMetadata {
     private String authorisation;
 
     @Builder
-    private FileMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull Collection<String> authors,
-                         @Nonnull Collection<String> organizations, @Nonnull String preprocessorVersion,
-                         @Nonnull String originatingSystem, @Nonnull String authorisation) {
+    private ProjectMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull Collection<String> authors,
+                            @Nonnull Collection<String> organizations, @Nonnull String preprocessorVersion,
+                            @Nonnull String originatingSystem, @Nonnull String authorisation) {
         this.name = name;
         this.timestamp = timestamp;
         this.authors = mapValue(authors);
