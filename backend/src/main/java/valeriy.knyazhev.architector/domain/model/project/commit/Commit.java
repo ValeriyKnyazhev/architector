@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
-import valeriy.knyazhev.architector.domain.model.project.file.FileEntityListener;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +19,6 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.CommitDes
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @Entity
-@EntityListeners(FileEntityListener.class)
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "commits")
 @TypeDef(typeClass = CommitDescriptionJsonbType.class, name = "commit_jsonb")
