@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import valeriy.knyazhev.architector.domain.model.project.file.FileContent.FileContentJsonbType;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;

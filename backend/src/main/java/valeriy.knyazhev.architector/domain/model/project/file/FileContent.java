@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import valeriy.knyazhev.architector.domain.model.util.JsonbType;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
@@ -34,6 +35,13 @@ public class FileContent implements Serializable {
     @Nonnull
     public List<String> items() {
         return this.items;
+    }
+
+    public static class FileContentJsonbType extends JsonbType<FileContent> {
+
+        public FileContentJsonbType() {
+            super(FileContent.class);
+        }
     }
 
 }
