@@ -1,5 +1,6 @@
 package valeriy.knyazhev.architector.domain.model.project.file;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,13 @@ import lombok.NoArgsConstructor;
 import javax.annotation.Nonnull;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @EqualsAndHashCode
+@JsonAutoDetect(fieldVisibility = ANY)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class FileId {
 

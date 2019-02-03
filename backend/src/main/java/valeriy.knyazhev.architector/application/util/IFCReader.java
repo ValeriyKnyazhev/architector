@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.application.util;
 
 import org.bimserver.ifc.step.deserializer.IfcHeaderParser;
 import org.bimserver.models.store.IfcHeader;
+import org.bimserver.models.store.StoreFactory;
 import org.bimserver.plugins.deserializers.DeserializeException;
 
 import javax.annotation.Nonnull;
@@ -43,7 +44,9 @@ public abstract class IFCReader<T> {
     @Nonnull
     protected T read(@Nonnull InputStream contentStream) {
         String isoId = null;
-        StringBuilder header = new StringBuilder();
+        String fileDescription = null;
+        String fileName = null;
+        String fileSchema = null;
         List<String> contentItems = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(contentStream))) {
 
@@ -59,12 +62,22 @@ public abstract class IFCReader<T> {
                 }
 
                 if (isHeader) {
-                    header.append(readFullLine(line, reader)).append("\n");
+                    String fullLine = readFullLine(line, reader);
+                    // like as in IfcStepDeserializer::processHeader
+                    if (fullLine.startsWith("FILE_DESCRIPTION")) {
+                        fileDescription = fullLine.substring("FILE_DESCRIPTION".length() + 1, fullLine.length() - 2).trim();
+                    }
+                    if (fullLine.startsWith("FILE_NAME")) {
+                        fileName = fullLine.substring("FILE_NAME".length() + 1, fullLine.length() - 2).trim();
+                    }
+                    if (fullLine.startsWith("FILE_SCHEMA")) {
+                        fileSchema = fullLine.substring("FILE_SCHEMA".length() + 1, fullLine.length() - 2).trim();
+                    }
                 }
 
                 if (isData) {
                     String itemLine = readFullLine(line, reader);
-                    int startIndexItem = itemLine.indexOf("=");
+                    int startIndexItem = itemLine.indexOf("=") + 1;
                     contentItems.add(itemLine.substring(startIndexItem));
                 }
 
@@ -75,12 +88,18 @@ public abstract class IFCReader<T> {
                     isData = true;
                 }
             }
-
+            if (fileDescription == null || fileName == null || fileSchema == null) {
+                throw new IllegalStateException("File description, name or schema not found.");
+            }
         } catch (IOException ioe) {
             throw new IllegalStateException("Unable to read input stream.", ioe);
         }
         try {
-            IfcHeader resultHeader = new IfcHeaderParser().parseFileName(header.toString());
+            IfcHeader resultHeader = StoreFactory.eINSTANCE.createIfcHeader();
+            new IfcHeaderParser().parseDescription(fileDescription, resultHeader);
+            new IfcHeaderParser().parseFileName(fileName, resultHeader);
+            // TODO add reading file schema
+            new IfcHeaderParser().parseFileSchema(fileSchema, resultHeader);
             return constructResult(isoId, resultHeader, contentItems);
         } catch (DeserializeException e) {
             throw new IllegalStateException("Unable to deserialize input content.");

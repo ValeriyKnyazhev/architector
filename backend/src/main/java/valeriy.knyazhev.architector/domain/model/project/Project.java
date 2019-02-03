@@ -3,6 +3,8 @@ package valeriy.knyazhev.architector.domain.model.project;
 import lombok.NoArgsConstructor;
 import org.bimserver.emf.Schema;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
+import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
+import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
@@ -157,6 +159,19 @@ public class Project {
 
     void setUpdatedDate(@Nonnull LocalDateTime date) {
         this.updatedDate = date;
+    }
+
+    public boolean updateFile(@Nonnull FileId fileId, @Nonnull FileContent content) {
+        File file = this.files.stream()
+                .filter(f -> fileId.equals(f.fileId()))
+                .findFirst()
+                .orElse(null);
+        if (file != null) {
+            file.updateContent(content);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static class ProjectConstructor {

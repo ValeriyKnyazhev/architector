@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
@@ -46,7 +47,12 @@ public final class FileDiffCalculator {
     }
 
     @Nonnull
-    public List<CommitItem> calculateDiff(@Nonnull File oldFile, @Nonnull File newFile) {
+    public List<CommitItem> calculateDiff(@Nullable File oldFile, @Nonnull File newFile) {
+        if (oldFile == null) {
+            return newFile.content().items().stream()
+                    .map(item -> addItem(item, 0))
+                    .collect(toList());
+        }
         List<String> oldItems = oldFile.content().items();
         List<String> newItems = newFile.content().items();
         Patch<String> diff = DiffUtils.diff(oldItems, newItems);

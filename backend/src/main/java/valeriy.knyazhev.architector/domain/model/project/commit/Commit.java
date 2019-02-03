@@ -8,6 +8,7 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileEntityListener;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -30,7 +31,8 @@ public class Commit {
     @GeneratedValue(strategy = TABLE)
     private long id;
 
-    private long parentId;
+    @Nullable
+    private Long parentId;
 
     @AttributeOverride(name = "id", column = @Column(name = "project_id", nullable = false, updatable = false))
     @Embedded
@@ -48,12 +50,11 @@ public class Commit {
     @Type(type = "commit_jsonb")
     private CommitDescription data;
 
-    @Nonnull
     @Version
     private long concurrencyVersion;
 
     @Builder
-    private Commit(long parentId, @Nonnull ProjectId projectId,
+    private Commit(@Nullable Long parentId, @Nonnull ProjectId projectId,
                    @Nonnull String author, @Nonnull CommitDescription data) {
         this.parentId = parentId;
         this.projectId = projectId;
@@ -62,7 +63,12 @@ public class Commit {
         this.data = data;
     }
 
-    public long parentId() {
+    public long id() {
+        return this.id;
+    }
+
+    @Nullable
+    public Long parentId() {
         return this.parentId;
     }
 

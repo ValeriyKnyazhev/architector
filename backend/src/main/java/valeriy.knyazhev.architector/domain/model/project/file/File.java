@@ -75,6 +75,10 @@ public class File {
         return this.updatedDate;
     }
 
+    public void updateContent(@Nonnull FileContent content) {
+        this.content = content;
+    }
+
     void setCreatedDate(@Nonnull LocalDateTime date) {
         this.createdDate = date;
     }
