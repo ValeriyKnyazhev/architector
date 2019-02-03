@@ -4,7 +4,7 @@ import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import valeriy.knyazhev.architector.application.IFCProjectReader;
+import valeriy.knyazhev.architector.application.project.IFCProjectReader;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;

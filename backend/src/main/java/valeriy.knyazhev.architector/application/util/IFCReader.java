@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application;
+package valeriy.knyazhev.architector.application.util;
 
 import org.bimserver.ifc.step.deserializer.IfcHeaderParser;
 import org.bimserver.models.store.IfcHeader;
@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-abstract class IFCReader<T> {
+public abstract class IFCReader<T> {
 
     @Nonnull
     private static String readFullLine(@Nonnull String line, @Nonnull BufferedReader reader) {
@@ -41,7 +41,7 @@ abstract class IFCReader<T> {
     }
 
     @Nonnull
-    T read(@Nonnull InputStream contentStream) {
+    protected T read(@Nonnull InputStream contentStream) {
         String isoId = null;
         StringBuilder header = new StringBuilder();
         List<String> contentItems = new ArrayList<>();
@@ -90,5 +90,5 @@ abstract class IFCReader<T> {
     }
 
     @Nonnull
-    abstract T constructResult(String isoId, IfcHeader header, List<String> contentItems);
+    protected abstract T constructResult(String isoId, IfcHeader header, List<String> contentItems);
 }

@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application;
+package valeriy.knyazhev.architector.application.util;
 
 import org.apache.http.util.Args;
 

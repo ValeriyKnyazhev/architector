@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application;
+package valeriy.knyazhev.architector.application.project;
 
 import lombok.RequiredArgsConstructor;
 import org.bimserver.models.store.IfcHeader;

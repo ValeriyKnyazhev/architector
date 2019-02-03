@@ -1,8 +1,10 @@
-package valeriy.knyazhev.architector.application;
+package valeriy.knyazhev.architector.application.project;
 
 import lombok.RequiredArgsConstructor;
 import org.bimserver.models.store.IfcHeader;
 import org.springframework.stereotype.Service;
+import valeriy.knyazhev.architector.application.util.ContentReadingException;
+import valeriy.knyazhev.architector.application.util.IFCReader;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
@@ -40,7 +42,7 @@ public class IFCProjectReader extends IFCReader<Project> {
 
     @Override
     @Nonnull
-    Project constructResult(String isoId, IfcHeader header, List<String> contentItems) {
+    protected Project constructResult(String isoId, IfcHeader header, List<String> contentItems) {
         File file = File.builder()
                 .fileId(FileId.nextId())
                 .content(FileContent.of(contentItems))
