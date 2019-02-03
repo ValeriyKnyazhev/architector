@@ -24,11 +24,13 @@ public class CommitItem {
         this.position = position;
     }
 
-    public CommitItem addItem(@Nonnull String value, int position) {
+    @Nonnull
+    public static CommitItem addItem(@Nonnull String value, int position) {
         return new CommitItem(value, ADDITION, position);
     }
 
-    public CommitItem deleteItem(@Nonnull String value, int position) {
+    @Nonnull
+    public static CommitItem deleteItem(@Nonnull String value, int position) {
         return new CommitItem(value, DELETION, position);
     }
 
