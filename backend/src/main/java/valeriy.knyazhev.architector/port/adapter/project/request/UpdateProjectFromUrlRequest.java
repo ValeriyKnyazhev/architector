@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.port.adapter.project;
+package valeriy.knyazhev.architector.port.adapter.project.request;
 
 import org.apache.http.util.Args;
 
@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class CreateProjectFromUrlRequest {
+public class UpdateProjectFromUrlRequest {
 
     @Nonnull
     private String sourceUrl;

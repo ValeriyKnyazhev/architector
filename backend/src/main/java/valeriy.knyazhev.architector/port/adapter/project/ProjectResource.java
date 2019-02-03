@@ -4,12 +4,16 @@ import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import valeriy.knyazhev.architector.application.project.CreateProjectFromFileCommand;
-import valeriy.knyazhev.architector.application.project.CreateProjectFromUrlCommand;
 import valeriy.knyazhev.architector.application.project.ProjectManagementService;
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
+import valeriy.knyazhev.architector.application.project.command.CreateProjectFromFileCommand;
+import valeriy.knyazhev.architector.application.project.command.CreateProjectFromUrlCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectFromFileCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectFromUrlCommand;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.port.adapter.project.request.CreateProjectFromUrlRequest;
+import valeriy.knyazhev.architector.port.adapter.project.request.UpdateProjectFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -35,6 +39,8 @@ public class ProjectResource {
         this.queryService = Args.notNull(queryService, "Query service is required.");
     }
 
+    // TODO add resources for creating and updating projects from json content (for webclient)
+
     @PostMapping(value = "/projects/source",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
@@ -55,6 +61,36 @@ public class ProjectResource {
                 new CreateProjectFromFileCommand("author", multipartFile));
         return ResponseEntity.ok().body(new ResponseMessage()
                 .info("Project " + projectId.id() + " was created from received file."));
+    }
+
+    @PutMapping(value = "/projects/{qProjectId}/source",
+            consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
+                                                @RequestBody UpdateProjectFromUrlRequest request) {
+        boolean updated = this.managementService.updateProject(
+                // TODO author constant should be replaced by user email
+                new UpdateProjectFromUrlCommand(qProjectId, "author", request.sourceUrl()));
+        return updated
+                ? ResponseEntity.ok().body(
+                new ResponseMessage().info("Project " + qProjectId + " was updated from source URL."))
+                : ResponseEntity.badRequest().body(
+                new ResponseMessage().error("Unable to update project " + qProjectId + " from source URL."));
+    }
+
+    @PutMapping(value = "/projects/{qProjectId}/import",
+            consumes = MULTIPART_FORM_DATA_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
+                                                          @RequestParam("file") MultipartFile multipartFile) {
+        boolean updated = this.managementService.updateProject(
+                // TODO author constant should be replaced by user email
+                new UpdateProjectFromFileCommand(qProjectId, "author", multipartFile));
+        return updated
+                ? ResponseEntity.ok().body(
+                new ResponseMessage().info("Project " + qProjectId + " was updated from received file."))
+                : ResponseEntity.badRequest().body(
+                new ResponseMessage().error("Unable to update project " + qProjectId + " from received file."));
     }
 
     @GetMapping(value = "/projects/{qProjectId}",

@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.http.util.Args;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import valeriy.knyazhev.architector.application.project.command.CreateProjectFromFileCommand;
+import valeriy.knyazhev.architector.application.project.command.CreateProjectFromUrlCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectFromFileCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectFromUrlCommand;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -49,4 +53,11 @@ public class ProjectManagementService {
         }
     }
 
+    public boolean updateProject(UpdateProjectFromUrlCommand command) {
+        return false;
+    }
+
+    public boolean updateProject(UpdateProjectFromFileCommand command) {
+        return false;
+    }
 }

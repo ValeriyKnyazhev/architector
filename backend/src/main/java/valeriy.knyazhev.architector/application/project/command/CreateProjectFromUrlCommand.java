@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application.project;
+package valeriy.knyazhev.architector.application.project.command;
 
 import javax.annotation.Nonnull;
 
