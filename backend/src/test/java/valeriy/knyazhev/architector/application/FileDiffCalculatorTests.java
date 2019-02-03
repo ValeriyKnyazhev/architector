@@ -6,20 +6,16 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import valeriy.knyazhev.architector.domain.model.project.ProjectDescription;
-import valeriy.knyazhev.architector.domain.model.project.ProjectMetadata;
 import valeriy.knyazhev.architector.domain.model.project.commit.CommitItem;
 import valeriy.knyazhev.architector.domain.model.project.commit.FileDiffCalculator;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.ADDITION;
@@ -36,16 +32,6 @@ public class FileDiffCalculatorTests {
     private FileDiffCalculator diffCalculator;
 
     private static File sampleFile(List<String> content) {
-        ProjectDescription description = ProjectDescription.of(emptyList(), "");
-        ProjectMetadata metadata = ProjectMetadata.builder()
-                .name("File name")
-                .timestamp(LocalDate.now())
-                .authors(emptyList())
-                .organizations(emptyList())
-                .preprocessorVersion("")
-                .originatingSystem("")
-                .authorisation("")
-                .build();
         return File.builder()
                 .fileId(FileId.nextId())
                 .content(FileContent.of(content))

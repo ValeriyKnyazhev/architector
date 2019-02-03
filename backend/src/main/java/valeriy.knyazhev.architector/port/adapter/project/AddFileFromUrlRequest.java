@@ -5,9 +5,9 @@ import org.apache.http.util.Args;
 import javax.annotation.Nonnull;
 
 /**
- * @author Valeriy Knyazhev
+ * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class AddFileFromUrlCommand {
+public class AddFileFromUrlRequest {
 
     @Nonnull
     private String fileUrl;

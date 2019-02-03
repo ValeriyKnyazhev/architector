@@ -10,7 +10,7 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.project.AddFileFromUrlCommand;
+import valeriy.knyazhev.architector.port.adapter.project.AddFileFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -68,7 +68,7 @@ public class FileResource {
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
-                                                 @RequestBody AddFileFromUrlCommand command) {
+                                                 @RequestBody AddFileFromUrlRequest command) {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(command, "Add file from url command is required.");
         try {
