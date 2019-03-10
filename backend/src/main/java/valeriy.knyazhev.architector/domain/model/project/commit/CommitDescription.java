@@ -21,6 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 public class CommitDescription implements Serializable {
 
     @Nonnull
+    // FIXME now the number of files is 1
     private List<CommitFileItem> changedFiles;
 
     private CommitDescription(@Nonnull List<CommitFileItem> files) {

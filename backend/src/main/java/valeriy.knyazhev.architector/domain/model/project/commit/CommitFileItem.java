@@ -8,6 +8,7 @@ import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 
@@ -27,7 +28,9 @@ public class CommitFileItem {
 
     private CommitFileItem(@Nonnull FileId fileId, @Nonnull List<CommitItem> items) {
         this.fileId = fileId;
-        this.items = items;
+        this.items = items.stream()
+                .sorted(CommitItem::compareTo)
+                .collect(Collectors.toList());
     }
 
     @Nonnull
@@ -44,6 +47,5 @@ public class CommitFileItem {
     public List<CommitItem> items() {
         return this.items;
     }
-
 
 }

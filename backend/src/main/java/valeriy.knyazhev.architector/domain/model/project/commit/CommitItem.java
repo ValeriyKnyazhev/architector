@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
+import java.util.Comparator;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.ADDITION;
@@ -17,7 +18,7 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeTyp
 @EqualsAndHashCode
 @JsonAutoDetect(fieldVisibility = ANY)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommitItem {
+public class CommitItem implements Comparable<CommitItem> {
 
     @Nonnull
     private String value;
@@ -56,4 +57,12 @@ public class CommitItem {
     public int position() {
         return this.position;
     }
+
+    @Override
+    public int compareTo(@Nonnull CommitItem item) {
+        return Comparator.comparing(CommitItem::position)
+                .thenComparing(CommitItem::type)
+                .compare(this, item);
+    }
+
 }

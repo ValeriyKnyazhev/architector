@@ -68,7 +68,7 @@ public class ProjectManagementService {
         try {
             MultipartFile multipartFile = command.file();
             Project project = this.projectReader.readFromFile(multipartFile.getInputStream());
-            // FIXME
+            // FIXME if project has more than 1 file
             File file = project.files().stream().findFirst().orElse(null);
             CommitDescription commitData = CommitDescription.of(singletonList(
                     CommitFileItem.of(file.fileId(), this.diffCalculator.calculateDiff(null, file))));
