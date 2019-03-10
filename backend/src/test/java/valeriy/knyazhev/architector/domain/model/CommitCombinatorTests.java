@@ -149,6 +149,7 @@ public class CommitCombinatorTests {
                 addItem("9", 1)));
         List<Commit> commits = asList(firstCommit,
                 sampleCommit(firstCommit.id(), fileId, asList(
+                        addItem("0", 0),
                         deleteItem("3", 3),
                         deleteItem("4", 4),
                         addItem("6", 5),
@@ -163,7 +164,7 @@ public class CommitCombinatorTests {
         SoftAssertions softly = new SoftAssertions();
         FileDataProjection fileProjection = projection.files().get(0);
         softly.assertThat(fileProjection.fileId()).isEqualTo(fileId);
-        softly.assertThat(fileProjection.items()).isEqualTo(asList("1", "2", "5", "6", "7", "8"));
+        softly.assertThat(fileProjection.items()).isEqualTo(asList("0", "1", "2", "5", "6", "7", "8"));
         softly.assertAll();
     }
 

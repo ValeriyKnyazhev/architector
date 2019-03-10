@@ -48,13 +48,17 @@ public final class CommitCombinator {
             projection.addNewFile(FileDataProjection.of(fileChanges.fileId(), items));
         } else {
             AtomicInteger index = new AtomicInteger();
-            List<String> newItems = foundFile.items().stream()
+            List<String> newItems = fileChanges.items().stream()
+                    .filter(item -> item.position() == 0)
+                    .map(CommitItem::value)
+                    .collect(Collectors.toList());
+            newItems.addAll(foundFile.items().stream()
                     .map(item -> defineValuesInPosition(foundFile.items().get(index.getAndIncrement()),
                             fileChanges.items().stream()
                                     .filter(changedItem -> index.get() == changedItem.position())
                                     .collect(Collectors.toList())))
                     .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList()));
             newItems.addAll(fileChanges.items().stream()
                     .filter(item -> index.get() < item.position())
                     .map(CommitItem::value)
