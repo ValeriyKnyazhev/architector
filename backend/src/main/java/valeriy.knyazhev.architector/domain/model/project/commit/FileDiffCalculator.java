@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -25,26 +26,37 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.CommitIte
 @RequiredArgsConstructor
 public final class FileDiffCalculator {
 
+    @Nonnull
     private static List<CommitItem> defineChangedItems(Delta<String> delta) {
         Chunk<String> originalChunk = delta.getOriginal();
-        int position = originalChunk.getPosition() + 1;
+        Chunk<String> revisedChunk = delta.getRevised();
+        int originPosition = originalChunk.getPosition();
         if (delta.getType() == Delta.TYPE.INSERT) {
-            return delta.getRevised().getLines().stream()
-                    .map(line -> addItem(line, position))
-                    .collect(toList());
+            return constructAdditionItems(delta.getRevised().getLines(), originPosition);
         }
         if (delta.getType() == Delta.TYPE.DELETE) {
-            return originalChunk.getLines().stream()
-                    .map(line -> deleteItem(line, position))
-                    .collect(toList());
+            return constructDeletionItems(originalChunk.getLines(), originPosition + 1);
         }
-        Chunk<String> revisedChunk = delta.getRevised();
-        Stream<CommitItem> originalChanges = originalChunk.getLines().stream()
-                .map(line -> deleteItem(line, position));
-        Stream<CommitItem> revisedChanges = revisedChunk.getLines().stream()
-                .map(line -> addItem(line, position));
-        return Stream.concat(originalChanges, revisedChanges).collect(toList());
+        List<CommitItem> originalChanges = constructDeletionItems(originalChunk.getLines(), originPosition);
+        List<CommitItem> revisedChanges = constructAdditionItems(revisedChunk.getLines(), originPosition);
+        return Stream.concat(originalChanges.stream(), revisedChanges.stream()).collect(toList());
     }
+
+    @Nonnull
+    private static List<CommitItem> constructAdditionItems(@Nonnull List<String> items, int startPosition) {
+        return items.stream()
+                .map(item -> addItem(item, startPosition))
+                .collect(toList());
+    }
+
+    @Nonnull
+    private static List<CommitItem> constructDeletionItems(@Nonnull List<String> items, int startPosition) {
+        AtomicInteger curIndex = new AtomicInteger(startPosition);
+        return items.stream()
+                .map(item -> deleteItem(item, curIndex.incrementAndGet()))
+                .collect(toList());
+    }
+
 
     @Nonnull
     public List<CommitItem> calculateDiff(@Nullable File oldFile, @Nonnull File newFile) {

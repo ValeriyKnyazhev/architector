@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application;
+package valeriy.knyazhev.architector.domain.model;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class FileDiffCalculatorTests {
         CommitItem changedItem = diff.get(0);
         softly.assertThat(changedItem.value()).isEqualTo("2");
         softly.assertThat(changedItem.type()).isEqualTo(ADDITION);
-        softly.assertThat(changedItem.position()).isEqualTo(2);
+        softly.assertThat(changedItem.position()).isEqualTo(1);
         softly.assertAll();
     }
 
@@ -115,7 +115,7 @@ public class FileDiffCalculatorTests {
         CommitItem changedItem = diff.get(0);
         softly.assertThat(changedItem.value()).isEqualTo("1");
         softly.assertThat(changedItem.type()).isEqualTo(ADDITION);
-        softly.assertThat(changedItem.position()).isEqualTo(1);
+        softly.assertThat(changedItem.position()).isEqualTo(0);
         softly.assertAll();
     }
 
@@ -143,8 +143,8 @@ public class FileDiffCalculatorTests {
     @Test
     public void shouldAddLineToMiddleOfFile() {
         // given
-        List<String> oldContent = generateContent(asList("1", "3"));
-        List<String> newContent = generateContent(asList("1", "2", "3"));
+        List<String> oldContent = generateContent(asList("1", "4"));
+        List<String> newContent = generateContent(asList("1", "2", "3", "4"));
         File oldFile = sampleFile(oldContent);
         File newFile = sampleFile(newContent);
 
@@ -152,20 +152,24 @@ public class FileDiffCalculatorTests {
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
 
         // then
-        assertThat(diff).size().isEqualTo(1);
+        assertThat(diff).size().isEqualTo(2);
         SoftAssertions softly = new SoftAssertions();
-        CommitItem changedItem = diff.get(0);
-        softly.assertThat(changedItem.value()).isEqualTo("2");
-        softly.assertThat(changedItem.type()).isEqualTo(ADDITION);
-        softly.assertThat(changedItem.position()).isEqualTo(2);
+        CommitItem changedItem0 = diff.get(0);
+        softly.assertThat(changedItem0.value()).isEqualTo("2");
+        softly.assertThat(changedItem0.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem0.position()).isEqualTo(1);
+        CommitItem changedItem1 = diff.get(1);
+        softly.assertThat(changedItem1.value()).isEqualTo("3");
+        softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem1.position()).isEqualTo(1);
         softly.assertAll();
     }
 
     @Test
     public void shouldRemoveLineFromMiddleOfFile() {
         // given
-        List<String> oldContent = generateContent(asList("1", "2", "3"));
-        List<String> newContent = generateContent(asList("1", "3"));
+        List<String> oldContent = generateContent(asList("1", "2", "3", "4"));
+        List<String> newContent = generateContent(asList("1", "4"));
         File oldFile = sampleFile(oldContent);
         File newFile = sampleFile(newContent);
 
@@ -173,20 +177,24 @@ public class FileDiffCalculatorTests {
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
 
         // then
-        assertThat(diff).size().isEqualTo(1);
+        assertThat(diff).size().isEqualTo(2);
         SoftAssertions softly = new SoftAssertions();
-        CommitItem changedItem = diff.get(0);
-        softly.assertThat(changedItem.value()).isEqualTo("2");
-        softly.assertThat(changedItem.type()).isEqualTo(DELETION);
-        softly.assertThat(changedItem.position()).isEqualTo(2);
+        CommitItem changedItem0 = diff.get(0);
+        softly.assertThat(changedItem0.value()).isEqualTo("2");
+        softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem0.position()).isEqualTo(2);
+        CommitItem changedItem1 = diff.get(1);
+        softly.assertThat(changedItem1.value()).isEqualTo("3");
+        softly.assertThat(changedItem1.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem1.position()).isEqualTo(3);
         softly.assertAll();
     }
 
     @Test
     public void shouldChangeLinesInFile() {
         // given
-        List<String> oldContent = generateContent(asList("1", "2", "3", "5"));
-        List<String> newContent = generateContent(asList("1", "3", "4"));
+        List<String> oldContent = generateContent(asList("1", "2", "3", "4", "5", "8", "9"));
+        List<String> newContent = generateContent(asList("0", "1", "2", "5", "6", "7", "8"));
         File oldFile = sampleFile(oldContent);
         File newFile = sampleFile(newContent);
 
@@ -194,24 +202,94 @@ public class FileDiffCalculatorTests {
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
 
         // then
-        assertThat(diff).size().isEqualTo(3);
+        assertThat(diff).size().isEqualTo(6);
         SoftAssertions softly = new SoftAssertions();
-        CommitItem changedItem1 = diff.stream().filter(item -> item.value().equals("2")).findFirst().orElse(null);
+        CommitItem changedItem0 = diff.stream().filter(item -> item.value().equals("0")).findFirst().orElse(null);
+        assertThat(changedItem0).isNotNull();
+        softly.assertThat(changedItem0.value()).isEqualTo("0");
+        softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem0.position()).isEqualTo(0);
+        CommitItem changedItem1 = diff.stream().filter(item -> item.value().equals("3")).findFirst().orElse(null);
         assertThat(changedItem1).isNotNull();
-        softly.assertThat(changedItem1.value()).isEqualTo("2");
+        softly.assertThat(changedItem1.value()).isEqualTo("3");
         softly.assertThat(changedItem1.type()).isEqualTo(DELETION);
-        softly.assertThat(changedItem1.position()).isEqualTo(2);
+        softly.assertThat(changedItem1.position()).isEqualTo(3);
         CommitItem changedItem2 = diff.stream().filter(item -> item.value().equals("4")).findFirst().orElse(null);
         assertThat(changedItem2).isNotNull();
         softly.assertThat(changedItem2.value()).isEqualTo("4");
-        softly.assertThat(changedItem2.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem2.type()).isEqualTo(DELETION);
         softly.assertThat(changedItem2.position()).isEqualTo(4);
-        CommitItem changedItem3 = diff.stream().filter(item -> item.value().equals("5")).findFirst().orElse(null);
+        CommitItem changedItem3 = diff.stream().filter(item -> item.value().equals("6")).findFirst().orElse(null);
         assertThat(changedItem3).isNotNull();
-        softly.assertThat(changedItem3.value()).isEqualTo("5");
-        softly.assertThat(changedItem3.type()).isEqualTo(DELETION);
-        softly.assertThat(changedItem3.position()).isEqualTo(4);
+        softly.assertThat(changedItem3.value()).isEqualTo("6");
+        softly.assertThat(changedItem3.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem3.position()).isEqualTo(5);
+        CommitItem changedItem4 = diff.stream().filter(item -> item.value().equals("7")).findFirst().orElse(null);
+        assertThat(changedItem4).isNotNull();
+        softly.assertThat(changedItem4.value()).isEqualTo("7");
+        softly.assertThat(changedItem4.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem4.position()).isEqualTo(5);
+        CommitItem changedItem5 = diff.stream().filter(item -> item.value().equals("9")).findFirst().orElse(null);
+        assertThat(changedItem5).isNotNull();
+        softly.assertThat(changedItem5.value()).isEqualTo("9");
+        softly.assertThat(changedItem5.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem5.position()).isEqualTo(7);
         softly.assertAll();
     }
+
+    @Test
+    public void shouldChangedLineReplaceByDeletionAndAddition() {
+        // given
+        List<String> oldContent = generateContent(asList("1", "2", "3"));
+        List<String> newContent = generateContent(asList("1", "2 new", "3"));
+        File oldFile = sampleFile(oldContent);
+        File newFile = sampleFile(newContent);
+
+        // when
+        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+
+        // then
+        assertThat(diff).size().isEqualTo(2);
+        SoftAssertions softly = new SoftAssertions();
+        CommitItem changedItem0 = diff.stream().filter(item -> item.value().equals("2")).findFirst().orElse(null);
+        assertThat(changedItem0).isNotNull();
+        softly.assertThat(changedItem0.value()).isEqualTo("2");
+        softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem0.position()).isEqualTo(2);
+        CommitItem changedItem1 = diff.stream().filter(item -> item.value().equals("2 new")).findFirst().orElse(null);
+        assertThat(changedItem1).isNotNull();
+        softly.assertThat(changedItem1.value()).isEqualTo("2 new");
+        softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem1.position()).isEqualTo(1);
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldBlockOfChangedLinesReplaceByDeletionsAndAdditions() {
+        // given
+        List<String> oldContent = generateContent(asList("1", "2", "3", "4"));
+        List<String> newContent = generateContent(asList("2 new", "new 3"));
+        File oldFile = sampleFile(oldContent);
+        File newFile = sampleFile(newContent);
+
+        // when
+        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+
+        // then
+        assertThat(diff).size().isEqualTo(2);
+        SoftAssertions softly = new SoftAssertions();
+        CommitItem changedItem0 = diff.stream().filter(item -> item.value().equals("2")).findFirst().orElse(null);
+        assertThat(changedItem0).isNotNull();
+        softly.assertThat(changedItem0.value()).isEqualTo("2");
+        softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem0.position()).isEqualTo(2);
+        CommitItem changedItem1 = diff.stream().filter(item -> item.value().equals("2 new")).findFirst().orElse(null);
+        assertThat(changedItem1).isNotNull();
+        softly.assertThat(changedItem1.value()).isEqualTo("2 new");
+        softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem1.position()).isEqualTo(1);
+        softly.assertAll();
+    }
+
 
 }
