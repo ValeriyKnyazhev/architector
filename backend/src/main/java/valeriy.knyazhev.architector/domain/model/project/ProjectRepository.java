@@ -1,8 +1,10 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,5 +14,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Nonnull
     public Optional<Project> findByProjectId(@Nonnull ProjectId projectId);
+
+    @NonNull
+    public List<Project> findAll();
 
 }

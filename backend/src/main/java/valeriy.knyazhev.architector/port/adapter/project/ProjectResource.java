@@ -12,12 +12,17 @@ import valeriy.knyazhev.architector.application.project.command.UpdateProjectFro
 import valeriy.knyazhev.architector.application.project.command.UpdateProjectFromUrlCommand;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.port.adapter.project.model.ProjectMapper;
+import valeriy.knyazhev.architector.port.adapter.project.model.ProjectModel;
 import valeriy.knyazhev.architector.port.adapter.project.request.CreateProjectFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.project.request.UpdateProjectFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -93,8 +98,15 @@ public class ProjectResource {
                 new ResponseMessage().error("Unable to update project " + qProjectId + " from received file."));
     }
 
-    @GetMapping(value = "/projects/{qProjectId}",
-            produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/projects", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> findAllProjects() {
+        List<ProjectModel> projects = this.queryService.findAllProjects().stream()
+                .map(ProjectMapper::mapToModel)
+                .collect(toList());
+        return ResponseEntity.ok(Collections.singletonMap("projects", projects));
+    }
+
+    @GetMapping(value = "/projects/{qProjectId}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findProject(@PathVariable String qProjectId) {
         Project project = this.queryService.findById(qProjectId);
         if (project == null) {
