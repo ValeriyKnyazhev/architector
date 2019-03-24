@@ -46,7 +46,7 @@ public class ProjectResource {
 
     // TODO add resources for creating and updating projects from json content (for webclient)
 
-    @PostMapping(value = "/projects/source",
+    @PostMapping(value = "/api/projects/source",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> createFromUrl(@RequestBody CreateProjectFromUrlRequest request) {
@@ -57,7 +57,7 @@ public class ProjectResource {
                 .info("Project " + projectId.id() + " was created from source URL."));
     }
 
-    @PostMapping(value = "/projects/import",
+    @PostMapping(value = "/api/projects/import",
             consumes = MULTIPART_FORM_DATA_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> createFromFile(@RequestParam("file") MultipartFile multipartFile) {
@@ -68,7 +68,7 @@ public class ProjectResource {
                 .info("Project " + projectId.id() + " was created from received file."));
     }
 
-    @PutMapping(value = "/projects/{qProjectId}/source",
+    @PutMapping(value = "/api/projects/{qProjectId}/source",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
@@ -83,7 +83,7 @@ public class ProjectResource {
                 new ResponseMessage().error("Unable to update project " + qProjectId + " from source URL."));
     }
 
-    @PutMapping(value = "/projects/{qProjectId}/import",
+    @PutMapping(value = "/api/projects/{qProjectId}/import",
             consumes = MULTIPART_FORM_DATA_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
@@ -98,7 +98,7 @@ public class ProjectResource {
                 new ResponseMessage().error("Unable to update project " + qProjectId + " from received file."));
     }
 
-    @GetMapping(value = "/projects", produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findAllProjects() {
         List<ProjectModel> projects = this.queryService.findAllProjects().stream()
                 .map(ProjectMapper::mapToModel)
@@ -106,7 +106,7 @@ public class ProjectResource {
         return ResponseEntity.ok(Collections.singletonMap("projects", projects));
     }
 
-    @GetMapping(value = "/projects/{qProjectId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/api/projects/{qProjectId}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findProject(@PathVariable String qProjectId) {
         Project project = this.queryService.findById(qProjectId);
         if (project == null) {

@@ -1,0 +1,59 @@
+.projects
+  &__header-top
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding-top: 20px
+  &__navigation
+    margin-top: 30px
+    background-color: rgba(157, 157, 157, 0.5)
+    margin-bottom: 20px
+  &__navigations--in-container
+    display: flex
+  &__navigation-item
+    font-size: 18px
+    line-height: 40px
+    display: block
+    color: black
+    cursor: pointer
+    height: 40px
+    margin: 0 30px 0 0
+    &:hover
+     color: rgba(black, 0.5)
+  &__navigation-item--selected
+    color: #e60028
+    border-bottom: 2px solid #e60028
+    padding: 0 12px 0 10px
+    margin: 0 10px 0 0
+    &:hover
+     color: #e60028
+  &__navigation-item--with-pseudo
+    position: relative
+    &::after
+      position: absolute
+      top: 20px
+      right: -12px
+      width: 0
+      height: 0
+      content: ''
+      border-width: 5px 3px 0 3px
+      border-style: solid
+      border-color: black transparent transparent transparent
+  &__logo
+    background-position: 0% 0%
+    background-repeat: no-repeat
+    background-size: 120px 40px
+    width: 120px
+    height: 40px
+  &__list
+    margin-top: 24px
+  &__project
+    margin-bottom: 8px
+    padding: 16px
+    border: 1px solid #d9d9d9
+    border-radius: 8px
+    &:hover
+      border-color: #40a9ff
+  &__create-project
+    .ant-btn
+      margin-right: 16px

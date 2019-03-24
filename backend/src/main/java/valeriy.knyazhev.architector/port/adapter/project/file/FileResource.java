@@ -39,7 +39,7 @@ public class FileResource {
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
     }
 
-    @GetMapping(value = "/projects/{qProjectId}/files/{qFileId}",
+    @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findFile(@PathVariable String qProjectId,
                                            @PathVariable String qFileId) {
@@ -64,7 +64,7 @@ public class FileResource {
         return ResponseEntity.ok(mapToModel(foundFile));
     }
 
-    @PostMapping(value = "/projects/{qProjectId}/files/source",
+    @PostMapping(value = "/api/projects/{qProjectId}/files/source",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
@@ -89,7 +89,7 @@ public class FileResource {
         }
     }
 
-    @PostMapping(value = "/projects/{qProjectId}/files/import",
+    @PostMapping(value = "/api/projects/{qProjectId}/files/import",
             consumes = MULTIPART_FORM_DATA_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,

@@ -5,9 +5,9 @@ import {
   Switch,
   Redirect
 } from "react-router-dom";
+import Projects from './pages/Projects';
 import "./App.css";
 
-const Projects = () => <div> Projects </div>;
 const Files = () => <div> Files </div>;
 
 class App extends Component {
@@ -15,7 +15,7 @@ class App extends Component {
     return <div className="App">
         <Router>
             <Switch>
-                <Route path="/projects" component={Projects} />
+                <Route exact path="/projects" component={Projects} />
                 <Route path="/files" component={Files} />
                 <Redirect exact from="/" to="/projects" />
             </Switch>
