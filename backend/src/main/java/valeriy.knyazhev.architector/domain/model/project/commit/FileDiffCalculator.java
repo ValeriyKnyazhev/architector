@@ -37,9 +37,12 @@ public final class FileDiffCalculator {
         if (delta.getType() == Delta.TYPE.DELETE) {
             return constructDeletionItems(originalChunk.getLines(), originPosition + 1);
         }
-        List<CommitItem> originalChanges = constructDeletionItems(originalChunk.getLines(), originPosition);
-        List<CommitItem> revisedChanges = constructAdditionItems(revisedChunk.getLines(), originPosition);
-        return Stream.concat(originalChanges.stream(), revisedChanges.stream()).collect(toList());
+        if (delta.getType() == Delta.TYPE.CHANGE) {
+            List<CommitItem> originalChanges = constructDeletionItems(originalChunk.getLines(), originPosition);
+            List<CommitItem> revisedChanges = constructAdditionItems(revisedChunk.getLines(), originPosition);
+            return Stream.concat(originalChanges.stream(), revisedChanges.stream()).collect(toList());
+        }
+        throw new IllegalStateException("Unsupported delta type.");
     }
 
     @Nonnull
