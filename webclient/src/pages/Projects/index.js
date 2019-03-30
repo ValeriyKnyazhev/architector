@@ -133,33 +133,43 @@ export default class Projects extends Component {
             <div className="row projects__list">
               {projects.map(
                 ({ projectId, createdDate, updatedDate, schema, files, metadata }) => (
-                  <div className="col-xs-12 col-sm-4" key={projectId}>
+                  <div className="col-xs-12 col-sm-6" key={projectId}>
                     <Link
                       to={{ pathname: `/api/projects/${projectId}`, state: { files } }}
                     >
-                      <div className="projects__invoice" key={projectId}>
-                        <div className="projects__project-id">
-                          Project № {projectId}
+                      <div className="projects__project" key={projectId}>
+                        <div className="row projects__project-id">
+                          <div className="col-xs-3">Project № </div>
+                          <div className="col-xs-9">{projectId}</div>
                         </div>
-                        <div className="projects__project-date">
-                          Created: {createdDate}
+                        <div className="row projects__project-date">
+                          <div className="col-xs-3">Created </div>
+                          <div className="col-xs-9">{createdDate}</div>
                         </div>
-                        <div className="projects__project-date">
-                          Updated: {updatedDate}
+                        <div className="row projects__project-date">
+                          <div className="col-xs-3">Updated </div>
+                          <div className="col-xs-9">{updatedDate}</div>
                         </div>
-                        <div className="projects__project-schema">
-                          Schema: {schema}
+                        <div className="row projects__project-schema">
+                          <div className="col-xs-3">Schema </div>
+                          <div className="col-xs-9">{schema}</div>
                         </div>
                         <div className="projects__project-metadata">
-                            <div className="projects__project-metadata-name">
-                                Name: {metadata.name}
-                            </div>
-                            <div className="projects__project-metadata-authors">
-                                Authors: {metadata.authors.reduce((a1, a2) => a1 + "," + a2)}
-                            </div>
+                          <div className="row projects__project-metadata-name">
+                            <div className="col-xs-3">Name </div>
+                            <div className="col-xs-9">{metadata.name}</div>
+                          </div>
+                          <div className="row row projects__project-metadata-authors">
+                           <div className="col-xs-3">Authors </div>
+                           <div className="col-xs-9">{metadata.authors.filter(a => a).length > 0
+                             ? metadata.authors.reduce((a1, a2) => a1 + ", " + a2)
+                             : 'N/A'}
+                           </div>
+                          </div>
                         </div>
-                        <div className="projects__project-files">
-                          Files: {files.length}
+                        <div className="row projects__project-files">
+                          <div className="col-xs-3">Files </div>
+                          <div className="col-xs-9">{files.length}</div>
                         </div>
                       </div>
                     </Link>
