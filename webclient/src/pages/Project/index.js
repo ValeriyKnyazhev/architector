@@ -29,10 +29,8 @@ export default class Project extends Component {
         params: {projectId}
       }
     } = this.props;
-    console.log(this.props)
     const { data } = await axios.get(`/api/projects/${projectId}`);
     this.setState({project: data});
-    console.log(this.state)
   };
 
   render() {
@@ -41,15 +39,12 @@ export default class Project extends Component {
         params: {projectId}
       }
     } = this.props;
-    const {
-      project
-    } = this.state;
-    // TODO remove duplication
-    project.files = project.files.concat(project.files).sort()
+    const { project } = this.state;
+
     return (
       <div className="container">
         <div>
-          <h1>Project № {projectId}</h1>
+          <h2>Project № {projectId}</h2>
         </div>
         <div>
           <div className="row projects__project-date">
@@ -134,12 +129,14 @@ export default class Project extends Component {
                 <div>
                   {
                     project.files.map((file, index) =>
-                      <div className="project__files_file">
-                        <div><b>{index+1}</b>     {file.fileId}</div>
+                      <div className="project__files_file" key={file.fileId}>
+                        <Link to={{ pathname: `/files/${file.fileId}`, state: { projectId, fileId: file.fileId } }}>
+                          <div><b>{index+1}</b> {file.fileId}</div>
+                        </Link>
                         <div>     {file.createdDate}</div>
                         <div>     {file.updatedDate}</div>
                       </div>
-                    )
+                    )  
                   }
                 </div>
               </div>
