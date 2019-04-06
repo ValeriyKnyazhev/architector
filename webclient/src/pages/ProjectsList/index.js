@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import _isEmpty from 'lodash/isEmpty';
 import { Button, Icon, Input, Modal, Popconfirm, message } from 'antd';
-import './Projects.sass';
+import './ProjectsList.sass';
 
 function constructSourceUrl(value) {
     return value.startsWith("https://") || value.startsWith("http://")
@@ -135,7 +135,7 @@ export default class Projects extends Component {
                 ({ projectId, createdDate, updatedDate, schema, files, metadata }) => (
                   <div className="col-xs-12 col-sm-6" key={projectId}>
                     <Link
-                      to={{ pathname: `/api/projects/${projectId}`, state: { files } }}
+                      to={{ pathname: `/projects/${projectId}`, state: { projectId } }}
                     >
                       <div className="projects__project" key={projectId}>
                         <div className="row projects__project-id">
