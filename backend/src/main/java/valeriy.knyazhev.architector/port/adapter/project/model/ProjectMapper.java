@@ -6,8 +6,10 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectMetadata;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static valeriy.knyazhev.architector.port.adapter.project.model.ProjectModel.DescriptionModel;
 import static valeriy.knyazhev.architector.port.adapter.project.model.ProjectModel.MetadataModel;
@@ -38,8 +40,8 @@ public final class ProjectMapper {
         return MetadataModel.builder()
                 .name(metadata.name())
                 .timestamp(metadata.timestamp())
-                .authors(metadata.authors())
-                .organizations(metadata.organizations())
+                .authors(checkAndMapList(metadata.authors()))
+                .organizations(checkAndMapList(metadata.organizations()))
                 .preprocessorVersion(metadata.preprocessorVersion())
                 .originatingSystem(metadata.originatingSystem())
                 .authorisation(metadata.authorisation())
@@ -50,6 +52,14 @@ public final class ProjectMapper {
     private static FileModel constructFile(@Nonnull File file) {
 
         return new FileModel(file.fileId().id(), file.createdDate(), file.updatedDate());
+    }
+
+    @Nonnull
+    private static List<String> checkAndMapList(@Nonnull List<String> items)
+    {
+        return items.stream().anyMatch(item -> !item.isEmpty())
+                ? items
+                : emptyList();
     }
 
 }

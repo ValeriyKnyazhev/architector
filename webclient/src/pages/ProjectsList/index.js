@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Input, Modal, Popconfirm, message } from 'antd';
-import './ProjectsList.sass';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import _isEmpty from "lodash/isEmpty";
+import { Button, Icon, Input, Modal, Popconfirm, message } from "antd";
+import "./ProjectsList.sass";
 
 function constructSourceUrl(value) {
-    return value.startsWith("https://") || value.startsWith("http://")
-        ? value
-        : "https://" + value
-  };
+  return value.startsWith("https://") || value.startsWith("http://")
+    ? value
+    : "https://" + value;
+}
 
 export default class Projects extends Component {
   state = {
     projects: [],
-    newProjectSourceUrl: '',
+    newProjectSourceUrl: "",
     confirmLoading: false,
     visibleCreateProject: false,
     visiblePopup: false
@@ -22,12 +22,12 @@ export default class Projects extends Component {
 
   async componentDidMount() {
     this.fetchProjects.call(this);
-  };
+  }
 
   async fetchProjects() {
-    const { data: projects } = await axios.get('/api/projects');
+    const { data: projects } = await axios.get("/api/projects");
     this.setState(projects);
-  };
+  }
 
   showModal = state => {
     this.setState({
@@ -36,7 +36,7 @@ export default class Projects extends Component {
   };
 
   onChangeSourceUrl = event => {
-    this.setState({ newProjectSourceUrl: event.target.value});
+    this.setState({ newProjectSourceUrl: event.target.value });
   };
 
   handleCreateProjectFromSource = modalVisible => {
@@ -45,7 +45,7 @@ export default class Projects extends Component {
       confirmLoading: true
     });
     axios
-      .post('/api/projects/source', {
+      .post("/api/projects/source", {
         sourceUrl: constructSourceUrl(newProjectSourceUrl)
       })
       .then(() => {
@@ -56,7 +56,7 @@ export default class Projects extends Component {
           },
           () => {
             this.fetchProjects.call(this);
-            message.success('Project was created');
+            message.success("Project was created");
           }
         );
       });
@@ -83,11 +83,7 @@ export default class Projects extends Component {
   };
 
   render() {
-    const {
-      projects,
-      confirmLoading,
-      visibleCreateProject
-    } = this.state;
+    const { projects, confirmLoading, visibleCreateProject } = this.state;
     return (
       <div className="container">
         <div>
@@ -95,34 +91,36 @@ export default class Projects extends Component {
         </div>
         <section>
           <div className="projects__create-project">
-            <Button onClick={() => this.showModal('visibleCreateProject')}>
+            <Button onClick={() => this.showModal("visibleCreateProject")}>
               Create project <Icon type="plus-circle" />
             </Button>
             {visibleCreateProject && (
               <Modal
                 title="Create new project"
                 visible={visibleCreateProject}
-                onOk={() => this.handleCreateProjectFromSource('visibleCreateProject')}
+                onOk={() =>
+                  this.handleCreateProjectFromSource("visibleCreateProject")
+                }
                 confirmLoading={confirmLoading}
-                onCancel={() => this.handleCancel('visibleCreateProject')}
+                onCancel={() => this.handleCancel("visibleCreateProject")}
                 okButtonProps={{
                   disabled: _isEmpty(this.state.newProjectSourceUrl)
                 }}
               >
                 <div style={{ marginBottom: 16 }}>
-                    <Input
-                        placeholder="Enter your source URL"
-                        value={this.state.newProjectSourceUrl}
-                        onChange={this.onChangeSourceUrl}
-                        addonBefore="Https://"
-                    />
+                  <Input
+                    placeholder="Enter your source URL"
+                    value={this.state.newProjectSourceUrl}
+                    onChange={this.onChangeSourceUrl}
+                    addonBefore="Https://"
+                  />
                 </div>
               </Modal>
             )}
             <Popconfirm
               title="Do you want to create new project?"
               visible={this.state.visiblePopup}
-              onConfirm={() => this.handleCarded('visibleProjects')}
+              onConfirm={() => this.handleCarded("visibleProjects")}
               onCancel={this.handleClosePopup}
               okText="Yes"
               cancelText="No"
@@ -132,10 +130,20 @@ export default class Projects extends Component {
           {!_isEmpty(projects) && (
             <div className="row projects__list">
               {projects.map(
-                ({ projectId, createdDate, updatedDate, schema, files, metadata }) => (
+                ({
+                  projectId,
+                  createdDate,
+                  updatedDate,
+                  schema,
+                  files,
+                  metadata
+                }) => (
                   <div className="col-xs-12 col-sm-6" key={projectId}>
                     <Link
-                      to={{ pathname: `/projects/${projectId}`, state: { projectId } }}
+                      to={{
+                        pathname: `/projects/${projectId}`,
+                        state: { projectId }
+                      }}
                     >
                       <div className="projects__project" key={projectId}>
                         <div className="row projects__project-id">
@@ -154,17 +162,18 @@ export default class Projects extends Component {
                           <div className="col-xs-3">Schema </div>
                           <div className="col-xs-9">{schema}</div>
                         </div>
-                        <div className="projects__project-metadata">
-                          <div className="row projects__project-metadata-name">
-                            <div className="col-xs-3">Name </div>
-                            <div className="col-xs-9">{metadata.name}</div>
-                          </div>
-                          <div className="row row projects__project-metadata-authors">
-                           <div className="col-xs-3">Authors </div>
-                           <div className="col-xs-9">{metadata.authors.filter(a => a).length > 0
-                             ? metadata.authors.reduce((a1, a2) => a1 + ", " + a2)
-                             : 'N/A'}
-                           </div>
+                        <div className="row projects__project-metadata-name">
+                          <div className="col-xs-3">Name </div>
+                          <div className="col-xs-9">{metadata.name}</div>
+                        </div>
+                        <div className="row projects__project-metadata-authors">
+                          <div className="col-xs-3">Authors </div>
+                          <div className="col-xs-9">
+                            {metadata.authors.filter(a => a).length > 0
+                              ? metadata.authors.reduce(
+                                  (a1, a2) => a1 + ", " + a2
+                                )
+                              : "N/A"}
                           </div>
                         </div>
                         <div className="row projects__project-files">
