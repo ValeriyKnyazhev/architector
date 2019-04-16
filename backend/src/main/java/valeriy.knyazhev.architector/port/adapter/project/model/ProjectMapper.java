@@ -4,6 +4,7 @@ import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectDescription;
 import valeriy.knyazhev.architector.domain.model.project.ProjectMetadata;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
+import valeriy.knyazhev.architector.port.adapter.project.file.model.FileModel;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -20,7 +21,7 @@ import static valeriy.knyazhev.architector.port.adapter.project.model.ProjectMod
 public final class ProjectMapper {
 
     @Nonnull
-    public static ProjectModel mapToModel(@Nonnull Project project) {
+    public static ProjectModel buildProject(@Nonnull Project project) {
         List<FileModel> files = project.files().stream()
                 .map(ProjectMapper::constructFile)
                 .collect(toList());

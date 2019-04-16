@@ -12,7 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileWithContentModel {
+public class FileModel {
 
 
     @Nonnull
@@ -24,26 +24,12 @@ public class FileWithContentModel {
     @Nonnull
     private LocalDateTime updatedDate;
 
-    private FileContentModel content;
 
-
-    public FileWithContentModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
-                                @Nonnull LocalDateTime updatedDate, @Nonnull FileContentModel content) {
+    public FileModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
+                     @Nonnull LocalDateTime updatedDate) {
         this.fileId = fileId;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
-        this.content = content;
-    }
-
-    @JsonAutoDetect(fieldVisibility = ANY)
-    public static class FileContentModel {
-
-        @Nonnull
-        private List<String> items;
-
-        public FileContentModel(@Nonnull List<String> items) {
-            this.items = items;
-        }
     }
 
 }

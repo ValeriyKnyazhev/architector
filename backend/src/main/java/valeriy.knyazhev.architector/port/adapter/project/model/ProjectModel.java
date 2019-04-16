@@ -3,6 +3,7 @@ package valeriy.knyazhev.architector.port.adapter.project.model;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Builder;
 import org.bimserver.emf.Schema;
+import valeriy.knyazhev.architector.port.adapter.project.file.model.FileModel;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;

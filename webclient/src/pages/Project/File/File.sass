@@ -1,29 +1,21 @@
 .file
-  &__header-top
+  &__file-content
+    margin-top: 20px
+  &__file-content-info
+    height: 60vh
+    overflow: auto
+    border: 1px solid #e60028
+  &__file-show-content
     display: flex
     justify-content: space-between
     align-items: center
-    padding-top: 20px
-  &__navigation
-    margin-top: 30px
-    background-color: rgba(157, 157, 157, 0.5)
-    margin-bottom: 20px
-  &__navigations--in-container
-    display: flex
-  &__navigation-item
-    font-size: 18px
-    line-height: 40px
-    display: block
-    color: black
+    border: 1px solid black
+    background-color: #eeeeee
+    padding: 20px
     cursor: pointer
-    height: 40px
-    margin: 0 30px 0 0
-    &:hover
-     color: rgba(black, 0.5)
-  &__navigation-item--selected
-    color: #e60028
-    border-bottom: 2px solid #e60028
-    padding: 0 12px 0 10px
-    margin: 0 10px 0 0
-    &:hover
-     color: #e60028
+  &__file-content-loader
+    display: flex
+    justify-content: center
+    border-radius: 4px
+    padding: 30px 50px
+    margin: 20px

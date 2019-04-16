@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static valeriy.knyazhev.architector.port.adapter.project.model.ProjectMapper.mapToModel;
+import static valeriy.knyazhev.architector.port.adapter.project.model.ProjectMapper.buildProject;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -101,7 +101,7 @@ public class ProjectResource {
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findAllProjects() {
         List<ProjectModel> projects = this.queryService.findAllProjects().stream()
-                .map(ProjectMapper::mapToModel)
+                .map(ProjectMapper::buildProject)
                 .collect(toList());
         return ResponseEntity.ok(Collections.singletonMap("projects", projects));
     }
@@ -113,7 +113,7 @@ public class ProjectResource {
             return ResponseEntity.status(NOT_FOUND).body(new ResponseMessage()
                     .error("Project with identifier " + qProjectId + " not found."));
         }
-        return ResponseEntity.ok(mapToModel(project));
+        return ResponseEntity.ok(buildProject(project));
     }
 
 }

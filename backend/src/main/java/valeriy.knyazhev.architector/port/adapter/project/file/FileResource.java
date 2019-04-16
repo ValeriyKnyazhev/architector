@@ -21,7 +21,7 @@ import java.net.URL;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static valeriy.knyazhev.architector.port.adapter.project.file.FileMapper.mapToModel;
+import static valeriy.knyazhev.architector.port.adapter.project.file.FileMapper.*;
 
 /**
  * @author Valeriy Knyazhev
@@ -61,7 +61,32 @@ public class FileResource {
             return ResponseEntity.status(NOT_FOUND).body(new ResponseMessage()
                     .error("File with identifier " + qFileId + " in project [" + qProjectId + "] not found."));
         }
-        return ResponseEntity.ok(mapToModel(foundFile));
+        return ResponseEntity.ok(buildFile(foundFile));
+    }
+
+    @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/content",
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> fetchFileContent(@PathVariable String qProjectId,
+                                                   @PathVariable String qFileId) {
+        Args.notNull(qProjectId, "Project identifier is required.");
+        Args.notNull(qFileId, "File identifier is required.");
+        ProjectId projectId = ProjectId.of(qProjectId);
+        FileId fileId = FileId.of(qFileId);
+        Project project = this.projectRepository.findByProjectId(projectId)
+                .orElse(null);
+        if (project == null) {
+            return ResponseEntity.status(NOT_FOUND).body(new ResponseMessage()
+                    .error("Project with identifier " + qProjectId + " not found."));
+        }
+        File foundFile = project.files().stream()
+                .filter(file -> fileId.equals(file.fileId()))
+                .findFirst()
+                .orElse(null);
+        if (foundFile == null) {
+            return ResponseEntity.status(NOT_FOUND).body(new ResponseMessage()
+                    .error("File with identifier " + qFileId + " in project [" + qProjectId + "] not found."));
+        }
+        return ResponseEntity.ok(buildContent(foundFile));
     }
 
     @PostMapping(value = "/api/projects/{qProjectId}/files/source",

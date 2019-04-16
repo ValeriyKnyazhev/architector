@@ -1,33 +1,74 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Layout, message } from 'antd';
-import './File.sass';
+import React, { Component } from "react";
+import axios from "axios";
+import { Icon, message, Spin, Table } from "antd";
+import "./File.sass";
 
-const { Header, Content, Footer } = Layout;
+const mainInfoColumns = [
+  {
+    title: "Created",
+    dataIndex: "created",
+    key: "created",
+    width: 4,
+    render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
+  },
+  {
+    title: "Updated",
+    dataIndex: "updated",
+    key: "updated",
+    width: 4,
+    render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
+  }
+];
 
 export default class File extends Component {
   state = {
+    isContentLoaded: false,
+    isContentShow: false,
     file: {
-      content: {
-        items: []
-      }
+      createdDate: "",
+      updatedDate: ""
+    },
+    content: {
+      items: []
     }
   };
 
   async componentDidMount() {
-    this.fetchFileInfo.call(this);
-  };
+    this.fetchFileInfo();
+  }
 
-  async fetchFileInfo() {
+  fetchFileInfo = async () => {
     const {
       location: {
         state: { projectId, fileId }
       }
     } = this.props;
-    const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
-    this.setState({file: data});
+    const { data } = await axios.get(
+      `/api/projects/${projectId}/files/${fileId}`
+    );
+    this.setState({ file: data });
+  };
+
+  fetchFileContent = async () => {
+    const {
+      location: {
+        state: { projectId, fileId }
+      }
+    } = this.props;
+    const { data } = await axios.get(
+      `/api/projects/${projectId}/files/${fileId}/content`
+    );
+    this.setState({ content: data.content, isContentLoaded: true });
+  };
+
+  onToggleShowContent = () => {
+    const { isContentShow, isContentLoaded } = this.state;
+    if (!isContentShow) {
+      this.setState({ isContentShow: true });
+      !isContentLoaded && this.fetchFileContent();
+    } else {
+      this.setState({ isContentShow: false });
+    }
   };
 
   render() {
@@ -36,7 +77,16 @@ export default class File extends Component {
         state: { projectId, fileId }
       }
     } = this.props;
-    const { file } = this.state;
+    const { file, content, isContentLoaded, isContentShow } = this.state;
+
+    const mainInfoData = [
+      {
+        key: "1",
+        created: file.createdDate,
+        updated: file.updatedDate,
+      }
+    ];
+
     return (
       <div className="container">
         <div>
@@ -44,30 +94,46 @@ export default class File extends Component {
         </div>
         <div>
           <div>
-            <div className="row files__file-date">
-              <div className="col-xs-3">Created</div>
-              <div className="col-xs-9">{file.createdDate}</div>
-            </div>
-            <div className="row files__file-date">
-              <div className="col-xs-3">Updated</div>
-              <div className="col-xs-9">{file.updatedDate}</div>
-            </div>
-            <div className="files__file-content">
-              <div className="row files__file-content-header">
-                <div className="col-xs-3"><b>Content</b> </div>
-                <div className="col-xs-9"></div>
+            <Table
+              className="file__info"
+              columns={mainInfoColumns}
+              dataSource={mainInfoData}
+              pagination={false}
+            />
+            <div className="file__file-content">
+              <div
+                className="file__file-show-content"
+                onClick={this.onToggleShowContent}
+              >
+                <b>Content</b> <Icon type={isContentShow ? "up" : "down"} />{" "}
               </div>
-              <Layout className="files__file-content-info" style={{ marginLeft: 100 }}>
-                <Header style={{ background: '#fff', alpha: 0.2, padding: 0 }} />
-                <Content style={{ margin: '12px 8px 0', overflow: 'initial' }}>
-                  {file.content.items.map((item, index) =>
-                    <div style={{ padding: 6, background: '#fff', textAlign: 'left' }}>
-                      {item}
-                    </div>
-                  )}
-                </Content>
-                <Footer style={{ textAlign: 'center' }} />
-              </Layout>
+              <div
+                className="file__file-content-info"
+                style={{
+                  visibility: isContentShow ? "visible" : "hidden"
+                }}
+              >
+                {isContentLoaded ? (
+                  <div style={{ margin: "12px 8px 0", overflow: "initial" }}>
+                    {content.items.map((item, index, { length }) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: 6,
+                          background: "#fff",
+                          textAlign: "left"
+                        }}
+                      >
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="file__file-content-loader">
+                    <Spin size="large" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
