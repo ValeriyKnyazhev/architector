@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectQueryService {
 
-
     private final ProjectRepository repository;
 
     @Nullable

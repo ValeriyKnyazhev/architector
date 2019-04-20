@@ -1,10 +1,10 @@
-package valeriy.knyazhev.architector.application.project;
+package valeriy.knyazhev.architector.application.project.file;
 
 import lombok.RequiredArgsConstructor;
 import org.bimserver.models.store.IfcHeader;
 import org.springframework.stereotype.Service;
-import valeriy.knyazhev.architector.domain.model.project.ProjectDescription;
-import valeriy.knyazhev.architector.domain.model.project.ProjectMetadata;
+import valeriy.knyazhev.architector.domain.model.project.file.ProjectDescription;
+import valeriy.knyazhev.architector.domain.model.project.file.ProjectMetadata;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import java.time.ZoneId;
  */
 @Service
 @RequiredArgsConstructor
-public final class ProjectInfoExtractor {
+public final class FileInfoExtractor {
 
     @Nonnull
     public static ProjectDescription extractDescription(@Nonnull IfcHeader header) {

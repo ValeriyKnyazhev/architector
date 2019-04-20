@@ -1,10 +1,10 @@
-package valeriy.knyazhev.architector.port.adapter.project.file.model;
+package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import org.bimserver.emf.Schema;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 
@@ -12,7 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileModel {
+public class FileBriefModel {
 
 
     @Nonnull
@@ -24,9 +24,11 @@ public class FileModel {
     @Nonnull
     private LocalDateTime updatedDate;
 
+    @Nonnull
+    private Schema schema;
 
-    public FileModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
-                     @Nonnull LocalDateTime updatedDate) {
+    public FileBriefModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
+                          @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema) {
         this.fileId = fileId;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;

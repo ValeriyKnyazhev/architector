@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project;
+package valeriy.knyazhev.architector.domain.model.project.file;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

@@ -1,5 +1,6 @@
-package valeriy.knyazhev.architector.application.project.command;
+package valeriy.knyazhev.architector.application.project.file.command;
 
+import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 
 import javax.annotation.Nonnull;
@@ -7,7 +8,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class UpdateProjectFromUrlCommand {
+public class AddFileFromUploadCommand {
 
     @Nonnull
     private String projectId;
@@ -16,14 +17,14 @@ public class UpdateProjectFromUrlCommand {
     private String author;
 
     @Nonnull
-    private String sourceUrl;
+    private MultipartFile content;
 
-    public UpdateProjectFromUrlCommand(@Nonnull String projectId,
-                                       @Nonnull String author,
-                                       @Nonnull String sourceUrl) {
+    public AddFileFromUploadCommand(@Nonnull String projectId,
+                                    @Nonnull String author,
+                                    @Nonnull MultipartFile content) {
         this.projectId = projectId;
         this.author = author;
-        this.sourceUrl = sourceUrl;
+        this.content = content;
     }
 
     @Nonnull
@@ -37,7 +38,7 @@ public class UpdateProjectFromUrlCommand {
     }
 
     @Nonnull
-    public String sourceUrl() {
-        return this.sourceUrl;
+    public MultipartFile content() {
+        return this.content;
     }
 }

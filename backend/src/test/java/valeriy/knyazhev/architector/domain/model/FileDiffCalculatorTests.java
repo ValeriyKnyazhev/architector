@@ -32,10 +32,10 @@ public class FileDiffCalculatorTests {
     private FileDiffCalculator diffCalculator;
 
     private static File sampleFile(List<String> content) {
-        return File.builder()
+        return File.constructor()
                 .fileId(FileId.nextId())
-                .content(FileContent.of(content))
-                .build();
+            .withContent(FileContent.of(content))
+            .construct();
     }
 
     private static List<String> generateContent(List<String> values) {

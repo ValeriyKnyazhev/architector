@@ -1,7 +1,7 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.NoArgsConstructor;
-import org.bimserver.emf.Schema;
+import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
@@ -15,7 +15,6 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
-import static org.bimserver.emf.Schema.IFC2X3TC1;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -43,39 +42,13 @@ public class Project {
     private LocalDateTime updatedDate;
 
     @Nonnull
-    @Enumerated(EnumType.STRING)
-    private Schema schema = IFC2X3TC1;
+    private String projectName;
 
-    @AttributeOverrides({
-            @AttributeOverride(name = "descriptions",
-                    column = @Column(name = "descriptions")),
-            @AttributeOverride(name = "implementationLevel",
-                    column = @Column(name = "implementation_level"))
-    })
-    @Embedded
     @Nonnull
-    private ProjectDescription description;
+    private String author;
 
-    @AttributeOverrides({
-            @AttributeOverride(name = "name",
-                    column = @Column(name = "name")),
-            @AttributeOverride(name = "timestamp",
-                    column = @Column(name = "timestamp")),
-            @AttributeOverride(name = "authors",
-                    column = @Column(name = "authors")),
-            @AttributeOverride(name = "organizations",
-                    column = @Column(name = "organizations")),
-            @AttributeOverride(name = "preprocessorVersion",
-                    column = @Column(name = "preprocessor_version")),
-            @AttributeOverride(name = "originatingSystem",
-                    column = @Column(name = "originating_system")),
-            @AttributeOverride(name = "authorisation",
-                    column = @Column(name = "authorisation"))
-    })
-    @Embedded
     @Nonnull
-    private ProjectMetadata metadata;
-
+    private String description;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id", nullable = false)
@@ -88,12 +61,14 @@ public class Project {
     private long concurrencyVersion;
 
     private Project(@Nonnull ProjectId projectId,
-                    @Nonnull ProjectDescription description,
-                    @Nonnull ProjectMetadata metadata,
+                    @Nonnull String projectName,
+                    @Nonnull String author,
+                    @Nonnull String description,
                     @Nonnull List<File> files) {
         this.projectId = projectId;
+        this.projectName = projectName;
+        this.author = author;
         this.description = description;
-        this.metadata = metadata;
         this.files = files;
     }
 
@@ -118,31 +93,8 @@ public class Project {
     }
 
     @Nonnull
-    public Schema schema() {
-        return this.schema;
-    }
-
-    @Nonnull
-    public ProjectDescription description() {
-        return this.description;
-    }
-
-    @Nonnull
-    public ProjectMetadata metadata() {
-        return this.metadata;
-    }
-
-    @Nonnull
     public List<File> files() {
         return this.files;
-    }
-
-    public void updateDescription(@Nonnull ProjectDescription description) {
-        this.description = description;
-    }
-
-    public void updateMetadata(@Nonnull ProjectMetadata metadata) {
-        this.metadata = metadata;
     }
 
     public void addFile(@Nonnull File file) {
@@ -153,6 +105,14 @@ public class Project {
         this.files.add(file);
     }
 
+    public void updateFile(@Nonnull FileId fileId, @Nonnull FileContent content) {
+        this.files.stream()
+            .filter(f -> fileId.equals(f.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(projectId, fileId))
+            .updateContent(content);
+    }
+
     void setCreatedDate(@Nonnull LocalDateTime date) {
         this.createdDate = date;
     }
@@ -161,26 +121,15 @@ public class Project {
         this.updatedDate = date;
     }
 
-    public boolean updateFile(@Nonnull FileId fileId, @Nonnull FileContent content) {
-        File file = this.files.stream()
-                .filter(f -> fileId.equals(f.fileId()))
-                .findFirst()
-                .orElse(null);
-        if (file != null) {
-            file.updateContent(content);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public static class ProjectConstructor {
 
         private ProjectId projectId;
 
-        private ProjectDescription description;
+        private String projectName;
 
-        private ProjectMetadata metadata;
+        private String author;
+
+        private String description;
 
         private File file;
 
@@ -194,14 +143,20 @@ public class Project {
         }
 
         @Nonnull
-        public ProjectConstructor withDescription(@Nonnull ProjectDescription description) {
-            this.description = description;
+        public ProjectConstructor withName(@Nonnull String projectName) {
+            this.projectName = projectName;
             return this;
         }
 
         @Nonnull
-        public ProjectConstructor withMetadata(@Nonnull ProjectMetadata metadata) {
-            this.metadata = metadata;
+        public ProjectConstructor withAuthor(@Nonnull String author) {
+            this.author = author;
+            return this;
+        }
+
+        @Nonnull
+        public ProjectConstructor withDescription(@Nonnull String description) {
+            this.description = description;
             return this;
         }
 
@@ -213,7 +168,9 @@ public class Project {
 
         @Nonnull
         public Project construct() {
-            return new Project(this.projectId, this.description, this.metadata, singletonList(this.file));
+            return new Project(
+                this.projectId, this.projectName, this.author, this.description, singletonList(this.file)
+            );
         }
 
     }

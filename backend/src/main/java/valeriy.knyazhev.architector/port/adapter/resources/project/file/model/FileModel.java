@@ -1,9 +1,8 @@
-package valeriy.knyazhev.architector.port.adapter.project.model;
+package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Builder;
 import org.bimserver.emf.Schema;
-import valeriy.knyazhev.architector.port.adapter.project.file.model.FileModel;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
@@ -16,11 +15,11 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class ProjectModel {
+public class FileModel {
 
 
     @Nonnull
-    private String projectId;
+    private String fileId;
 
     @Nonnull
     private LocalDateTime createdDate;
@@ -37,20 +36,15 @@ public class ProjectModel {
     @Nonnull
     private MetadataModel metadata;
 
-    @Nonnull
-    private List<FileModel> files;
-
-    public ProjectModel(@Nonnull String projectId, @Nonnull LocalDateTime createdDate,
-                        @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema,
-                        @Nonnull DescriptionModel description, @Nonnull MetadataModel metadata,
-                        @Nonnull List<FileModel> files) {
-        this.projectId = projectId;
+    public FileModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
+                     @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema,
+                     @Nonnull DescriptionModel description, @Nonnull MetadataModel metadata) {
+        this.fileId = fileId;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
         this.schema = schema;
         this.description = description;
         this.metadata = metadata;
-        this.files = files;
     }
 
     @JsonAutoDetect(fieldVisibility = ANY)

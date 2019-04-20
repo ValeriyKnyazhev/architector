@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Icon, message, Spin, Table } from "antd";
+import { Icon, Spin, Table } from "antd";
 import "./File.sass";
 
 const mainInfoColumns = [
@@ -20,6 +20,10 @@ const mainInfoColumns = [
   }
 ];
 
+function buildMarkupContent(content) {
+  return { __html: "First &middot; Second" };
+}
+
 export default class File extends Component {
   state = {
     isContentLoaded: false,
@@ -28,9 +32,7 @@ export default class File extends Component {
       createdDate: "",
       updatedDate: ""
     },
-    content: {
-      items: []
-    }
+    content: ""
   };
 
   async componentDidMount() {
@@ -83,7 +85,7 @@ export default class File extends Component {
       {
         key: "1",
         created: file.createdDate,
-        updated: file.updatedDate,
+        updated: file.updatedDate
       }
     ];
 
@@ -114,20 +116,14 @@ export default class File extends Component {
                 }}
               >
                 {isContentLoaded ? (
-                  <div style={{ margin: "12px 8px 0", overflow: "initial" }}>
-                    {content.items.map((item, index, { length }) => (
-                      <div
-                        key={index}
-                        style={{
-                          padding: 6,
-                          background: "#fff",
-                          textAlign: "left"
-                        }}
-                      >
-                        {item}
-                      </div>
-                    ))}
-                  </div>
+                  <div
+                    style={{
+                      margin: "12px 8px 0",
+                      overflow: "initial",
+                      textAlign: "left"
+                    }}
+                    dangerouslySetInnerHTML={buildMarkupContent(content)}
+                  />
                 ) : (
                   <div className="file__file-content-loader">
                     <Spin size="large" />

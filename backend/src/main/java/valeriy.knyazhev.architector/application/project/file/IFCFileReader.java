@@ -42,10 +42,12 @@ public class IFCFileReader extends IFCReader<File> {
     @Override
     @Nonnull
     protected File constructResult(String isoId, IfcHeader header, List<String> contentItems) {
-        return File.builder()
+        return File.constructor()
                 .fileId(FileId.nextId())
-                .content(FileContent.of(contentItems))
-                .build();
+            .withDescription(FileInfoExtractor.extractDescription(header))
+            .withMetadata(FileInfoExtractor.extractMetadata(header))
+            .withContent(FileContent.of(contentItems))
+            .construct();
     }
 
 }
