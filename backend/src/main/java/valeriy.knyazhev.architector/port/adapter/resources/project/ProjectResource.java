@@ -46,7 +46,7 @@ public class ProjectResource {
             // TODO author constant should be replaced by user email
             new CreateProjectCommand(request.name(), "author", request.description()));
         return ResponseEntity.ok().body(new ResponseMessage()
-            .info("Project " + projectId.id() + " was created from source URL."));
+            .info("Project " + projectId.id() + " was created."));
     }
 
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)

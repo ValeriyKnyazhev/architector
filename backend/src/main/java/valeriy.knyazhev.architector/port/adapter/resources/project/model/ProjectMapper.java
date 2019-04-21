@@ -20,7 +20,13 @@ public final class ProjectMapper {
             .map(ProjectMapper::constructFile)
             .collect(toList());
         return new ProjectModel(
-            project.projectId().id(), project.createdDate(), project.updatedDate(), files
+            project.projectId().id(),
+            project.createdDate(),
+            project.updatedDate(),
+            project.name(),
+            project.author(),
+            project.description(),
+            files
         );
     }
 

@@ -2,8 +2,14 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import _isEmpty from "lodash/isEmpty";
-import { Button, Icon, Input, message, Table, Divider, Tag } from "antd";
+import { Button, Icon, Input, message, Modal, Popconfirm, Table } from "antd";
 import "./Project.sass";
+
+function constructSourceUrl(value) {
+  return value.startsWith("https://") || value.startsWith("http://")
+    ? value
+    : "https://" + value;
+}
 
 const mainInfoColumns = [
   {
@@ -21,87 +27,10 @@ const mainInfoColumns = [
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: "Schema",
-    dataIndex: "schema",
-    key: "schema",
+    title: "Author",
+    dataIndex: "author",
+    key: "author",
     width: 4
-  }
-];
-
-const metadataColumns = [
-  {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    width: 3
-  },
-  {
-    title: "Authors",
-    key: "authors",
-    dataIndex: "authors",
-    width: 3,
-    render: authors => (
-      <span>
-        {authors.map(author => {
-          return (
-            <Tag color="geekblue" key={author}>
-              {author}
-            </Tag>
-          );
-        })}
-      </span>
-    )
-  },
-  {
-    title: "Organizations",
-    key: "organizations",
-    dataIndex: "organizations",
-    width: 2,
-    render: organizations => (
-      <span>
-        {organizations.map(organization => {
-          return (
-            <Tag color="geekblue" key={organization}>
-              {organization.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </span>
-    )
-  },
-  {
-    title: "Originating system",
-    dataIndex: "originatingSystem",
-    key: "originatingSystem",
-    width: 2
-  },
-  {
-    title: "Preprocessor version",
-    dataIndex: "preprocessorVersion",
-    key: "preprocessorVersion",
-    width: 2
-  }
-];
-
-const descriptionColumns = [
-  {
-    title: "Descriptions",
-    key: "descriptions",
-    dataIndex: "descriptions",
-    width: 9,
-    render: descriptions => (
-      <span>
-        {descriptions.map(description => {
-          return <div key={description}>{description}</div>;
-        })}
-      </span>
-    )
-  },
-  {
-    title: "Implementation level",
-    dataIndex: "implementationLevel",
-    key: "implementationLevel",
-    width: 3
   }
 ];
 
@@ -110,16 +39,15 @@ export default class Project extends Component {
     project: {
       createdDate: "",
       updatedDate: "",
-      schema: "",
-      metadata: {
-        authors: [],
-        organizations: []
-      },
-      description: {
-        descriptions: []
-      },
+      projectName: "",
+      author: "",
+      description: "",
       files: []
-    }
+    },
+    newFileSourceUrl: "",
+    confirmLoading: false,
+    visibleCreateFile: false,
+    visiblePopup: false
   };
 
   async componentDidMount() {
@@ -133,9 +61,62 @@ export default class Project extends Component {
       }
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}`);
-    data.metadata.authors = ["Valeriy", "Sofia", "Knyazhev", "Buyanova"];
     this.setState({ project: data });
   }
+
+  showModal = state => {
+    this.setState({
+      [state]: true
+    });
+  };
+
+  onChangeSourceUrl = event => {
+    this.setState({ newFileSourceUrl: event.target.value });
+  };
+
+  handleCreateFileFromSource = modalVisible => {
+    const { newFileSourceUrl } = this.state;
+    const {
+      match: {
+        params: { projectId }
+      }
+    } = this.props;
+    this.setState({
+      confirmLoading: true
+    });
+    axios
+      .post(`/api/projects/${projectId}/files/source`, {
+        sourceUrl: constructSourceUrl(newFileSourceUrl)
+      })
+      .then(() => {
+        this.setState(
+          {
+            [modalVisible]: false,
+            confirmLoading: false
+          },
+          () => {
+            this.fetchProject.call(this);
+            message.success("File was created");
+          }
+        );
+      });
+  };
+
+  handlePopup = () => {
+    this.setState({ visiblePopup: true });
+  };
+
+  handleCancel = state => {
+    this.setState({
+      [state]: false
+    });
+  };
+
+  handleClosePopup = () => {
+    this.setState({
+      visiblePopup: false
+    });
+  };
 
   render() {
     const {
@@ -143,31 +124,14 @@ export default class Project extends Component {
         params: { projectId }
       }
     } = this.props;
-    const { project } = this.state;
+    const { project, confirmLoading, visibleCreateFile } = this.state;
 
     const mainInfoData = [
       {
         key: "1",
         created: project.createdDate,
         updated: project.updatedDate,
-        schema: project.schema
-      }
-    ];
-    const metadataData = [
-      {
-        key: "1",
-        name: project.metadata.name,
-        authors: project.metadata.authors,
-        organizations: project.metadata.organizations,
-        originatingSystem: project.metadata.originatingSystem,
-        preprocessorVersion: project.metadata.preprocessorVersion
-      }
-    ];
-    const descriptionData = [
-      {
-        key: "1",
-        descriptions: project.description.descriptions,
-        implementationLevel: project.description.implementationLevel
+        author: project.author
       }
     ];
 
@@ -231,50 +195,59 @@ export default class Project extends Component {
             dataSource={mainInfoData}
             pagination={false}
           />
-          <div className="project__metadata">
-            <div className="row project__metadata-header">
-              <div className="col-xs-3">
-                <b>Metadata</b>
-              </div>
-              <div className="col-xs-9" />
-            </div>
-            <div className="project__metadata-info">
-              <Table
-                className="project__metadata"
-                columns={metadataColumns}
-                dataSource={metadataData}
-                pagination={false}
-              />
-            </div>
-          </div>
-          <div className="project__description">
-            <div className="row project__description-header">
-              <div className="col-xs-3">
-                <b>Description</b>
-              </div>
-              <div className="col-xs-9" />
-            </div>
-            <div className="project__description-info">
-              <Table
-                className="project__metadata"
-                columns={descriptionColumns}
-                dataSource={descriptionData}
-                pagination={false}
-              />
-            </div>
-          </div>
           <div className="project__files">
             <div className="row project__files-header">
-              <div className="col-xs-3">
-                <b>Files</b>{" "}
+              <div className="project__files_header-title col-xs-3">
+                <h4>Files</h4>
               </div>
-              <div className="col-xs-9" />
+              <div className="col-xs-9">
+                <Button
+                  className="project__files-create-file"
+                  onClick={() => this.showModal("visibleCreateFile")}
+                  type="primary"
+                  style={{ marginBottom: 16, alignContent: "right" }}
+                >
+                  Add file <Icon type="plus-circle"/>
+                </Button>
+              </div>
             </div>
-            <div className="project__files-info">
-              <Table
-                className="project__metadata"
-                columns={filesListColumns}
-                dataSource={filesListData}
+            <Table
+              className="project__files-table"
+              bordered
+              columns={filesListColumns}
+              dataSource={filesListData}
+            />
+            <div className="project__files-create-file-modal">
+              {visibleCreateFile && (
+                <Modal
+                  title="Add new file"
+                  visible={visibleCreateFile}
+                  onOk={() =>
+                    this.handleCreateFileFromSource("visibleCreateFile")
+                  }
+                  confirmLoading={confirmLoading}
+                  onCancel={() => this.handleCancel("visibleCreateFile")}
+                  okButtonProps={{
+                    disabled: _isEmpty(this.state.newFileSourceUrl)
+                  }}
+                >
+                  <div style={{ marginBottom: 16 }}>
+                    <Input
+                      placeholder="Enter your source URL"
+                      value={this.state.newFileSourceUrl}
+                      onChange={this.onChangeSourceUrl}
+                      addonBefore="Https://"
+                    />
+                  </div>
+                </Modal>
+              )}
+              <Popconfirm
+                title="Do you want to create new project?"
+                visible={this.state.visiblePopup}
+                onConfirm={() => this.handleCarded("visibleProjects")}
+                onCancel={this.handleClosePopup}
+                okText="Yes"
+                cancelText="No"
               />
             </div>
           </div>

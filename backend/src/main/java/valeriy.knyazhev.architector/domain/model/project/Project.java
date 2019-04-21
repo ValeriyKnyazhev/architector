@@ -42,7 +42,7 @@ public class Project {
     private LocalDateTime updatedDate;
 
     @Nonnull
-    private String projectName;
+    private String name;
 
     @Nonnull
     private String author;
@@ -61,12 +61,12 @@ public class Project {
     private long concurrencyVersion;
 
     private Project(@Nonnull ProjectId projectId,
-                    @Nonnull String projectName,
+                    @Nonnull String name,
                     @Nonnull String author,
                     @Nonnull String description,
                     @Nonnull List<File> files) {
         this.projectId = projectId;
-        this.projectName = projectName;
+        this.name = name;
         this.author = author;
         this.description = description;
         this.files = files;
@@ -80,6 +80,21 @@ public class Project {
     @Nonnull
     public ProjectId projectId() {
         return this.projectId;
+    }
+
+    @Nonnull
+    public String name() {
+        return this.name;
+    }
+
+    @Nonnull
+    public String author() {
+        return this.author;
+    }
+
+    @Nonnull
+    public String description() {
+        return this.description;
     }
 
     @Nonnull

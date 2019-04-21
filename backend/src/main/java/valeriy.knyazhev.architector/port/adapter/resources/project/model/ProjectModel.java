@@ -26,13 +26,27 @@ public class ProjectModel {
     private LocalDateTime updatedDate;
 
     @Nonnull
+    private String projectName;
+
+    @Nonnull
+    private String author;
+
+    @Nonnull
+    private String description;
+
+    @Nonnull
     private List<FileBriefModel> files;
 
     public ProjectModel(@Nonnull String projectId, @Nonnull LocalDateTime createdDate,
-                        @Nonnull LocalDateTime updatedDate, @Nonnull List<FileBriefModel> files) {
+                        @Nonnull LocalDateTime updatedDate, @Nonnull String projectName,
+                        @Nonnull String author, @Nonnull String description,
+                        @Nonnull List<FileBriefModel> files) {
         this.projectId = projectId;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
+        this.projectName = projectName;
+        this.author = author;
+        this.description = description;
         this.files = files;
     }
 

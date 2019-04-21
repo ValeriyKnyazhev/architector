@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Icon, Spin, Table } from "antd";
+import { Icon, Spin, Table, Tag } from "antd";
 import "./File.sass";
 
 const mainInfoColumns = [
@@ -17,11 +17,95 @@ const mainInfoColumns = [
     key: "updated",
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
+  },
+  {
+    title: "Schema",
+    dataIndex: "schema",
+    key: "schema",
+    width: 4
   }
 ];
 
+const metadataColumns = [
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
+    width: 3
+  },
+  {
+    title: "Authors",
+    key: "authors",
+    dataIndex: "authors",
+    width: 3,
+    render: authors => (
+      <span>
+        {authors.map(author => {
+          return (
+            <Tag color="geekblue" key={author}>
+              {author}
+            </Tag>
+          );
+        })}
+      </span>
+    )
+  },
+  {
+    title: "Organizations",
+    key: "organizations",
+    dataIndex: "organizations",
+    width: 2,
+    render: organizations => (
+      <span>
+        {organizations.map(organization => {
+          return (
+            <Tag color="geekblue" key={organization}>
+              {organization.toUpperCase()}
+            </Tag>
+          );
+        })}
+      </span>
+    )
+  },
+  {
+    title: "Originating system",
+    dataIndex: "originatingSystem",
+    key: "originatingSystem",
+    width: 2
+  },
+  {
+    title: "Preprocessor version",
+    dataIndex: "preprocessorVersion",
+    key: "preprocessorVersion",
+    width: 2
+  }
+];
+
+const descriptionColumns = [
+  {
+    title: "Descriptions",
+    key: "descriptions",
+    dataIndex: "descriptions",
+    width: 9,
+    render: descriptions => (
+      <span>
+        {descriptions.map(description => {
+          return <div key={description}>{description}</div>;
+        })}
+      </span>
+    )
+  },
+  {
+    title: "Implementation level",
+    dataIndex: "implementationLevel",
+    key: "implementationLevel",
+    width: 3
+  }
+];
+
+
 function buildMarkupContent(content) {
-  return { __html: "First &middot; Second" };
+  return { __html: content };
 }
 
 export default class File extends Component {
@@ -30,7 +114,15 @@ export default class File extends Component {
     isContentShow: false,
     file: {
       createdDate: "",
-      updatedDate: ""
+      updatedDate: "",
+      schema: "",
+      metadata: {
+        authors: [],
+        organizations: []
+      },
+      description: {
+        descriptions: []
+      }
     },
     content: ""
   };
@@ -85,7 +177,25 @@ export default class File extends Component {
       {
         key: "1",
         created: file.createdDate,
-        updated: file.updatedDate
+        updated: file.updatedDate,
+        schema: file.schema
+      }
+    ];
+    const metadataData = [
+      {
+        key: "1",
+        name: file.metadata.name,
+        authors: file.metadata.authors,
+        organizations: file.metadata.organizations,
+        originatingSystem: file.metadata.originatingSystem,
+        preprocessorVersion: file.metadata.preprocessorVersion
+      }
+    ];
+    const descriptionData = [
+      {
+        key: "1",
+        descriptions: file.description.descriptions,
+        implementationLevel: file.description.implementationLevel
       }
     ];
 
@@ -102,6 +212,38 @@ export default class File extends Component {
               dataSource={mainInfoData}
               pagination={false}
             />
+            <div className="file__metadata">
+              <div className="row file__metadata-header">
+                <div className="col-xs-3">
+                  <b>Metadata</b>
+                </div>
+                <div className="col-xs-9"/>
+              </div>
+              <div className="file__metadata-info">
+                <Table
+                  className="file__metadata-table"
+                  columns={metadataColumns}
+                  dataSource={metadataData}
+                  pagination={false}
+                />
+              </div>
+            </div>
+            <div className="file__description">
+              <div className="row file__description-header">
+                <div className="col-xs-3">
+                  <b>Description</b>
+                </div>
+                <div className="col-xs-9"/>
+              </div>
+              <div className="file__description-info">
+                <Table
+                  className="file__description-table"
+                  columns={descriptionColumns}
+                  dataSource={descriptionData}
+                  pagination={false}
+                />
+              </div>
+            </div>
             <div className="file__file-content">
               <div
                 className="file__file-show-content"
