@@ -204,32 +204,44 @@ public class FileDiffCalculatorTests {
         // then
         assertThat(diff).size().isEqualTo(6);
         SoftAssertions softly = new SoftAssertions();
-        CommitItem changedItem0 = diff.stream().filter(item -> item.value().equals("0")).findFirst().orElse(null);
+        CommitItem changedItem0 = diff.stream()
+            .filter(item -> item.value().equals("0"))
+            .findFirst().orElse(null);
         assertThat(changedItem0).isNotNull();
         softly.assertThat(changedItem0.value()).isEqualTo("0");
-        softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem0.type()).isEqualTo(ADDITION);
         softly.assertThat(changedItem0.position()).isEqualTo(0);
-        CommitItem changedItem1 = diff.stream().filter(item -> item.value().equals("3")).findFirst().orElse(null);
+        CommitItem changedItem1 = diff.stream()
+            .filter(item -> item.value().equals("3"))
+            .findFirst().orElse(null);
         assertThat(changedItem1).isNotNull();
         softly.assertThat(changedItem1.value()).isEqualTo("3");
         softly.assertThat(changedItem1.type()).isEqualTo(DELETION);
         softly.assertThat(changedItem1.position()).isEqualTo(3);
-        CommitItem changedItem2 = diff.stream().filter(item -> item.value().equals("4")).findFirst().orElse(null);
+        CommitItem changedItem2 = diff.stream()
+            .filter(item -> item.value().equals("4"))
+            .findFirst().orElse(null);
         assertThat(changedItem2).isNotNull();
         softly.assertThat(changedItem2.value()).isEqualTo("4");
         softly.assertThat(changedItem2.type()).isEqualTo(DELETION);
         softly.assertThat(changedItem2.position()).isEqualTo(4);
-        CommitItem changedItem3 = diff.stream().filter(item -> item.value().equals("6")).findFirst().orElse(null);
+        CommitItem changedItem3 = diff.stream()
+            .filter(item -> item.value().equals("6"))
+            .findFirst().orElse(null);
         assertThat(changedItem3).isNotNull();
         softly.assertThat(changedItem3.value()).isEqualTo("6");
         softly.assertThat(changedItem3.type()).isEqualTo(ADDITION);
         softly.assertThat(changedItem3.position()).isEqualTo(5);
-        CommitItem changedItem4 = diff.stream().filter(item -> item.value().equals("7")).findFirst().orElse(null);
+        CommitItem changedItem4 = diff.stream()
+            .filter(item -> item.value().equals("7"))
+            .findFirst().orElse(null);
         assertThat(changedItem4).isNotNull();
         softly.assertThat(changedItem4.value()).isEqualTo("7");
         softly.assertThat(changedItem4.type()).isEqualTo(ADDITION);
         softly.assertThat(changedItem4.position()).isEqualTo(5);
-        CommitItem changedItem5 = diff.stream().filter(item -> item.value().equals("9")).findFirst().orElse(null);
+        CommitItem changedItem5 = diff.stream()
+            .filter(item -> item.value().equals("9"))
+            .findFirst().orElse(null);
         assertThat(changedItem5).isNotNull();
         softly.assertThat(changedItem5.value()).isEqualTo("9");
         softly.assertThat(changedItem5.type()).isEqualTo(DELETION);
@@ -251,12 +263,16 @@ public class FileDiffCalculatorTests {
         // then
         assertThat(diff).size().isEqualTo(2);
         SoftAssertions softly = new SoftAssertions();
-        CommitItem changedItem0 = diff.stream().filter(item -> item.value().equals("2")).findFirst().orElse(null);
+        CommitItem changedItem0 = diff.stream()
+            .filter(item -> item.value().equals("2"))
+            .findFirst().orElse(null);
         assertThat(changedItem0).isNotNull();
         softly.assertThat(changedItem0.value()).isEqualTo("2");
         softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
         softly.assertThat(changedItem0.position()).isEqualTo(2);
-        CommitItem changedItem1 = diff.stream().filter(item -> item.value().equals("2 new")).findFirst().orElse(null);
+        CommitItem changedItem1 = diff.stream()
+            .filter(item -> item.value().equals("2 new"))
+            .findFirst().orElse(null);
         assertThat(changedItem1).isNotNull();
         softly.assertThat(changedItem1.value()).isEqualTo("2 new");
         softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
@@ -268,7 +284,7 @@ public class FileDiffCalculatorTests {
     public void shouldBlockOfChangedLinesReplaceByDeletionsAndAdditions() {
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3", "4"));
-        List<String> newContent = generateContent(asList("2 new", "new 3"));
+        List<String> newContent = generateContent(asList("1", "2 new", "new 3", "4"));
         File oldFile = sampleFile(oldContent);
         File newFile = sampleFile(newContent);
 
@@ -276,20 +292,38 @@ public class FileDiffCalculatorTests {
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
 
         // then
-        assertThat(diff).size().isEqualTo(2);
+        assertThat(diff).size().isEqualTo(4);
         SoftAssertions softly = new SoftAssertions();
-        CommitItem changedItem0 = diff.stream().filter(item -> item.value().equals("2")).findFirst().orElse(null);
+        CommitItem changedItem0 = diff.stream()
+            .filter(item -> item.value().equals("2"))
+            .findFirst().orElse(null);
         assertThat(changedItem0).isNotNull();
         softly.assertThat(changedItem0.value()).isEqualTo("2");
         softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
         softly.assertThat(changedItem0.position()).isEqualTo(2);
-        CommitItem changedItem1 = diff.stream().filter(item -> item.value().equals("2 new")).findFirst().orElse(null);
+        CommitItem changedItem1 = diff.stream()
+            .filter(item -> item.value().equals("2 new"))
+            .findFirst().orElse(null);
         assertThat(changedItem1).isNotNull();
         softly.assertThat(changedItem1.value()).isEqualTo("2 new");
         softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
         softly.assertThat(changedItem1.position()).isEqualTo(1);
+
+        CommitItem changedItem2 = diff.stream()
+            .filter(item -> item.value().equals("3"))
+            .findFirst().orElse(null);
+        assertThat(changedItem2).isNotNull();
+        softly.assertThat(changedItem2.value()).isEqualTo("3");
+        softly.assertThat(changedItem2.type()).isEqualTo(DELETION);
+        softly.assertThat(changedItem2.position()).isEqualTo(3);
+        CommitItem changedItem3 = diff.stream()
+            .filter(item -> item.value().equals("new 3"))
+            .findFirst().orElse(null);
+        assertThat(changedItem3).isNotNull();
+        softly.assertThat(changedItem3.value()).isEqualTo("new 3");
+        softly.assertThat(changedItem3.type()).isEqualTo(ADDITION);
+        softly.assertThat(changedItem3.position()).isEqualTo(1);
         softly.assertAll();
     }
-
 
 }

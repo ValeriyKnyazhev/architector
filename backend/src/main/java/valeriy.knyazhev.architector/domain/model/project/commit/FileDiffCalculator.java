@@ -35,7 +35,7 @@ public final class FileDiffCalculator {
             return constructAdditionItems(delta.getRevised().getLines(), originPosition);
         }
         if (delta.getType() == Delta.TYPE.DELETE) {
-            return constructDeletionItems(originalChunk.getLines(), originPosition + 1);
+            return constructDeletionItems(originalChunk.getLines(), originPosition);
         }
         if (delta.getType() == Delta.TYPE.CHANGE) {
             List<CommitItem> originalChanges = constructDeletionItems(originalChunk.getLines(), originPosition);
