@@ -19,3 +19,22 @@ allprojects {
     }
     apply plugin: "idea"
 }
+
+subprojects {
+    apply plugin: "idea"
+
+    plugins.withId("java") {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+
+        tasks.withType(JavaCompile) {
+            options.compilerArgs += "-Xlint:deprecation"
+            options.encoding = "UTF-8"
+        }
+
+        tasks.withType(Test) {
+            testLogging.events "passed", "failed"
+            jvmArgs += ["-Dspring.main.banner-mode=off"]
+        }
+    }
+}
