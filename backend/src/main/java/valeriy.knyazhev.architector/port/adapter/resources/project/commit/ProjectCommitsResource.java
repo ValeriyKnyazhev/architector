@@ -75,7 +75,9 @@ public class ProjectCommitsResource {
         ProjectId projectId = ProjectId.of(qProjectId);
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        List<ProjectCommitBriefModel> commits = this.commitRepository.findByProjectIdOrderById(projectId).stream()
+        List<ProjectCommitBriefModel> commits = this.commitRepository
+            .findByProjectIdOrderByIdDesc(projectId)
+            .stream()
             .map(ProjectCommitsResource::constructBriefDescription)
             .collect(toList());
         return ResponseEntity.ok(
@@ -113,6 +115,7 @@ public class ProjectCommitsResource {
                 projectId.id(),
                 project.name(),
                 projection.files().stream()
+                    .filter(file -> !file.items().isEmpty())
                     .map(file -> new FileContentModel(
                             file.fileId().id(),
                         file.name(),

@@ -16,6 +16,9 @@ public interface CommitRepository extends JpaRepository<Commit, Long> {
     public List<Commit> findByProjectIdOrderById(@Nonnull ProjectId projectId);
 
     @Nonnull
+    public List<Commit> findByProjectIdOrderByIdDesc(@Nonnull ProjectId projectId);
+
+    @Nonnull
     public Optional<Commit> findById(long id);
 
 }

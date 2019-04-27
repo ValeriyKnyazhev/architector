@@ -6,7 +6,7 @@ import difflib.DiffUtils;
 import difflib.Patch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import valeriy.knyazhev.architector.domain.model.project.file.File;
+import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,10 +35,10 @@ public final class FileDiffCalculator {
             return constructAdditionItems(delta.getRevised().getLines(), originPosition);
         }
         if (delta.getType() == Delta.TYPE.DELETE) {
-            return constructDeletionItems(originalChunk.getLines(), originPosition);
+            return constructDeletionItems(originalChunk.getLines(), originPosition + 1);
         }
         if (delta.getType() == Delta.TYPE.CHANGE) {
-            List<CommitItem> originalChanges = constructDeletionItems(originalChunk.getLines(), originPosition);
+            List<CommitItem> originalChanges = constructDeletionItems(originalChunk.getLines(), originPosition + 1);
             List<CommitItem> revisedChanges = constructAdditionItems(revisedChunk.getLines(), originPosition);
             return Stream.concat(originalChanges.stream(), revisedChanges.stream()).collect(toList());
         }
@@ -56,20 +56,24 @@ public final class FileDiffCalculator {
     private static List<CommitItem> constructDeletionItems(@Nonnull List<String> items, int startPosition) {
         AtomicInteger curIndex = new AtomicInteger(startPosition);
         return items.stream()
-                .map(item -> deleteItem(item, curIndex.incrementAndGet()))
+            .map(item -> deleteItem(item, curIndex.getAndIncrement()))
                 .collect(toList());
     }
 
 
     @Nonnull
-    public List<CommitItem> calculateDiff(@Nullable File oldFile, @Nonnull File newFile) {
-        if (oldFile == null) {
-            return newFile.content().items().stream()
-                    .map(item -> addItem(item, 0))
-                    .collect(toList());
+    public List<CommitItem> calculateDiff(@Nullable FileContent oldFile, @Nullable FileContent newFile) {
+        if (oldFile == null && newFile == null) {
+            throw new IllegalStateException("Old and new files must not be null");
         }
-        List<String> oldItems = oldFile.content().items();
-        List<String> newItems = newFile.content().items();
+        if (oldFile == null) {
+            return constructAdditionItems(newFile.items(), 0);
+        }
+        if (newFile == null) {
+            return constructDeletionItems(oldFile.items(), 1);
+        }
+        List<String> oldItems = oldFile.items();
+        List<String> newItems = newFile.items();
         Patch<String> diff = DiffUtils.diff(oldItems, newItems);
         return diff.getDeltas().stream()
                 .map(FileDiffCalculator::defineChangedItems)

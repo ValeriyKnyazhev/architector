@@ -124,6 +124,15 @@ public class Project {
             .updateContent(content);
     }
 
+    public File deleteFile(@Nonnull FileId fileId) {
+        File deleted = this.files.stream()
+            .filter(f -> fileId.equals(f.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+        this.files.remove(deleted);
+        return deleted;
+    }
+
     void setCreatedDate(@Nonnull LocalDateTime date) {
         this.createdDate = date;
     }

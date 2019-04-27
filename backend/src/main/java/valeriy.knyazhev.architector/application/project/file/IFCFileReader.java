@@ -5,9 +5,7 @@ import org.bimserver.models.store.IfcHeader;
 import org.springframework.stereotype.Service;
 import valeriy.knyazhev.architector.application.util.ContentReadingException;
 import valeriy.knyazhev.architector.application.util.IFCReader;
-import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
-import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -20,14 +18,13 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class IFCFileReader extends IFCReader<File> {
+public class IFCFileReader extends IFCReader<FileData> {
 
     @Nonnull
-    public File readFromUrl(@Nonnull String fileName,
-                            @Nonnull URL fileUrl) {
+    public FileData readFromUrl(@Nonnull URL fileUrl) {
         try {
             InputStream fileStream = fileUrl.openStream();
-            return read(fileName, fileStream);
+            return read(fileStream);
         } catch (IOException e) {
             throw new ContentReadingException(fileUrl.getRef());
         }
@@ -35,22 +32,20 @@ public class IFCFileReader extends IFCReader<File> {
     }
 
     @Nonnull
-    public File readFromFile(@Nonnull String fileName,
-                             @Nonnull InputStream fileContent) {
-        return read(fileName, fileContent);
+    public FileData readFromFile(@Nonnull InputStream fileContent) {
+        return read(fileContent);
     }
 
 
     @Override
     @Nonnull
-    protected File constructResult(String name, String isoId, IfcHeader header, List<String> contentItems) {
-        return File.constructor()
-            .withFileId(FileId.nextId())
-            .withName(name)
-            .withDescription(FileInfoExtractor.extractDescription(header))
-            .withMetadata(FileInfoExtractor.extractMetadata(header))
-            .withContent(FileContent.of(contentItems))
-            .construct();
+    protected FileData constructResult(@Nonnull String isoId, IfcHeader header, List<String> contentItems) {
+        return new FileData(
+            isoId,
+            FileInfoExtractor.extractDescription(header),
+            FileInfoExtractor.extractMetadata(header),
+            FileContent.of(contentItems)
+        );
     }
 
 }

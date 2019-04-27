@@ -8,9 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import valeriy.knyazhev.architector.domain.model.project.commit.CommitItem;
 import valeriy.knyazhev.architector.domain.model.project.commit.FileDiffCalculator;
-import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
-import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,12 +29,8 @@ public class FileDiffCalculatorTests {
     @Autowired
     private FileDiffCalculator diffCalculator;
 
-    private static File sampleFile(List<String> content) {
-        return File.constructor()
-            .withFileId(FileId.nextId())
-            .withName("File name")
-            .withContent(FileContent.of(content))
-            .construct();
+    private static FileContent sampleFile(List<String> content) {
+        return FileContent.of(content);
     }
 
     private static List<String> generateContent(List<String> values) {
@@ -47,8 +41,8 @@ public class FileDiffCalculatorTests {
     public void shouldFilesAreEquals() {
         // given
         List<String> content = generateContent(asList("1", "2"));
-        File oldFile = sampleFile(content);
-        File newFile = sampleFile(content);
+        FileContent oldFile = sampleFile(content);
+        FileContent newFile = sampleFile(content);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -62,8 +56,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(singletonList("1"));
         List<String> newContent = generateContent(asList("1", "2"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -83,8 +77,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(asList("1", "2"));
         List<String> newContent = generateContent(Collections.singletonList("1"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -104,8 +98,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(singletonList("2"));
         List<String> newContent = generateContent(asList("1", "2"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -125,8 +119,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(asList("1", "2"));
         List<String> newContent = generateContent(Collections.singletonList("2"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -146,8 +140,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(asList("1", "4"));
         List<String> newContent = generateContent(asList("1", "2", "3", "4"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -171,8 +165,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3", "4"));
         List<String> newContent = generateContent(asList("1", "4"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -196,8 +190,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3", "4", "5", "8", "9"));
         List<String> newContent = generateContent(asList("0", "1", "2", "5", "6", "7", "8"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -255,8 +249,8 @@ public class FileDiffCalculatorTests {
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3"));
         List<String> newContent = generateContent(asList("1", "2 new", "3"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFile(oldContent);
+        FileContent newFile = sampleFile(newContent);
 
         // when
         List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
@@ -278,52 +272,6 @@ public class FileDiffCalculatorTests {
         softly.assertThat(changedItem1.value()).isEqualTo("2 new");
         softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
         softly.assertThat(changedItem1.position()).isEqualTo(1);
-        softly.assertAll();
-    }
-
-    @Test
-    public void shouldBlockOfChangedLinesReplaceByDeletionsAndAdditions() {
-        // given
-        List<String> oldContent = generateContent(asList("1", "2", "3", "4"));
-        List<String> newContent = generateContent(asList("1", "2 new", "new 3", "4"));
-        File oldFile = sampleFile(oldContent);
-        File newFile = sampleFile(newContent);
-
-        // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
-
-        // then
-        assertThat(diff).size().isEqualTo(4);
-        SoftAssertions softly = new SoftAssertions();
-        CommitItem changedItem0 = diff.stream()
-            .filter(item -> item.value().equals("2"))
-            .findFirst().orElse(null);
-        assertThat(changedItem0).isNotNull();
-        softly.assertThat(changedItem0.value()).isEqualTo("2");
-        softly.assertThat(changedItem0.type()).isEqualTo(DELETION);
-        softly.assertThat(changedItem0.position()).isEqualTo(2);
-        CommitItem changedItem1 = diff.stream()
-            .filter(item -> item.value().equals("2 new"))
-            .findFirst().orElse(null);
-        assertThat(changedItem1).isNotNull();
-        softly.assertThat(changedItem1.value()).isEqualTo("2 new");
-        softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
-        softly.assertThat(changedItem1.position()).isEqualTo(1);
-
-        CommitItem changedItem2 = diff.stream()
-            .filter(item -> item.value().equals("3"))
-            .findFirst().orElse(null);
-        assertThat(changedItem2).isNotNull();
-        softly.assertThat(changedItem2.value()).isEqualTo("3");
-        softly.assertThat(changedItem2.type()).isEqualTo(DELETION);
-        softly.assertThat(changedItem2.position()).isEqualTo(3);
-        CommitItem changedItem3 = diff.stream()
-            .filter(item -> item.value().equals("new 3"))
-            .findFirst().orElse(null);
-        assertThat(changedItem3).isNotNull();
-        softly.assertThat(changedItem3.value()).isEqualTo("new 3");
-        softly.assertThat(changedItem3.type()).isEqualTo(ADDITION);
-        softly.assertThat(changedItem3.position()).isEqualTo(1);
         softly.assertAll();
     }
 

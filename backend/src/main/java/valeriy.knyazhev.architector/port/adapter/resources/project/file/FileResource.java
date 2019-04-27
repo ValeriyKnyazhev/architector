@@ -7,10 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.FileManagementService;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
-import valeriy.knyazhev.architector.application.project.file.command.AddFileFromUploadCommand;
-import valeriy.knyazhev.architector.application.project.file.command.AddFileFromUrlCommand;
-import valeriy.knyazhev.architector.application.project.file.command.UpdateFileFromUploadCommand;
-import valeriy.knyazhev.architector.application.project.file.command.UpdateFileFromUrlCommand;
+import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -121,9 +118,9 @@ public class FileResource {
         );
         return updated
             ? ResponseEntity.ok().body(
-            new ResponseMessage().info("Project " + qProjectId + " was updated from source URL."))
+            new ResponseMessage().info("File " + qFileId + " was updated from source URL."))
             : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to update project " + qProjectId + " from source URL."));
+            new ResponseMessage().error("Unable to update file " + qFileId + " from source URL."));
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/import",
@@ -141,9 +138,23 @@ public class FileResource {
         );
         return updated
             ? ResponseEntity.ok().body(
-            new ResponseMessage().info("Project " + qProjectId + " was updated from received file."))
+            new ResponseMessage().info("File " + qFileId + " was updated from received file."))
             : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to update project " + qProjectId + " from received file."));
+            new ResponseMessage().error("Unable to update file " + qFileId + " from received file."));
+    }
+
+    @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
+        produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
+                                                          @PathVariable String qFileId) {
+        boolean deleted = this.managementService.deleteFile(
+            new DeleteFileCommand(qProjectId, qFileId, "author")
+        );
+        return deleted
+            ? ResponseEntity.ok().body(
+            new ResponseMessage().info("File " + qFileId + " was deleted from project."))
+            : ResponseEntity.badRequest().body(
+            new ResponseMessage().error("Unable to delete file " + qFileId + " from project."));
     }
 
     @Nonnull

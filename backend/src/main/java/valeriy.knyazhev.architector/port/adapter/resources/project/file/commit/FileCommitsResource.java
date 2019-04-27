@@ -63,7 +63,9 @@ public class FileCommitsResource {
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
         FileId fileId = FileId.of(qFileId);
-        List<FileCommitBriefModel> commits = this.commitRepository.findByProjectIdOrderById(projectId).stream()
+        List<FileCommitBriefModel> commits = this.commitRepository
+            .findByProjectIdOrderByIdDesc(projectId)
+            .stream()
             .filter(commit -> commitRelatedToFile(commit, fileId))
             .map(FileCommitsResource::constructBriefDescription)
             .collect(toList());
