@@ -12,8 +12,8 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.project.commit.CommitRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.commit.model.FileChangesModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.commit.model.FileCommitBriefModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.commit.model.FileCommitsModel;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -25,13 +25,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RestController
-public class FileChangesResource {
+public class FileCommitsResource {
 
     private final CommitRepository commitRepository;
 
     private final ProjectRepository projectRepository;
 
-    public FileChangesResource(@Nonnull CommitRepository commitRepository,
+    public FileCommitsResource(@Nonnull CommitRepository commitRepository,
                                @Nonnull ProjectRepository projectRepository) {
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
@@ -55,7 +55,7 @@ public class FileChangesResource {
             .anyMatch(file -> fileId.equals(file.fileId()));
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/files/{qFileId}/changes",
+    @GetMapping(value = "api/projects/{qProjectId}/files/{qFileId}/commits",
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchFileChanges(@PathVariable String qProjectId,
                                                    @PathVariable String qFileId) {
@@ -63,15 +63,15 @@ public class FileChangesResource {
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
         FileId fileId = FileId.of(qFileId);
-        List<FileCommitBriefModel> changes = this.commitRepository.findByProjectIdOrderById(projectId).stream()
+        List<FileCommitBriefModel> commits = this.commitRepository.findByProjectIdOrderById(projectId).stream()
             .filter(commit -> commitRelatedToFile(commit, fileId))
-            .map(FileChangesResource::constructBriefDescription)
+            .map(FileCommitsResource::constructBriefDescription)
             .collect(toList());
         return ResponseEntity.ok(
-            new FileChangesModel(
+            new FileCommitsModel(
                 projectId.id(),
                 project.name(),
-                changes
+                commits
             )
         );
     }

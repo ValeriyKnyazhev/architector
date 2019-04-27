@@ -11,8 +11,8 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.project.commit.CommitRepository;
-import valeriy.knyazhev.architector.port.adapter.resources.project.commit.model.ProjectChangesModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.commit.model.ProjectCommitBriefModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.commit.model.ProjectCommitsModel;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -24,13 +24,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RestController
-public class ProjectChangesResource {
+public class ProjectCommitsResource {
 
     private final CommitRepository commitRepository;
 
     private final ProjectRepository projectRepository;
 
-    public ProjectChangesResource(@Nonnull CommitRepository commitRepository,
+    public ProjectCommitsResource(@Nonnull CommitRepository commitRepository,
                                   @Nonnull ProjectRepository projectRepository) {
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
@@ -47,20 +47,20 @@ public class ProjectChangesResource {
         );
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/changes",
+    @GetMapping(value = "api/projects/{qProjectId}/commits",
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId) {
         ProjectId projectId = ProjectId.of(qProjectId);
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        List<ProjectCommitBriefModel> changes = this.commitRepository.findByProjectIdOrderById(projectId).stream()
-            .map(ProjectChangesResource::constructBriefDescription)
+        List<ProjectCommitBriefModel> commits = this.commitRepository.findByProjectIdOrderById(projectId).stream()
+            .map(ProjectCommitsResource::constructBriefDescription)
             .collect(toList());
         return ResponseEntity.ok(
-            new ProjectChangesModel(
+            new ProjectCommitsModel(
                 projectId.id(),
                 project.name(),
-                changes
+                commits
             )
         );
     }

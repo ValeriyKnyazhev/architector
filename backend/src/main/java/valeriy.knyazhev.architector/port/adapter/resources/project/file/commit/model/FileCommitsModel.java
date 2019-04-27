@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.port.adapter.resources.project.commit.model;
+package valeriy.knyazhev.architector.port.adapter.resources.project.file.commit.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -11,7 +11,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class ProjectChangesModel {
+public class FileCommitsModel {
 
 
     @Nonnull
@@ -21,14 +21,14 @@ public class ProjectChangesModel {
     private String name;
 
     @Nonnull
-    private List<ProjectCommitBriefModel> changes;
+    private List<FileCommitBriefModel> commits;
 
-    public ProjectChangesModel(@Nonnull String projectId,
-                               @Nonnull String name,
-                               @Nonnull List<ProjectCommitBriefModel> changes) {
+    public FileCommitsModel(@Nonnull String projectId,
+                            @Nonnull String name,
+                            @Nonnull List<FileCommitBriefModel> commits) {
         this.projectId = projectId;
         this.name = name;
-        this.changes = changes;
+        this.commits = commits;
     }
 
 }
