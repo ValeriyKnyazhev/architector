@@ -18,6 +18,7 @@ import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,52 +42,30 @@ public class FileManagementService {
 
     private final CommitRepository commitRepository;
 
-    @Nonnull
-    public ProjectId addFile(@Nonnull AddFileFromUrlCommand command) {
+    @Nullable
+    public File addFile(@Nonnull AddFileFromUrlCommand command) {
         Args.notNull(command, "Add file from url command is required.");
+        File newFile = null;
         try {
             URL sourceUrl = new URL(command.sourceUrl());
-            Project project = this.projectRepository.findByProjectId(command.projectId())
-                .orElseThrow(() -> new ProjectNotFoundException(command.projectId()));
-            File newFile = this.fileReader.readFromUrl(sourceUrl);
-            project.addFile(newFile);
-            CommitDescription commitData = CommitDescription.of(
-                singletonList(
-                    CommitFileItem.of(
-                        newFile.fileId(),
-                        this.diffCalculator.calculateDiff(null, newFile)
-                    )
-                )
-            );
-            commitChanges(project.projectId(), command.author(), commitData);
-            return this.projectRepository.save(project).projectId();
+            newFile = this.fileReader.readFromUrl(sourceUrl);
         } catch (MalformedURLException e) {
-            throw new IllegalStateException(e.getMessage());
+            return null;
         }
+        return addFile(command.projectId(), command.author(), newFile);
     }
 
-    @Nonnull
-    public ProjectId addFile(@Nonnull AddFileFromUploadCommand command) {
+    @Nullable
+    public File addFile(@Nonnull AddFileFromUploadCommand command) {
         Args.notNull(command, "Add file from upload file command is required.");
+        File newFile = null;
         try {
             MultipartFile multipartFile = command.content();
-            Project project = this.projectRepository.findByProjectId(command.projectId())
-                .orElseThrow(() -> new ProjectNotFoundException(command.projectId()));
-            File newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
-            project.addFile(newFile);
-            CommitDescription commitData = CommitDescription.of(
-                singletonList(
-                    CommitFileItem.of(
-                        newFile.fileId(),
-                        this.diffCalculator.calculateDiff(null, newFile)
-                    )
-                )
-            );
-            commitChanges(project.projectId(), command.author(), commitData);
-            return projectRepository.save(project).projectId();
+            newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
         } catch (IOException ex) {
-            throw new IllegalStateException("Unexpected IO error: try to import project one more time.");
+            return null;
         }
+        return addFile(command.projectId(), command.author(), newFile);
     }
 
     public boolean updateFile(@Nonnull UpdateFileFromUrlCommand command) {
@@ -111,6 +90,27 @@ public class FileManagementService {
             return false;
         }
         return updateFile(command.projectId(), command.fileId(), command.author(), newFile);
+    }
+
+    @Nullable
+    private File addFile(@Nonnull ProjectId projectId,
+                         @Nonnull String author,
+                         @Nonnull File newFile) {
+        Project project = this.projectRepository.findByProjectId(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        project.addFile(newFile);
+        projectRepository.save(project);
+        CommitDescription commitData = CommitDescription.of(
+            singletonList(
+                CommitFileItem.of(
+                    newFile.fileId(),
+                    this.diffCalculator.calculateDiff(null, newFile)
+                )
+            )
+        );
+        return commitChanges(project.projectId(), author, commitData)
+            ? newFile
+            : null;
     }
 
     private boolean updateFile(@Nonnull ProjectId projectId,

@@ -34,35 +34,35 @@ public final class CommitCombinator {
     private static void addNextFileChangesToProjection(@Nonnull ProjectDataProjection projection,
                                                        @Nonnull CommitFileItem fileChanges) {
         FileDataProjection foundFile = projection.files().stream()
-                .filter(file -> fileChanges.fileId().equals(file.fileId()))
-                .findFirst().orElse(null);
+            .filter(file -> fileChanges.fileId().equals(file.fileId()))
+            .findFirst().orElse(null);
         if (foundFile == null) {
             if (fileChanges.items().stream().anyMatch(item -> DELETION == item.type())) {
                 log.warn("Commit with new file " + fileChanges.fileId() + " has a few deletion items.");
                 throw new IllegalStateException("Commit with new file " + fileChanges.fileId() +
-                        " has a few deletion items.");
+                    " has a few deletion items.");
             }
             List<String> items = fileChanges.items().stream()
-                    .map(CommitItem::value)
-                    .collect(Collectors.toList());
+                .map(CommitItem::value)
+                .collect(Collectors.toList());
             projection.addNewFile(FileDataProjection.of(fileChanges.fileId(), items));
         } else {
             AtomicInteger index = new AtomicInteger();
             List<String> newItems = fileChanges.items().stream()
-                    .filter(item -> item.position() == 0)
-                    .map(CommitItem::value)
-                    .collect(Collectors.toList());
+                .filter(item -> item.position() == 0)
+                .map(CommitItem::value)
+                .collect(Collectors.toList());
             newItems.addAll(foundFile.items().stream()
-                    .map(item -> defineValuesInPosition(foundFile.items().get(index.getAndIncrement()),
-                            fileChanges.items().stream()
-                                    .filter(changedItem -> index.get() == changedItem.position())
-                                    .collect(Collectors.toList())))
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList()));
+                .map(item -> defineValuesInPosition(foundFile.items().get(index.getAndIncrement()),
+                    fileChanges.items().stream()
+                        .filter(changedItem -> index.get() == changedItem.position())
+                        .collect(Collectors.toList())))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList()));
             newItems.addAll(fileChanges.items().stream()
-                    .filter(item -> index.get() < item.position())
-                    .map(CommitItem::value)
-                    .collect(Collectors.toList()));
+                .filter(item -> index.get() < item.position())
+                .map(CommitItem::value)
+                .collect(Collectors.toList()));
             foundFile.updateItems(newItems);
         }
     }
@@ -75,8 +75,8 @@ public final class CommitCombinator {
             throw new IllegalStateException("Commit must not have a few deletion items in one position.");
         }
         CommitItem deletedItem = itemsInPosition.stream()
-                .filter(item -> DELETION == item.type())
-                .findFirst().orElse(null);
+            .filter(item -> DELETION == item.type())
+            .findFirst().orElse(null);
         if (deletedItem != null) {
             if (!curValue.equals(deletedItem.value())) {
                 throw new IllegalStateException("Current item does not match with deleted item.");
@@ -85,9 +85,9 @@ public final class CommitCombinator {
             newItems.add(curValue);
         }
         newItems.addAll(itemsInPosition.stream()
-                .filter(item -> ADDITION == item.type())
-                .map(CommitItem::value)
-                .collect(Collectors.toList()));
+            .filter(item -> ADDITION == item.type())
+            .map(CommitItem::value)
+            .collect(Collectors.toList()));
         return newItems;
     }
 
@@ -95,9 +95,9 @@ public final class CommitCombinator {
     public ProjectDataProjection combineCommits(@Nonnull List<Commit> commits) {
         ProjectDataProjection projection = ProjectDataProjection.empty();
         commits.stream()
-                .sorted(Comparator.comparing(Commit::timestamp))
-                .map(Commit::data)
-                .forEach(commit -> addNextProjectChangesToProjection(projection, commit));
+            .sorted(Comparator.comparing(Commit::timestamp))
+            .map(Commit::data)
+            .forEach(commit -> addNextProjectChangesToProjection(projection, commit));
         return projection;
     }
 

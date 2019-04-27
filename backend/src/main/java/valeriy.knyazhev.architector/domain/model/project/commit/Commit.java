@@ -41,6 +41,9 @@ public class Commit {
     private String author;
 
     @Nonnull
+    private String message;
+
+    @Nonnull
     private LocalDateTime timestamp;
 
     @Nonnull
@@ -48,15 +51,14 @@ public class Commit {
     @Type(type = "commit_jsonb")
     private CommitDescription data;
 
-    @Version
-    private long concurrencyVersion;
-
     @Builder
     private Commit(@Nullable Long parentId, @Nonnull ProjectId projectId,
-                   @Nonnull String author, @Nonnull CommitDescription data) {
+                   @Nonnull String author, @Nonnull String message,
+                   @Nonnull CommitDescription data) {
         this.parentId = parentId;
         this.projectId = projectId;
         this.author = author;
+        this.message = message;
         this.timestamp = LocalDateTime.now();
         this.data = data;
     }
@@ -78,6 +80,11 @@ public class Commit {
     @Nonnull
     public String author() {
         return this.author;
+    }
+
+    @Nonnull
+    public String message() {
+        return this.message;
     }
 
     @Nonnull
