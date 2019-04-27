@@ -3,7 +3,6 @@ package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.ProjectDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.ProjectMetadata;
-import valeriy.knyazhev.architector.port.adapter.project.file.model.FileContentModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileModel.DescriptionModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileModel.MetadataModel;
 

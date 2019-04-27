@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.port.adapter.project.file.model;
+package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
