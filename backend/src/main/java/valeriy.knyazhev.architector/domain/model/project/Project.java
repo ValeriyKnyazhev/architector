@@ -113,10 +113,6 @@ public class Project {
     }
 
     public void addFile(@Nonnull File file) {
-        if (!this.files.isEmpty()) {
-            // FIXME now project must have only one file
-            throw new IllegalStateException("Unable to save a few file in one project.");
-        }
         this.files.add(file);
     }
 

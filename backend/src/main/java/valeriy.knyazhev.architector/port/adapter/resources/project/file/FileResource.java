@@ -16,7 +16,8 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileFromUploadRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -70,7 +71,7 @@ public class FileResource {
         consumes = APPLICATION_JSON_UTF8_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
-                                                 @RequestBody FileRequest request) {
+                                                 @RequestBody FileFromUrlRequest request) {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(request, "Add file from url request is required.");
         File newFile = this.managementService.addFile(new AddFileFromUrlCommand(
@@ -108,10 +109,13 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
-                                                @RequestBody FileRequest request) {
+                                                @RequestBody FileFromUrlRequest request) {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email
-            new UpdateFileFromUrlCommand(qProjectId, qFileId, "author", request.sourceUrl()));
+            new UpdateFileFromUrlCommand(
+                qProjectId, qFileId, "author", request.message(), request.sourceUrl()
+            )
+        );
         return updated
             ? ResponseEntity.ok().body(
             new ResponseMessage().info("Project " + qProjectId + " was updated from source URL."))
@@ -124,10 +128,14 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
+                                                          @RequestBody FileFromUploadRequest request,
                                                           @RequestParam("file") MultipartFile multipartFile) {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email
-            new UpdateFileFromUploadCommand(qProjectId, qFileId, "author", multipartFile));
+            new UpdateFileFromUploadCommand(
+                qProjectId, qFileId, "author", request.message(), multipartFile
+            )
+        );
         return updated
             ? ResponseEntity.ok().body(
             new ResponseMessage().info("Project " + qProjectId + " was updated from received file."))

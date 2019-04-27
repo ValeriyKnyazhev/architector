@@ -46,26 +46,38 @@ public class FileManagementService {
     public File addFile(@Nonnull AddFileFromUrlCommand command) {
         Args.notNull(command, "Add file from url command is required.");
         File newFile = null;
+        String fileName = "";
         try {
             URL sourceUrl = new URL(command.sourceUrl());
+            fileName = sourceUrl.getPath();
             newFile = this.fileReader.readFromUrl(sourceUrl);
         } catch (MalformedURLException e) {
             return null;
         }
-        return addFile(command.projectId(), command.author(), newFile);
+        return addNewFile(
+            command.projectId(),
+            command.author(),
+            fileName,
+            newFile);
     }
 
     @Nullable
     public File addFile(@Nonnull AddFileFromUploadCommand command) {
         Args.notNull(command, "Add file from upload file command is required.");
         File newFile = null;
+        String fileName = "";
         try {
             MultipartFile multipartFile = command.content();
+            fileName = multipartFile.getName();
             newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
         } catch (IOException ex) {
             return null;
         }
-        return addFile(command.projectId(), command.author(), newFile);
+        return addNewFile(
+            command.projectId(),
+            command.author(),
+            fileName,
+            newFile);
     }
 
     public boolean updateFile(@Nonnull UpdateFileFromUrlCommand command) {
@@ -77,7 +89,12 @@ public class FileManagementService {
         } catch (MalformedURLException e) {
             return false;
         }
-        return updateFile(command.projectId(), command.fileId(), command.author(), newFile);
+        return updateFile(
+            command.projectId(),
+            command.fileId(),
+            command.author(),
+            command.message(),
+            newFile);
     }
 
     public boolean updateFile(@Nonnull UpdateFileFromUploadCommand command) {
@@ -89,13 +106,19 @@ public class FileManagementService {
         } catch (IOException ex) {
             return false;
         }
-        return updateFile(command.projectId(), command.fileId(), command.author(), newFile);
+        return updateFile(
+            command.projectId(),
+            command.fileId(),
+            command.author(),
+            command.message(),
+            newFile);
     }
 
     @Nullable
-    private File addFile(@Nonnull ProjectId projectId,
-                         @Nonnull String author,
-                         @Nonnull File newFile) {
+    private File addNewFile(@Nonnull ProjectId projectId,
+                            @Nonnull String author,
+                            @Nonnull String fileName,
+                            @Nonnull File newFile) {
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
         project.addFile(newFile);
@@ -108,14 +131,18 @@ public class FileManagementService {
                 )
             )
         );
-        return commitChanges(project.projectId(), author, commitData)
-            ? newFile
-            : null;
+        boolean added = commitChanges(
+            project.projectId(),
+            author,
+            "File " + fileName + " was added to project.",
+            commitData);
+        return added ? newFile : null;
     }
 
     private boolean updateFile(@Nonnull ProjectId projectId,
                                @Nonnull FileId fileId,
                                @Nonnull String author,
+                               @Nonnull String message,
                                @Nonnull File newFile) {
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
@@ -131,7 +158,7 @@ public class FileManagementService {
         updateFileContent(project, oldFile.fileId(), newFile);
         CommitDescription commitData = CommitDescription.of(
             singletonList(CommitFileItem.of(oldFile.fileId(), commitItems)));
-        return commitChanges(project.projectId(), author, commitData);
+        return commitChanges(project.projectId(), author, message, commitData);
     }
 
     private void updateFileContent(@Nonnull Project project,
@@ -143,6 +170,7 @@ public class FileManagementService {
 
     private boolean commitChanges(@Nonnull ProjectId projectId,
                                   @Nonnull String author,
+                                  @Nonnull String message,
                                   @Nonnull CommitDescription commitData) {
         Long parentId = this.commitRepository.findByProjectIdOrderById(projectId)
             .stream()
@@ -152,6 +180,7 @@ public class FileManagementService {
         Commit newCommit = Commit.builder()
             .parentId(parentId)
             .projectId(projectId)
+            .message(message)
             .author(author)
             .data(commitData)
             .build();

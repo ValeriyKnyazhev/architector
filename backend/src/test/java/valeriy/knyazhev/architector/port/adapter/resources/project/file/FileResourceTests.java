@@ -14,7 +14,7 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileFromUrlRequest;
 
 import java.util.Optional;
 
@@ -52,7 +52,7 @@ public class FileResourceTests {
         // given
         String fileUrl = "https://test.projects.ru/example.ifc";
         String createCommand = "{\"fileUrl\": \"" + fileUrl + "\"}";
-        FileRequest expectedCommand = new FileRequest();
+        FileFromUrlRequest expectedCommand = new FileFromUrlRequest();
         expectedCommand.setSourceUrl(fileUrl);
         ProjectId projectId = ProjectId.nextId();
         Project project = sampleProject(projectId);
