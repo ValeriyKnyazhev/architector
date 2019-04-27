@@ -22,6 +22,9 @@ public class FileModel {
     private String fileId;
 
     @Nonnull
+    private String name;
+
+    @Nonnull
     private LocalDateTime createdDate;
 
     @Nonnull
@@ -36,10 +39,11 @@ public class FileModel {
     @Nonnull
     private MetadataModel metadata;
 
-    public FileModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
+    public FileModel(@Nonnull String fileId, @Nonnull String name, @Nonnull LocalDateTime createdDate,
                      @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema,
                      @Nonnull DescriptionModel description, @Nonnull MetadataModel metadata) {
         this.fileId = fileId;
+        this.name = name;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
         this.schema = schema;

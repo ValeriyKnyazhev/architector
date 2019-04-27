@@ -46,18 +46,18 @@ public class FileManagementService {
     public File addFile(@Nonnull AddFileFromUrlCommand command) {
         Args.notNull(command, "Add file from url command is required.");
         File newFile = null;
-        String fileName = "";
         try {
             URL sourceUrl = new URL(command.sourceUrl());
-            fileName = sourceUrl.getPath();
-            newFile = this.fileReader.readFromUrl(sourceUrl);
+            newFile = this.fileReader.readFromUrl(
+                command.name(), sourceUrl
+            );
         } catch (MalformedURLException e) {
             return null;
         }
         return addNewFile(
             command.projectId(),
             command.author(),
-            fileName,
+            command.name(),
             newFile);
     }
 
@@ -65,18 +65,18 @@ public class FileManagementService {
     public File addFile(@Nonnull AddFileFromUploadCommand command) {
         Args.notNull(command, "Add file from upload file command is required.");
         File newFile = null;
-        String fileName = "";
         try {
             MultipartFile multipartFile = command.content();
-            fileName = multipartFile.getName();
-            newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
+            newFile = this.fileReader.readFromFile(
+                command.name(), multipartFile.getInputStream()
+            );
         } catch (IOException ex) {
             return null;
         }
         return addNewFile(
             command.projectId(),
             command.author(),
-            fileName,
+            command.name(),
             newFile);
     }
 
@@ -85,7 +85,8 @@ public class FileManagementService {
         File newFile = null;
         try {
             URL sourceUrl = new URL(command.sourceUrl());
-            newFile = this.fileReader.readFromUrl(sourceUrl);
+            // FIXME
+            newFile = this.fileReader.readFromUrl("", sourceUrl);
         } catch (MalformedURLException e) {
             return false;
         }
@@ -102,7 +103,8 @@ public class FileManagementService {
         File newFile = null;
         try {
             MultipartFile multipartFile = command.content();
-            newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
+            // FIXME
+            newFile = this.fileReader.readFromFile("", multipartFile.getInputStream());
         } catch (IOException ex) {
             return false;
         }
@@ -127,6 +129,7 @@ public class FileManagementService {
             singletonList(
                 CommitFileItem.of(
                     newFile.fileId(),
+                    newFile.name(),
                     this.diffCalculator.calculateDiff(null, newFile)
                 )
             )
@@ -157,7 +160,7 @@ public class FileManagementService {
         }
         updateFileContent(project, oldFile.fileId(), newFile);
         CommitDescription commitData = CommitDescription.of(
-            singletonList(CommitFileItem.of(oldFile.fileId(), commitItems)));
+            singletonList(CommitFileItem.of(oldFile.fileId(), oldFile.name(), commitItems)));
         return commitChanges(project.projectId(), author, message, commitData);
     }
 

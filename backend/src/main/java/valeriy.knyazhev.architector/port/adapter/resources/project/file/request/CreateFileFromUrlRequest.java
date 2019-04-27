@@ -7,20 +7,20 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class FileFromUrlRequest {
+public class CreateFileFromUrlRequest {
 
     @Nonnull
     private String sourceUrl;
 
     @Nonnull
-    private String message;
+    private String name;
 
     public void setSourceUrl(@Nonnull String sourceUrl) {
         this.sourceUrl = Args.notBlank(sourceUrl, "Source url is required.");
     }
 
-    public void setMessage(@Nonnull String message) {
-        this.message = Args.notNull(message, "Message is required.");
+    public void setName(@Nonnull String name) {
+        this.name = Args.notNull(name, "Name is required.");
     }
 
     @Nonnull
@@ -29,8 +29,8 @@ public class FileFromUrlRequest {
     }
 
     @Nonnull
-    public String message() {
-        return this.message;
+    public String name() {
+        return this.name;
     }
 
 }

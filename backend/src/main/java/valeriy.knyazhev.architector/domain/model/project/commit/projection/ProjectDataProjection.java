@@ -57,21 +57,34 @@ public class ProjectDataProjection {
         private FileId fileId;
 
         @Nonnull
+        private String name;
+
+        @Nonnull
         private List<String> items;
 
-        private FileDataProjection(@Nonnull FileId fileId, @Nonnull List<String> items) {
+        private FileDataProjection(@Nonnull FileId fileId,
+                                   @Nonnull String name,
+                                   @Nonnull List<String> items) {
             this.fileId = Args.notNull(fileId, "File identifier is required.");
+            this.name = Args.notNull(name, "File name is required.");
             this.items = Args.notNull(items, "File items are required.");
         }
 
         @Nonnull
-        public static FileDataProjection of(@Nonnull FileId fileId, @Nonnull List<String> items) {
-            return new FileDataProjection(fileId, items);
+        public static FileDataProjection of(@Nonnull FileId fileId,
+                                            @Nonnull String name,
+                                            @Nonnull List<String> items) {
+            return new FileDataProjection(fileId, name, items);
         }
 
         @Nonnull
         public FileId fileId() {
             return this.fileId;
+        }
+
+        @Nonnull
+        public String name() {
+            return this.name;
         }
 
         @Nonnull

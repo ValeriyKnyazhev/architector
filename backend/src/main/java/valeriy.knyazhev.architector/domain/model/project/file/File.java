@@ -35,6 +35,9 @@ public class File {
     private FileId fileId;
 
     @Nonnull
+    private String name;
+
+    @Nonnull
     private LocalDateTime createdDate;
 
     @Nonnull
@@ -46,9 +49,9 @@ public class File {
 
     @AttributeOverrides({
         @AttributeOverride(name = "descriptions",
-            column = @Column(name = "descriptions")),
+            column = @Column(name = "description_descriptions")),
         @AttributeOverride(name = "implementationLevel",
-            column = @Column(name = "implementation_level"))
+            column = @Column(name = "description_implementation_level"))
     })
     @Embedded
     @Nonnull
@@ -56,19 +59,19 @@ public class File {
 
     @AttributeOverrides({
         @AttributeOverride(name = "name",
-            column = @Column(name = "name")),
+            column = @Column(name = "metadata_name")),
         @AttributeOverride(name = "timestamp",
-            column = @Column(name = "timestamp")),
+            column = @Column(name = "metadata_timestamp")),
         @AttributeOverride(name = "authors",
-            column = @Column(name = "authors")),
+            column = @Column(name = "metadata_authors")),
         @AttributeOverride(name = "organizations",
-            column = @Column(name = "organizations")),
+            column = @Column(name = "metadata_organizations")),
         @AttributeOverride(name = "preprocessorVersion",
-            column = @Column(name = "preprocessor_version")),
+            column = @Column(name = "metadata_preprocessor_version")),
         @AttributeOverride(name = "originatingSystem",
-            column = @Column(name = "originating_system")),
+            column = @Column(name = "metadata_originating_system")),
         @AttributeOverride(name = "authorisation",
-            column = @Column(name = "authorisation"))
+            column = @Column(name = "metadata_authorisation"))
     })
     @Embedded
     @Nonnull
@@ -84,10 +87,12 @@ public class File {
     private long concurrencyVersion;
 
     private File(@Nonnull FileId fileId,
+                 @Nonnull String name,
                  @Nonnull ProjectDescription description,
                  @Nonnull ProjectMetadata metadata,
                  @Nonnull FileContent content) {
         this.fileId = fileId;
+        this.name = name;
         this.description = description;
         this.metadata = metadata;
         this.content = content;
@@ -101,6 +106,11 @@ public class File {
     @Nonnull
     public FileId fileId() {
         return this.fileId;
+    }
+
+    @Nonnull
+    public String name() {
+        return this.name;
     }
 
     @Nonnull
@@ -157,6 +167,8 @@ public class File {
 
         private FileId fileId;
 
+        private String name;
+
         private ProjectDescription description;
 
         private ProjectMetadata metadata;
@@ -167,8 +179,14 @@ public class File {
         }
 
         @Nonnull
-        public FileConstructor fileId(@Nonnull FileId fileId) {
+        public FileConstructor withFileId(@Nonnull FileId fileId) {
             this.fileId = fileId;
+            return this;
+        }
+
+        @Nonnull
+        public FileConstructor withName(@Nonnull String name) {
+            this.name = name;
             return this;
         }
 
@@ -192,7 +210,9 @@ public class File {
 
         @Nonnull
         public File construct() {
-            return new File(this.fileId, this.description, this.metadata, this.content);
+            return new File(
+                this.fileId, this.name, this.description, this.metadata, this.content
+            );
         }
 
     }

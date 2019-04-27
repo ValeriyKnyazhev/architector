@@ -35,13 +35,17 @@ public class CommitCombinatorTests {
     private CommitCombinator commitCombinator;
 
     private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items) {
-        CommitDescription data = CommitDescription.of(singletonList(CommitFileItem.of(fileId, items)));
+        CommitDescription data = CommitDescription.of(
+            singletonList(
+                CommitFileItem.of(fileId, "file", items)
+            )
+        );
         return Commit.builder()
-                .parentId(parentId)
-                .projectId(PROJECT_ID)
-                .author("author")
-                .data(data)
-                .build();
+            .parentId(parentId)
+            .projectId(PROJECT_ID)
+            .author("author")
+            .data(data)
+            .build();
     }
 
     @Test
@@ -49,9 +53,9 @@ public class CommitCombinatorTests {
         // given
         FileId fileId = FileId.nextId();
         List<Commit> commits = singletonList(
-                sampleCommit(null, fileId, asList(
-                        addItem("1", 1),
-                        addItem("2", 1))));
+            sampleCommit(null, fileId, asList(
+                addItem("1", 1),
+                addItem("2", 1))));
 
         // when
         ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);
@@ -71,7 +75,7 @@ public class CommitCombinatorTests {
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
         List<Commit> commits = asList(firstCommit,
-                sampleCommit(firstCommit.id(), fileId, singletonList(addItem("2", 1))));
+            sampleCommit(firstCommit.id(), fileId, singletonList(addItem("2", 1))));
 
         // when
         ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);
@@ -91,7 +95,7 @@ public class CommitCombinatorTests {
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
         List<Commit> commits = asList(firstCommit,
-                sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("1", 1))));
+            sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("1", 1))));
 
         // when
         ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);
@@ -111,12 +115,12 @@ public class CommitCombinatorTests {
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
         List<Commit> commits = asList(firstCommit,
-                sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("2", 1))));
+            sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("2", 1))));
 
         // expect
         assertThatThrownBy(() -> this.commitCombinator.combineCommits(commits))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("Current item does not match with deleted item.");
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Current item does not match with deleted item.");
     }
 
     @Test
@@ -124,15 +128,15 @@ public class CommitCombinatorTests {
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, asList(
-                addItem("1", 1), addItem("2", 1)));
+            addItem("1", 1), addItem("2", 1)));
         List<Commit> commits = asList(firstCommit,
-                sampleCommit(firstCommit.id(), fileId, asList(
-                        deleteItem("1", 1), deleteItem("2", 1))));
+            sampleCommit(firstCommit.id(), fileId, asList(
+                deleteItem("1", 1), deleteItem("2", 1))));
 
         // expect
         assertThatThrownBy(() -> this.commitCombinator.combineCommits(commits))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("Commit must not have a few deletion items in one position.");
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Commit must not have a few deletion items in one position.");
     }
 
     @Test
@@ -140,21 +144,21 @@ public class CommitCombinatorTests {
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, asList(
-                addItem("1", 1),
-                addItem("2", 1),
-                addItem("3", 1),
-                addItem("4", 1),
-                addItem("5", 1),
-                addItem("8", 1),
-                addItem("9", 1)));
+            addItem("1", 1),
+            addItem("2", 1),
+            addItem("3", 1),
+            addItem("4", 1),
+            addItem("5", 1),
+            addItem("8", 1),
+            addItem("9", 1)));
         List<Commit> commits = asList(firstCommit,
-                sampleCommit(firstCommit.id(), fileId, asList(
-                        addItem("0", 0),
-                        deleteItem("3", 3),
-                        deleteItem("4", 4),
-                        addItem("6", 5),
-                        addItem("7", 5),
-                        deleteItem("9", 7))));
+            sampleCommit(firstCommit.id(), fileId, asList(
+                addItem("0", 0),
+                deleteItem("3", 3),
+                deleteItem("4", 4),
+                addItem("6", 5),
+                addItem("7", 5),
+                deleteItem("9", 7))));
 
         // when
         ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);

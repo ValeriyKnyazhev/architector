@@ -19,7 +19,7 @@ public final class FileMapper {
     @Nonnull
     public static FileContentModel buildContent(@Nonnull File file) {
         return new FileContentModel(
-            file.fileId().id(), file.content().items()
+            file.fileId().id(), file.name(), file.content().items()
         );
     }
 
@@ -28,7 +28,8 @@ public final class FileMapper {
         DescriptionModel description = constructDescription(file.description());
         MetadataModel metadata = constructMetadata(file.metadata());
         return new FileModel(
-            file.fileId().id(), file.createdDate(), file.updatedDate(), file.schema(), description, metadata
+            file.fileId().id(), file.name(), file.createdDate(), file.updatedDate(),
+            file.schema(), description, metadata
         );
     }
 

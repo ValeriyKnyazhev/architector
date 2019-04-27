@@ -42,7 +42,7 @@ public abstract class IFCReader<T> {
     }
 
     @Nonnull
-    protected T read(@Nonnull InputStream contentStream) {
+    protected T read(@Nonnull String name, @Nonnull InputStream contentStream) {
         String isoId = null;
         String fileDescription = null;
         String fileName = null;
@@ -100,7 +100,7 @@ public abstract class IFCReader<T> {
             new IfcHeaderParser().parseFileName(fileName, resultHeader);
             // TODO add reading file schema
             new IfcHeaderParser().parseFileSchema(fileSchema, resultHeader);
-            return constructResult(isoId, resultHeader, contentItems);
+            return constructResult(name, isoId, resultHeader, contentItems);
         } catch (DeserializeException e) {
             throw new IllegalStateException("Unable to deserialize input content.");
         } catch (ParseException e) {
@@ -109,5 +109,8 @@ public abstract class IFCReader<T> {
     }
 
     @Nonnull
-    protected abstract T constructResult(String isoId, IfcHeader header, List<String> contentItems);
+    protected abstract T constructResult(String name,
+                                         String isoId,
+                                         IfcHeader header,
+                                         List<String> contentItems);
 }

@@ -33,7 +33,8 @@ public class FileDiffCalculatorTests {
 
     private static File sampleFile(List<String> content) {
         return File.constructor()
-                .fileId(FileId.nextId())
+            .withFileId(FileId.nextId())
+            .withName("File name")
             .withContent(FileContent.of(content))
             .construct();
     }

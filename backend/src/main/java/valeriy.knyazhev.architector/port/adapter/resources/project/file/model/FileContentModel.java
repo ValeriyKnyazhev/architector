@@ -18,15 +18,21 @@ public class FileContentModel {
     @Nonnull
     private String fileId;
 
+    @Nonnull
+    private String name;
+
+    @Nonnull
     private String content;
 
-    public FileContentModel(@Nonnull String fileId, @Nonnull String content) {
+    public FileContentModel(@Nonnull String fileId, @Nonnull String name, @Nonnull String content) {
         this.fileId = fileId;
+        this.name = name;
         this.content = content;
     }
 
-    public FileContentModel(@Nonnull String fileId, @Nonnull List<String> items) {
+    public FileContentModel(@Nonnull String fileId, @Nonnull String name, @Nonnull List<String> items) {
         this.fileId = fileId;
+        this.name = name;
         this.content = items.stream()
             .map(FileContentModel::wrap)
             .collect(Collectors.joining(""));

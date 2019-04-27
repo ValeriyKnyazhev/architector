@@ -45,7 +45,7 @@ public final class CommitCombinator {
             List<String> items = fileChanges.items().stream()
                 .map(CommitItem::value)
                 .collect(Collectors.toList());
-            projection.addNewFile(FileDataProjection.of(fileChanges.fileId(), items));
+            projection.addNewFile(FileDataProjection.of(fileChanges.fileId(), fileChanges.name(), items));
         } else {
             AtomicInteger index = new AtomicInteger();
             List<String> newItems = fileChanges.items().stream()

@@ -115,6 +115,7 @@ public class ProjectCommitsResource {
                 projection.files().stream()
                     .map(file -> new FileContentModel(
                             file.fileId().id(),
+                        file.name(),
                             file.items()
                         )
                     )

@@ -24,23 +24,36 @@ public class CommitFileItem {
     private FileId fileId;
 
     @Nonnull
+    private String name;
+
+    @Nonnull
     private List<CommitItem> items;
 
-    private CommitFileItem(@Nonnull FileId fileId, @Nonnull List<CommitItem> items) {
+    private CommitFileItem(@Nonnull FileId fileId,
+                           @Nonnull String name,
+                           @Nonnull List<CommitItem> items) {
         this.fileId = fileId;
+        this.name = name;
         this.items = items.stream()
                 .sorted(CommitItem::compareTo)
                 .collect(Collectors.toList());
     }
 
     @Nonnull
-    public static CommitFileItem of(@Nonnull FileId fileId, @Nonnull List<CommitItem> items) {
-        return new CommitFileItem(fileId, items);
+    public static CommitFileItem of(@Nonnull FileId fileId,
+                                    @Nonnull String name,
+                                    @Nonnull List<CommitItem> items) {
+        return new CommitFileItem(fileId, name, items);
     }
 
     @Nonnull
     public FileId fileId() {
         return this.fileId;
+    }
+
+    @Nonnull
+    public String name() {
+        return this.name;
     }
 
     @Nonnull

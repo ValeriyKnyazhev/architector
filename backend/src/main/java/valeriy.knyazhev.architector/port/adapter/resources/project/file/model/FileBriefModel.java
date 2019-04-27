@@ -19,6 +19,9 @@ public class FileBriefModel {
     private String fileId;
 
     @Nonnull
+    private String name;
+
+    @Nonnull
     private LocalDateTime createdDate;
 
     @Nonnull
@@ -27,11 +30,13 @@ public class FileBriefModel {
     @Nonnull
     private Schema schema;
 
-    public FileBriefModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
+    public FileBriefModel(@Nonnull String fileId, @Nonnull String name, @Nonnull LocalDateTime createdDate,
                           @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema) {
         this.fileId = fileId;
+        this.name = name;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
+        this.schema = schema;
     }
 
 }

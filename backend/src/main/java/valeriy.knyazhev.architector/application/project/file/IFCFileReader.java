@@ -23,10 +23,11 @@ import java.util.List;
 public class IFCFileReader extends IFCReader<File> {
 
     @Nonnull
-    public File readFromUrl(@Nonnull URL fileUrl) {
+    public File readFromUrl(@Nonnull String fileName,
+                            @Nonnull URL fileUrl) {
         try {
             InputStream fileStream = fileUrl.openStream();
-            return read(fileStream);
+            return read(fileName, fileStream);
         } catch (IOException e) {
             throw new ContentReadingException(fileUrl.getRef());
         }
@@ -34,16 +35,18 @@ public class IFCFileReader extends IFCReader<File> {
     }
 
     @Nonnull
-    public File readFromFile(@Nonnull InputStream fileContent) {
-        return read(fileContent);
+    public File readFromFile(@Nonnull String fileName,
+                             @Nonnull InputStream fileContent) {
+        return read(fileName, fileContent);
     }
 
 
     @Override
     @Nonnull
-    protected File constructResult(String isoId, IfcHeader header, List<String> contentItems) {
+    protected File constructResult(String name, String isoId, IfcHeader header, List<String> contentItems) {
         return File.constructor()
-                .fileId(FileId.nextId())
+            .withFileId(FileId.nextId())
+            .withName(name)
             .withDescription(FileInfoExtractor.extractDescription(header))
             .withMetadata(FileInfoExtractor.extractMetadata(header))
             .withContent(FileContent.of(contentItems))

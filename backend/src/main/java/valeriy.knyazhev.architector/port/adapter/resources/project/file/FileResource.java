@@ -16,8 +16,10 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileFromUploadRequest;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileFromUrlRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUploadRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUrlRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileFromUploadRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -71,11 +73,11 @@ public class FileResource {
         consumes = APPLICATION_JSON_UTF8_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
-                                                 @RequestBody FileFromUrlRequest request) {
+                                                 @RequestBody CreateFileFromUrlRequest request) {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(request, "Add file from url request is required.");
         File newFile = this.managementService.addFile(new AddFileFromUrlCommand(
-                qProjectId, "author", request.sourceUrl()
+            qProjectId, "author", request.name(), request.sourceUrl()
             )
         );
         return newFile != null
@@ -89,11 +91,12 @@ public class FileResource {
         consumes = MULTIPART_FORM_DATA_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,
+                                                           @RequestBody CreateFileFromUploadRequest request,
                                                            @RequestParam("file") MultipartFile multipartFile) {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(multipartFile, "Upload file is required.");
         File newFile = this.managementService.addFile(new AddFileFromUploadCommand(
-                qProjectId, "author", multipartFile
+            qProjectId, "author", request.name(), multipartFile
             )
         );
         return newFile != null
@@ -109,7 +112,7 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
-                                                @RequestBody FileFromUrlRequest request) {
+                                                @RequestBody UpdateFileFromUrlRequest request) {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email
             new UpdateFileFromUrlCommand(
@@ -128,7 +131,7 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
-                                                          @RequestBody FileFromUploadRequest request,
+                                                          @RequestBody UpdateFileFromUploadRequest request,
                                                           @RequestParam("file") MultipartFile multipartFile) {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email

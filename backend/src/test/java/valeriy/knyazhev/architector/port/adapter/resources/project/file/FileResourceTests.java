@@ -14,7 +14,7 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.FileFromUrlRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUrlRequest;
 
 import java.util.Optional;
 
@@ -52,13 +52,13 @@ public class FileResourceTests {
         // given
         String fileUrl = "https://test.projects.ru/example.ifc";
         String createCommand = "{\"fileUrl\": \"" + fileUrl + "\"}";
-        FileFromUrlRequest expectedCommand = new FileFromUrlRequest();
+        CreateFileFromUrlRequest expectedCommand = new CreateFileFromUrlRequest();
         expectedCommand.setSourceUrl(fileUrl);
         ProjectId projectId = ProjectId.nextId();
         Project project = sampleProject(projectId);
-        File file = File.constructor().fileId(FileId.nextId()).construct();
+        File file = File.constructor().withFileId(FileId.nextId()).construct();
         when(this.projectRepository.findByProjectId(any())).thenReturn(Optional.of(project));
-        when(this.fileReader.readFromUrl(any())).thenReturn(file);
+        when(this.fileReader.readFromUrl(any(), any())).thenReturn(file);
 
         // expect
         this.mockMvc.perform(post("/projects/{projectId}/files", projectId.id())
