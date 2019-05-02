@@ -44,35 +44,15 @@ public class File {
     @Enumerated(EnumType.STRING)
     private Schema schema = IFC2X3TC1;
 
-    @AttributeOverrides({
-        @AttributeOverride(name = "descriptions",
-            column = @Column(name = "description_descriptions")),
-        @AttributeOverride(name = "implementationLevel",
-            column = @Column(name = "description_implementation_level"))
-    })
-    @Embedded
     @Nonnull
-    private ProjectDescription description;
+    @Column(columnDefinition = "jsonb")
+    @Type(type = "jsonb_type")
+    private FileDescription description;
 
-    @AttributeOverrides({
-        @AttributeOverride(name = "name",
-            column = @Column(name = "metadata_name")),
-        @AttributeOverride(name = "timestamp",
-            column = @Column(name = "metadata_timestamp")),
-        @AttributeOverride(name = "authors",
-            column = @Column(name = "metadata_authors")),
-        @AttributeOverride(name = "organizations",
-            column = @Column(name = "metadata_organizations")),
-        @AttributeOverride(name = "preprocessorVersion",
-            column = @Column(name = "metadata_preprocessor_version")),
-        @AttributeOverride(name = "originatingSystem",
-            column = @Column(name = "metadata_originating_system")),
-        @AttributeOverride(name = "authorisation",
-            column = @Column(name = "metadata_authorisation"))
-    })
-    @Embedded
     @Nonnull
-    private ProjectMetadata metadata;
+    @Column(columnDefinition = "jsonb")
+    @Type(type = "jsonb_type")
+    private FileMetadata metadata;
 
     @Nonnull
     @Column(columnDefinition = "jsonb")
@@ -85,8 +65,8 @@ public class File {
 
     private File(@Nonnull FileId fileId,
                  @Nonnull String name,
-                 @Nonnull ProjectDescription description,
-                 @Nonnull ProjectMetadata metadata,
+                 @Nonnull FileDescription description,
+                 @Nonnull FileMetadata metadata,
                  @Nonnull FileContent content) {
         this.fileId = fileId;
         this.name = name;
@@ -116,12 +96,12 @@ public class File {
     }
 
     @Nonnull
-    public ProjectDescription description() {
+    public FileDescription description() {
         return this.description;
     }
 
     @Nonnull
-    public ProjectMetadata metadata() {
+    public FileMetadata metadata() {
         return this.metadata;
     }
 
@@ -140,11 +120,11 @@ public class File {
         return this.updatedDate;
     }
 
-    public void updateDescription(@Nonnull ProjectDescription description) {
+    public void updateDescription(@Nonnull FileDescription description) {
         this.description = description;
     }
 
-    public void updateMetadata(@Nonnull ProjectMetadata metadata) {
+    public void updateMetadata(@Nonnull FileMetadata metadata) {
         this.metadata = metadata;
     }
 
@@ -166,9 +146,9 @@ public class File {
 
         private String name;
 
-        private ProjectDescription description;
+        private FileDescription description;
 
-        private ProjectMetadata metadata;
+        private FileMetadata metadata;
 
         private FileContent content;
 
@@ -188,13 +168,13 @@ public class File {
         }
 
         @Nonnull
-        public FileConstructor withDescription(@Nonnull ProjectDescription description) {
+        public FileConstructor withDescription(@Nonnull FileDescription description) {
             this.description = description;
             return this;
         }
 
         @Nonnull
-        public FileConstructor withMetadata(@Nonnull ProjectMetadata metadata) {
+        public FileConstructor withMetadata(@Nonnull FileMetadata metadata) {
             this.metadata = metadata;
             return this;
         }

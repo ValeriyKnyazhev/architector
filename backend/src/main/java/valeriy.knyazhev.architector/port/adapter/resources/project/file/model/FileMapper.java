@@ -1,8 +1,8 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import valeriy.knyazhev.architector.domain.model.project.file.File;
-import valeriy.knyazhev.architector.domain.model.project.file.ProjectDescription;
-import valeriy.knyazhev.architector.domain.model.project.file.ProjectMetadata;
+import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
+import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileModel.DescriptionModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileModel.MetadataModel;
 
@@ -34,14 +34,14 @@ public final class FileMapper {
     }
 
     @Nonnull
-    private static DescriptionModel constructDescription(@Nonnull ProjectDescription description) {
+    private static DescriptionModel constructDescription(@Nonnull FileDescription description) {
         return new DescriptionModel(
             description.descriptions(), description.implementationLevel()
         );
     }
 
     @Nonnull
-    private static MetadataModel constructMetadata(@Nonnull ProjectMetadata metadata) {
+    private static MetadataModel constructMetadata(@Nonnull FileMetadata metadata) {
         return MetadataModel.builder()
             .name(metadata.name())
             .timestamp(metadata.timestamp())

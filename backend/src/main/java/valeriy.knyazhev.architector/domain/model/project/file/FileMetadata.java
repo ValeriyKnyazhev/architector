@@ -6,17 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
-
-import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.extractValues;
-import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.mapValue;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProjectMetadata {
+public class FileMetadata {
 
     @Nonnull
     private String name;
@@ -25,10 +21,10 @@ public class ProjectMetadata {
     private LocalDate timestamp;
 
     @Nonnull
-    private String authors;
+    private List<String> authors;
 
     @Nonnull
-    private String organizations;
+    private List<String> organizations;
 
     @Nonnull
     private String preprocessorVersion;
@@ -40,13 +36,13 @@ public class ProjectMetadata {
     private String authorisation;
 
     @Builder
-    private ProjectMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull Collection<String> authors,
-                            @Nonnull Collection<String> organizations, @Nonnull String preprocessorVersion,
-                            @Nonnull String originatingSystem, @Nonnull String authorisation) {
+    private FileMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
+                         @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
+                         @Nonnull String originatingSystem, @Nonnull String authorisation) {
         this.name = name;
         this.timestamp = timestamp;
-        this.authors = mapValue(authors);
-        this.organizations = mapValue(organizations);
+        this.authors = authors;
+        this.organizations = organizations;
         this.preprocessorVersion = preprocessorVersion;
         this.originatingSystem = originatingSystem;
         this.authorisation = authorisation;
@@ -64,12 +60,12 @@ public class ProjectMetadata {
 
     @Nonnull
     public List<String> authors() {
-        return extractValues(this.authors);
+        return this.authors;
     }
 
     @Nonnull
     public List<String> organizations() {
-        return extractValues(this.organizations);
+        return this.organizations;
     }
 
     @Nonnull

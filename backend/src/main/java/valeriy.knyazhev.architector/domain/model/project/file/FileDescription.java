@@ -5,38 +5,34 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.List;
-
-import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.extractValues;
-import static valeriy.knyazhev.architector.domain.model.util.ListValuesUtils.mapValue;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProjectDescription {
+public class FileDescription {
 
     @Nonnull
-    private String descriptions;
+    private List<String> descriptions;
 
     @Nonnull
     private String implementationLevel;
 
-    private ProjectDescription(@Nonnull String descriptions, @Nonnull String implementationLevel) {
+    private FileDescription(@Nonnull List<String> descriptions, @Nonnull String implementationLevel) {
         this.descriptions = descriptions;
         this.implementationLevel = implementationLevel;
     }
 
     @Nonnull
-    public static ProjectDescription of(@Nonnull Collection<String> descriptions, @Nonnull String implementationLevel) {
-        return new ProjectDescription(mapValue(descriptions), implementationLevel);
+    public static FileDescription of(@Nonnull List<String> descriptions, @Nonnull String implementationLevel) {
+        return new FileDescription(descriptions, implementationLevel);
     }
 
     @Nonnull
     public List<String> descriptions() {
-        return extractValues(this.descriptions);
+        return this.descriptions;
     }
 
     @Nonnull

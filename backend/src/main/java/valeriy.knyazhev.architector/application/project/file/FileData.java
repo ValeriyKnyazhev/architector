@@ -2,8 +2,8 @@ package valeriy.knyazhev.architector.application.project.file;
 
 import org.bimserver.emf.Schema;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
-import valeriy.knyazhev.architector.domain.model.project.file.ProjectDescription;
-import valeriy.knyazhev.architector.domain.model.project.file.ProjectMetadata;
+import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
+import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
 import javax.annotation.Nonnull;
 
@@ -21,17 +21,17 @@ public class FileData {
     private String isoId;
 
     @Nonnull
-    private ProjectDescription description;
+    private FileDescription description;
 
     @Nonnull
-    private ProjectMetadata metadata;
+    private FileMetadata metadata;
 
     @Nonnull
     private FileContent content;
 
     public FileData(@Nonnull String isoId,
-                    @Nonnull ProjectDescription description,
-                    @Nonnull ProjectMetadata metadata,
+                    @Nonnull FileDescription description,
+                    @Nonnull FileMetadata metadata,
                     @Nonnull FileContent content) {
         this.isoId = isoId;
         this.description = description;
@@ -50,12 +50,12 @@ public class FileData {
     }
 
     @Nonnull
-    public ProjectDescription description() {
+    public FileDescription description() {
         return this.description;
     }
 
     @Nonnull
-    public ProjectMetadata metadata() {
+    public FileMetadata metadata() {
         return this.metadata;
     }
 
