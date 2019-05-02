@@ -21,20 +21,15 @@ public class UpdateFileFromUploadCommand {
     private String author;
 
     @Nonnull
-    private String message;
-
-    @Nonnull
     private MultipartFile content;
 
     public UpdateFileFromUploadCommand(@Nonnull String projectId,
                                        @Nonnull String fileId,
                                        @Nonnull String author,
-                                       @Nonnull String message,
                                        @Nonnull MultipartFile content) {
         this.projectId = projectId;
         this.fileId = fileId;
         this.author = author;
-        this.message = message;
         this.content = content;
     }
 
@@ -51,11 +46,6 @@ public class UpdateFileFromUploadCommand {
     @Nonnull
     public String author() {
         return this.author;
-    }
-
-    @Nonnull
-    public String message() {
-        return this.message;
     }
 
     @Nonnull

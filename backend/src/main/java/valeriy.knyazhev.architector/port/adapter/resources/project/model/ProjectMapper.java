@@ -35,7 +35,11 @@ public final class ProjectMapper {
     private static FileBriefModel constructFile(@Nonnull File file) {
 
         return new FileBriefModel(
-            file.fileId().id(), file.name(), file.createdDate(), file.updatedDate(), file.schema()
+            file.fileId().id(),
+            file.metadata().name(),
+            file.createdDate(),
+            file.updatedDate(),
+            file.schema()
         );
     }
 

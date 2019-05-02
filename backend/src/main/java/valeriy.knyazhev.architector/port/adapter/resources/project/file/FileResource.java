@@ -13,10 +13,10 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUploadRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUrlRequest;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileFromUploadRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileDescriptionRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileFromUrlRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileMetadataRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -73,8 +73,10 @@ public class FileResource {
                                                  @RequestBody CreateFileFromUrlRequest request) {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(request, "Add file from url request is required.");
-        File newFile = this.managementService.addFile(new AddFileFromUrlCommand(
-            qProjectId, "author", request.name(), request.sourceUrl()
+        File newFile = this.managementService.addFile(
+            // TODO author constant should be replaced by user email
+            new AddFileFromUrlCommand(
+                qProjectId, "author", request.sourceUrl()
             )
         );
         return newFile != null
@@ -88,12 +90,13 @@ public class FileResource {
         consumes = MULTIPART_FORM_DATA_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,
-                                                           @RequestBody CreateFileFromUploadRequest request,
                                                            @RequestParam("file") MultipartFile multipartFile) {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(multipartFile, "Upload file is required.");
-        File newFile = this.managementService.addFile(new AddFileFromUploadCommand(
-            qProjectId, "author", request.name(), multipartFile
+        File newFile = this.managementService.addFile(
+            // TODO author constant should be replaced by user email
+            new AddFileFromUploadCommand(
+                qProjectId, "author", multipartFile
             )
         );
         return newFile != null
@@ -113,7 +116,7 @@ public class FileResource {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email
             new UpdateFileFromUrlCommand(
-                qProjectId, qFileId, "author", request.message(), request.sourceUrl()
+                qProjectId, qFileId, "author", request.sourceUrl()
             )
         );
         return updated
@@ -128,12 +131,11 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
-                                                          @RequestBody UpdateFileFromUploadRequest request,
                                                           @RequestParam("file") MultipartFile multipartFile) {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email
             new UpdateFileFromUploadCommand(
-                qProjectId, qFileId, "author", request.message(), multipartFile
+                qProjectId, qFileId, "author", multipartFile
             )
         );
         return updated
@@ -141,6 +143,57 @@ public class FileResource {
             new ResponseMessage().info("File " + qFileId + " was updated from received file."))
             : ResponseEntity.badRequest().body(
             new ResponseMessage().error("Unable to update file " + qFileId + " from received file."));
+    }
+
+    @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/description",
+        consumes = APPLICATION_JSON_UTF8_VALUE,
+        produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
+                                                              @PathVariable String qFileId,
+                                                              @RequestBody UpdateFileDescriptionRequest request) {
+        boolean updated = this.managementService.updateFileDescription(
+            // TODO author constant should be replaced by user email
+            UpdateFileDescriptionCommand.builder()
+                .projectId(qProjectId)
+                .fileId(qFileId)
+                .author("author")
+                .descriptions(request.descriptions())
+                .implementationLevel(request.implementationLevel())
+                .build()
+        );
+        return updated
+            ? ResponseEntity.ok().body(
+            new ResponseMessage().info("File " + qFileId + " description was updated."))
+            : ResponseEntity.badRequest().body(
+            new ResponseMessage().error("Unable to update file " + qFileId + " description."));
+    }
+
+    @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata",
+        consumes = APPLICATION_JSON_UTF8_VALUE,
+        produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
+                                                              @PathVariable String qFileId,
+                                                              @RequestBody UpdateFileMetadataRequest request) {
+        boolean updated = this.managementService.updateFileMetadata(
+            // TODO author constant should be replaced by user email
+            UpdateFileMetadataCommand.builder()
+                .projectId(qProjectId)
+                .fileId(qFileId)
+                .author("author")
+                .name(request.name())
+                .timestamp(request.timestamp())
+                .authors(request.authors())
+                .organizations(request.organizations())
+                .preprocessorVersion(request.preprocessorVersion())
+                .originatingSystem(request.originatingSystem())
+                .authorization(request.authorization())
+                .build()
+        );
+        return updated
+            ? ResponseEntity.ok().body(
+            new ResponseMessage().info("File " + qFileId + " metadata was updated."))
+            : ResponseEntity.badRequest().body(
+            new ResponseMessage().error("Unable to update file " + qFileId + " metadata."));
     }
 
     @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",

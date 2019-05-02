@@ -20,20 +20,15 @@ public class UpdateFileFromUrlCommand {
     private String author;
 
     @Nonnull
-    private String message;
-
-    @Nonnull
     private String sourceUrl;
 
     public UpdateFileFromUrlCommand(@Nonnull String projectId,
                                     @Nonnull String fileId,
                                     @Nonnull String author,
-                                    @Nonnull String message,
                                     @Nonnull String sourceUrl) {
         this.projectId = projectId;
         this.fileId = fileId;
         this.author = author;
-        this.message = message;
         this.sourceUrl = sourceUrl;
     }
 
@@ -50,11 +45,6 @@ public class UpdateFileFromUrlCommand {
     @Nonnull
     public String author() {
         return this.author;
-    }
-
-    @Nonnull
-    public String message() {
-        return this.message;
     }
 
     @Nonnull

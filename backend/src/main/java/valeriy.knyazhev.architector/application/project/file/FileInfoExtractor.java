@@ -33,7 +33,7 @@ public final class FileInfoExtractor {
                 .organizations(header.getOrganization())
                 .preprocessorVersion(header.getPreProcessorVersion())
                 .originatingSystem(header.getOriginatingSystem())
-                .authorisation(header.getAuthorization())
+            .authorization(header.getAuthorization())
                 .build();
     }
 

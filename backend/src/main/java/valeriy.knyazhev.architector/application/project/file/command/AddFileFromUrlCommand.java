@@ -16,18 +16,13 @@ public class AddFileFromUrlCommand {
     private String author;
 
     @Nonnull
-    private String name;
-
-    @Nonnull
     private String sourceUrl;
 
     public AddFileFromUrlCommand(@Nonnull String projectId,
                                  @Nonnull String author,
-                                 @Nonnull String name,
                                  @Nonnull String sourceUrl) {
         this.projectId = projectId;
         this.author = author;
-        this.name = name;
         this.sourceUrl = sourceUrl;
     }
 
@@ -39,11 +34,6 @@ public class AddFileFromUrlCommand {
     @Nonnull
     public String author() {
         return this.author;
-    }
-
-    @Nonnull
-    public String name() {
-        return this.name;
     }
 
     @Nonnull

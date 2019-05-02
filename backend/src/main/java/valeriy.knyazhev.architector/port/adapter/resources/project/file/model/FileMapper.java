@@ -19,7 +19,7 @@ public final class FileMapper {
     @Nonnull
     public static FileContentModel buildContent(@Nonnull File file) {
         return new FileContentModel(
-            file.fileId().id(), file.name(), file.content().items()
+            file.fileId().id(), extractFileName(file), file.content().items()
         );
     }
 
@@ -28,7 +28,7 @@ public final class FileMapper {
         DescriptionModel description = constructDescription(file.description());
         MetadataModel metadata = constructMetadata(file.metadata());
         return new FileModel(
-            file.fileId().id(), file.name(), file.createdDate(), file.updatedDate(),
+            file.fileId().id(), extractFileName(file), file.createdDate(), file.updatedDate(),
             file.schema(), description, metadata
         );
     }
@@ -49,7 +49,7 @@ public final class FileMapper {
             .organizations(checkAndMapList(metadata.organizations()))
             .preprocessorVersion(metadata.preprocessorVersion())
             .originatingSystem(metadata.originatingSystem())
-            .authorisation(metadata.authorisation())
+            .authorization(metadata.authorization())
             .build();
     }
 
@@ -58,6 +58,11 @@ public final class FileMapper {
         return items.stream().anyMatch(item -> !item.isEmpty())
             ? items
             : emptyList();
+    }
+
+    @Nonnull
+    private static String extractFileName(@Nonnull File file) {
+        return file.metadata().name();
     }
 
 

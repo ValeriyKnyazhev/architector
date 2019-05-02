@@ -88,19 +88,19 @@ public class FileModel {
         private String originatingSystem;
 
         @Nonnull
-        private String authorisation;
+        private String authorization;
 
         @Builder
         private MetadataModel(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
                               @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
-                              @Nonnull String originatingSystem, @Nonnull String authorisation) {
+                              @Nonnull String originatingSystem, @Nonnull String authorization) {
             this.name = name;
             this.timestamp = timestamp;
             this.authors = authors;
             this.organizations = organizations;
             this.preprocessorVersion = preprocessorVersion;
             this.originatingSystem = originatingSystem;
-            this.authorisation = authorisation;
+            this.authorization = authorization;
         }
     }
 

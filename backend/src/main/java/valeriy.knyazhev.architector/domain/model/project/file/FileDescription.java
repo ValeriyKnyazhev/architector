@@ -1,8 +1,6 @@
 package valeriy.knyazhev.architector.domain.model.project.file;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -10,8 +8,7 @@ import java.util.List;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-@EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class FileDescription {
 
     @Nonnull
@@ -23,6 +20,10 @@ public class FileDescription {
     private FileDescription(@Nonnull List<String> descriptions, @Nonnull String implementationLevel) {
         this.descriptions = descriptions;
         this.implementationLevel = implementationLevel;
+    }
+
+    protected FileDescription() {
+        // empty
     }
 
     @Nonnull

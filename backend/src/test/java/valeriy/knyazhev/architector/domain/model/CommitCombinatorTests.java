@@ -37,7 +37,7 @@ public class CommitCombinatorTests {
     private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items) {
         CommitDescription data = CommitDescription.of(
             singletonList(
-                CommitFileItem.of(fileId, "file", items)
+                CommitFileItem.of(fileId, items)
             )
         );
         return Commit.builder()

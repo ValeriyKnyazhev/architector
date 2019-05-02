@@ -86,8 +86,7 @@ export default class Project extends Component {
     });
     axios
       .post(`/api/projects/${projectId}/files/source`, {
-        sourceUrl: constructSourceUrl(newFileSourceUrl),
-        name: "FIXME (add input field)"
+        sourceUrl: constructSourceUrl(newFileSourceUrl)
       })
       .then(() => {
         this.setState(

@@ -1,6 +1,5 @@
 package valeriy.knyazhev.architector.application.project;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.util.Args;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class ProjectQueryService {
                 .orElse(null);
     }
 
-    @NonNull
+    @Nonnull
     public List<Project> findAllProjects() {
         return this.repository.findAll();
     }

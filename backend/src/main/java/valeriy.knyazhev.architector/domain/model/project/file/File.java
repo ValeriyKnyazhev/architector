@@ -32,9 +32,6 @@ public class File {
     private FileId fileId;
 
     @Nonnull
-    private String name;
-
-    @Nonnull
     private LocalDateTime createdDate;
 
     @Nonnull
@@ -64,12 +61,10 @@ public class File {
     private long concurrencyVersion;
 
     private File(@Nonnull FileId fileId,
-                 @Nonnull String name,
                  @Nonnull FileDescription description,
                  @Nonnull FileMetadata metadata,
                  @Nonnull FileContent content) {
         this.fileId = fileId;
-        this.name = name;
         this.description = description;
         this.metadata = metadata;
         this.content = content;
@@ -83,11 +78,6 @@ public class File {
     @Nonnull
     public FileId fileId() {
         return this.fileId;
-    }
-
-    @Nonnull
-    public String name() {
-        return this.name;
     }
 
     @Nonnull
@@ -144,8 +134,6 @@ public class File {
 
         private FileId fileId;
 
-        private String name;
-
         private FileDescription description;
 
         private FileMetadata metadata;
@@ -158,12 +146,6 @@ public class File {
         @Nonnull
         public FileConstructor withFileId(@Nonnull FileId fileId) {
             this.fileId = fileId;
-            return this;
-        }
-
-        @Nonnull
-        public FileConstructor withName(@Nonnull String name) {
-            this.name = name;
             return this;
         }
 
@@ -188,7 +170,7 @@ public class File {
         @Nonnull
         public File construct() {
             return new File(
-                this.fileId, this.name, this.description, this.metadata, this.content
+                this.fileId, this.description, this.metadata, this.content
             );
         }
 

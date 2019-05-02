@@ -41,11 +41,9 @@ public class FileManagementService {
 
     @Nonnull
     private static File constructFile(@Nonnull FileId fileId,
-                                      @Nonnull String fileName,
                                       @Nonnull FileData fileData) {
         return File.constructor()
             .withFileId(fileId)
-            .withName(fileName)
             .withDescription(fileData.description())
             .withMetadata(fileData.metadata())
             .withContent(fileData.content())
@@ -65,7 +63,7 @@ public class FileManagementService {
         return addNewFile(
             command.projectId(),
             command.author(),
-            command.name(),
+            "File from " + command.sourceUrl() + " was added to project.",
             newFile);
     }
 
@@ -82,7 +80,7 @@ public class FileManagementService {
         return addNewFile(
             command.projectId(),
             command.author(),
-            command.name(),
+            "File from uploaded file was added to project.",
             newFile);
     }
 
@@ -99,7 +97,7 @@ public class FileManagementService {
             command.projectId(),
             command.fileId(),
             command.author(),
-            command.message(),
+            "File " + command.fileId().id() + " was updated from " + command.sourceUrl() + ".",
             newFile);
     }
 
@@ -116,8 +114,34 @@ public class FileManagementService {
             command.projectId(),
             command.fileId(),
             command.author(),
-            command.message(),
+            "File " + command.fileId().id() + " was updated from uploaded file.",
             newFile);
+    }
+
+    public boolean updateFileMetadata(@Nonnull UpdateFileMetadataCommand command) {
+        Args.notNull(command, "Update file metadata command is required.");
+        ProjectId projectId = command.projectId();
+        Project project = findProject(projectId);
+        FileId fileId = command.fileId();
+        File foundFile = project.files().stream()
+            .filter(file -> fileId.equals(file.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+        foundFile.updateMetadata(command.constructMetadata());
+        return true;
+    }
+
+    public boolean updateFileDescription(@Nonnull UpdateFileDescriptionCommand command) {
+        Args.notNull(command, "Update file description command is required.");
+        ProjectId projectId = command.projectId();
+        Project project = findProject(projectId);
+        FileId fileId = command.fileId();
+        File foundFile = project.files().stream()
+            .filter(file -> fileId.equals(file.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+        foundFile.updateDescription(command.constructDescription());
+        return true;
     }
 
     public boolean deleteFile(@Nonnull DeleteFileCommand command) {
@@ -128,18 +152,16 @@ public class FileManagementService {
     @Nullable
     private File addNewFile(@Nonnull ProjectId projectId,
                             @Nonnull String author,
-                            @Nonnull String fileName,
+                            @Nonnull String commitMessage,
                             @Nonnull FileData newFileData) {
-        Project project = this.projectRepository.findByProjectId(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        File newFile = constructFile(FileId.nextId(), fileName, newFileData);
+        Project project = findProject(projectId);
+        File newFile = constructFile(FileId.nextId(), newFileData);
         project.addFile(newFile);
         projectRepository.save(project);
         CommitDescription commitData = CommitDescription.of(
             singletonList(
                 CommitFileItem.of(
                     newFile.fileId(),
-                    newFile.name(),
                     this.diffCalculator.calculateDiff(
                         null, newFile.content()
                     )
@@ -149,7 +171,7 @@ public class FileManagementService {
         boolean added = commitChanges(
             project.projectId(),
             author,
-            "File " + fileName + " was added to project.",
+            commitMessage,
             commitData);
         return added ? newFile : null;
     }
@@ -157,15 +179,14 @@ public class FileManagementService {
     private boolean updateFile(@Nonnull ProjectId projectId,
                                @Nonnull FileId fileId,
                                @Nonnull String author,
-                               @Nonnull String message,
+                               @Nonnull String commitMessage,
                                @Nonnull FileData newFileData) {
-        Project project = this.projectRepository.findByProjectId(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        Project project = findProject(projectId);
         File oldFile = project.files().stream()
             .filter(file -> fileId.equals(file.fileId()))
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
-        File newFile = constructFile(fileId, oldFile.name(), newFileData);
+        File newFile = constructFile(fileId, newFileData);
         List<CommitItem> commitItems = this.diffCalculator.calculateDiff(
             oldFile.content(), newFile.content()
         );
@@ -178,26 +199,23 @@ public class FileManagementService {
             singletonList(
                 CommitFileItem.of(
                     oldFile.fileId(),
-                    oldFile.name(),
                     commitItems
                 )
             )
         );
-        return commitChanges(project.projectId(), author, message, commitData);
+        return commitChanges(project.projectId(), author, commitMessage, commitData);
     }
 
     private boolean deleteFile(@Nonnull ProjectId projectId,
                                @Nonnull FileId fileId,
                                @Nonnull String author) {
-        Project project = this.projectRepository.findByProjectId(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        Project project = findProject(projectId);
         File deleted = project.deleteFile(fileId);
         this.projectRepository.save(project);
         CommitDescription commitData = CommitDescription.of(
             singletonList(
                 CommitFileItem.of(
                     deleted.fileId(),
-                    deleted.name(),
                     this.diffCalculator.calculateDiff(
                         deleted.content(), null
                     )
@@ -207,7 +225,7 @@ public class FileManagementService {
         return commitChanges(
             project.projectId(),
             author,
-            "File " + deleted.name() + " was deleted from project.",
+            "File " + fileId.id() + " was deleted from project.",
             commitData
         );
     }
@@ -219,9 +237,15 @@ public class FileManagementService {
         this.projectRepository.save(project);
     }
 
+    @Nonnull
+    private Project findProject(@Nonnull ProjectId projectId) {
+        return this.projectRepository.findByProjectId(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+    }
+
     private boolean commitChanges(@Nonnull ProjectId projectId,
                                   @Nonnull String author,
-                                  @Nonnull String message,
+                                  @Nonnull String commitMessage,
                                   @Nonnull CommitDescription commitData) {
         Long parentId = this.commitRepository.findByProjectIdOrderById(projectId)
             .stream()
@@ -231,7 +255,7 @@ public class FileManagementService {
         Commit newCommit = Commit.builder()
             .parentId(parentId)
             .projectId(projectId)
-            .message(message)
+            .message(commitMessage)
             .author(author)
             .data(commitData)
             .build();

@@ -118,7 +118,8 @@ public class ProjectCommitsResource {
                     .filter(file -> !file.items().isEmpty())
                     .map(file -> new FileContentModel(
                             file.fileId().id(),
-                        file.name(),
+                        // FIXME add name from commit
+                        "FIXME",
                             file.items()
                         )
                     )

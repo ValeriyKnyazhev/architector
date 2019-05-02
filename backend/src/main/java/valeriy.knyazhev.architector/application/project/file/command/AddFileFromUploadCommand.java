@@ -17,18 +17,13 @@ public class AddFileFromUploadCommand {
     private String author;
 
     @Nonnull
-    private String name;
-
-    @Nonnull
     private MultipartFile content;
 
     public AddFileFromUploadCommand(@Nonnull String projectId,
                                     @Nonnull String author,
-                                    @Nonnull String name,
                                     @Nonnull MultipartFile content) {
         this.projectId = projectId;
         this.author = author;
-        this.name = name;
         this.content = content;
     }
 
@@ -40,11 +35,6 @@ public class AddFileFromUploadCommand {
     @Nonnull
     public String author() {
         return this.author;
-    }
-
-    @Nonnull
-    public String name() {
-        return this.name();
     }
 
     @Nonnull
