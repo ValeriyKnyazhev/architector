@@ -42,8 +42,8 @@ public class IFCFileReader extends IFCReader<FileData> {
     protected FileData constructResult(@Nonnull String isoId, IfcHeader header, List<String> contentItems) {
         return new FileData(
             isoId,
-            FileInfoExtractor.extractDescription(header),
             FileInfoExtractor.extractMetadata(header),
+            FileInfoExtractor.extractDescription(header),
             FileContent.of(contentItems)
         );
     }

@@ -12,7 +12,9 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.commit.*;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
+import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,8 +36,6 @@ public class FileManagementService {
     private final ProjectRepository projectRepository;
 
     private final IFCFileReader fileReader;
-
-    private final FileDiffCalculator diffCalculator;
 
     private final CommitRepository commitRepository;
 
@@ -127,7 +127,12 @@ public class FileManagementService {
             .filter(file -> fileId.equals(file.fileId()))
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
-        foundFile.updateMetadata(command.constructMetadata());
+        FileMetadata newMetadata = command.constructMetadata();
+        updateFile(projectId, fileId, command.author(),
+            "FIXME later",
+            new FileData("FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content())
+        );
+        foundFile.updateMetadata(newMetadata);
         return true;
     }
 
@@ -140,7 +145,12 @@ public class FileManagementService {
             .filter(file -> fileId.equals(file.fileId()))
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
-        foundFile.updateDescription(command.constructDescription());
+        FileDescription newDescription = command.constructDescription();
+        updateFile(projectId, fileId, command.author(),
+            "FIXME later",
+            new FileData("FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content())
+        );
+        foundFile.updateDescription(newDescription);
         return true;
     }
 
@@ -162,7 +172,9 @@ public class FileManagementService {
             singletonList(
                 CommitFileItem.of(
                     newFile.fileId(),
-                    this.diffCalculator.calculateDiff(
+                    FileDiffCalculator.defineMetadataChanges(null, newFile.metadata()),
+                    FileDiffCalculator.defineDescriptionChanges(null, newFile.description()),
+                    FileDiffCalculator.calculateDiff(
                         null, newFile.content()
                     )
                 )
@@ -187,18 +199,26 @@ public class FileManagementService {
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         File newFile = constructFile(fileId, newFileData);
-        List<CommitItem> commitItems = this.diffCalculator.calculateDiff(
+        List<CommitItem> commitItems = FileDiffCalculator.calculateDiff(
             oldFile.content(), newFile.content()
         );
-        if (commitItems.isEmpty()) {
-            // TODO return answer that nothing to commit
-            return false;
+        FileMetadataChanges fileMetadataChanges = FileDiffCalculator.defineMetadataChanges(
+            oldFile.metadata(), newFile.metadata()
+        );
+        FileDescriptionChanges fileDescriptionChanges = FileDiffCalculator.defineDescriptionChanges(
+            oldFile.description(), newFile.description()
+        );
+        if (commitItems.isEmpty() && fileMetadataChanges.isEmpty() && fileDescriptionChanges.isEmpty()) {
+            // FIXME add specific exception
+            throw new IllegalStateException("Nothing to commit.");
         }
         updateFileContent(project, oldFile.fileId(), newFile);
         CommitDescription commitData = CommitDescription.of(
             singletonList(
                 CommitFileItem.of(
                     oldFile.fileId(),
+                    fileMetadataChanges,
+                    fileDescriptionChanges,
                     commitItems
                 )
             )
@@ -216,7 +236,9 @@ public class FileManagementService {
             singletonList(
                 CommitFileItem.of(
                     deleted.fileId(),
-                    this.diffCalculator.calculateDiff(
+                    FileDiffCalculator.defineMetadataChanges(deleted.metadata(), null),
+                    FileDiffCalculator.defineDescriptionChanges(deleted.description(), null),
+                    FileDiffCalculator.calculateDiff(
                         deleted.content(), null
                     )
                 )

@@ -1,7 +1,6 @@
 package valeriy.knyazhev.architector.domain.model.project.commit;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
@@ -12,7 +11,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-@EqualsAndHashCode
 @JsonAutoDetect(fieldVisibility = ANY)
 public class CommitDescription implements Serializable {
 

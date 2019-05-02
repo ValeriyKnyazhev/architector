@@ -18,15 +18,20 @@ public class FileCommitsModel {
     private String projectId;
 
     @Nonnull
+    private String fileId;
+
+    @Nonnull
     private String name;
 
     @Nonnull
     private List<FileCommitBriefModel> commits;
 
     public FileCommitsModel(@Nonnull String projectId,
+                            @Nonnull String fileId,
                             @Nonnull String name,
                             @Nonnull List<FileCommitBriefModel> commits) {
         this.projectId = projectId;
+        this.fileId = fileId;
         this.name = name;
         this.commits = commits;
     }

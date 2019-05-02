@@ -36,14 +36,10 @@ public class ProjectCommitsResource {
 
     private final ProjectRepository projectRepository;
 
-    private final CommitCombinator commitCombinator;
-
     public ProjectCommitsResource(@Nonnull CommitRepository commitRepository,
-                                  @Nonnull ProjectRepository projectRepository,
-                                  @Nonnull CommitCombinator commitCombinator) {
+                                  @Nonnull ProjectRepository projectRepository) {
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
-        this.commitCombinator = Args.notNull(commitCombinator, "Commit combinator is required.");
     }
 
     @Nonnull
@@ -109,7 +105,7 @@ public class ProjectCommitsResource {
             .filter(commit -> identifiers.contains(commit.id()))
             .sorted(Comparator.comparingLong(Commit::id))
             .collect(toList());
-        ProjectDataProjection projection = this.commitCombinator.combineCommits(projectHistory);
+        ProjectDataProjection projection = CommitCombinator.combineCommits(projectHistory);
         return ResponseEntity.ok(
             new ProjectContentModel(
                 projectId.id(),
@@ -118,8 +114,7 @@ public class ProjectCommitsResource {
                     .filter(file -> !file.items().isEmpty())
                     .map(file -> new FileContentModel(
                             file.fileId().id(),
-                        // FIXME add name from commit
-                        "FIXME",
+                        file.metadata().name(),
                             file.items()
                         )
                     )

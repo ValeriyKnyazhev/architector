@@ -2,10 +2,11 @@ package valeriy.knyazhev.architector.domain.model.project.commit.projection;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.http.util.Args;
+import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import java.util.stream.Stream;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectDataProjection {
 
@@ -57,18 +57,30 @@ public class ProjectDataProjection {
         private FileId fileId;
 
         @Nonnull
+        private FileMetadata metadata;
+
+        @Nonnull
+        private FileDescription description;
+
+        @Nonnull
         private List<String> items;
 
         private FileDataProjection(@Nonnull FileId fileId,
+                                   @Nonnull FileMetadata metadata,
+                                   @Nonnull FileDescription description,
                                    @Nonnull List<String> items) {
             this.fileId = Args.notNull(fileId, "File identifier is required.");
+            this.metadata = Args.notNull(metadata, "File metadata is required.");
+            this.description = Args.notNull(description, "File description is required.");
             this.items = Args.notNull(items, "File items are required.");
         }
 
         @Nonnull
         public static FileDataProjection of(@Nonnull FileId fileId,
+                                            @Nonnull FileMetadata metadata,
+                                            @Nonnull FileDescription description,
                                             @Nonnull List<String> items) {
-            return new FileDataProjection(fileId, items);
+            return new FileDataProjection(fileId, metadata, description, items);
         }
 
         @Nonnull
@@ -77,11 +89,25 @@ public class ProjectDataProjection {
         }
 
         @Nonnull
+        public FileMetadata metadata() {
+            return this.metadata;
+        }
+
+        @Nonnull
+        public FileDescription description() {
+            return this.description;
+        }
+
+        @Nonnull
         public List<String> items() {
             return Collections.unmodifiableList(this.items);
         }
 
-        public void updateItems(@Nonnull List<String> items) {
+        public void update(@Nonnull FileMetadata metadata,
+                           @Nonnull FileDescription description,
+                           @Nonnull List<String> items) {
+            this.metadata = Args.notNull(metadata, "File metadata is required.");
+            this.description = Args.notNull(description, "File description is required.");
             this.items = Args.notNull(items, "File projection items are required.");
         }
 

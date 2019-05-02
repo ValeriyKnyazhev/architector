@@ -72,6 +72,7 @@ public class FileCommitsResource {
         return ResponseEntity.ok(
             new FileCommitsModel(
                 projectId.id(),
+                fileId.id(),
                 project.name(),
                 commits
             )

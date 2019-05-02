@@ -19,6 +19,7 @@ dependencies {
 	compileOnly "com.google.code.findbugs:jsr305"
 	compileOnly "org.projectlombok:lombok"
 
+	compile "commons-collections:commons-collections:3.2.2"
 	compile "com.google.code.gson:gson:2.8.2"
 	compile "com.googlecode.java-diff-utils:diffutils:1.3.0"
 	compile "org.springframework.boot:spring-boot-devtools"

@@ -3,7 +3,6 @@ package valeriy.knyazhev.architector.domain.model;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
@@ -31,13 +30,18 @@ public class CommitCombinatorTests {
 
     private static ProjectId PROJECT_ID = ProjectId.nextId();
 
-    @Autowired
-    private CommitCombinator commitCombinator;
+    private static FileMetadataChanges FILE_METADATA = FileMetadataChanges.builder()
+        .name("")
+        .build();
+
+    private static FileDescriptionChanges FILE_DESCRIPTION = FileDescriptionChanges.builder()
+        .implementationLevel("")
+        .build();
 
     private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items) {
         CommitDescription data = CommitDescription.of(
             singletonList(
-                CommitFileItem.of(fileId, items)
+                CommitFileItem.of(fileId, FILE_METADATA, FILE_DESCRIPTION, items)
             )
         );
         return Commit.builder()
@@ -58,7 +62,7 @@ public class CommitCombinatorTests {
                 addItem("2", 1))));
 
         // when
-        ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);
+        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
@@ -78,7 +82,7 @@ public class CommitCombinatorTests {
             sampleCommit(firstCommit.id(), fileId, singletonList(addItem("2", 1))));
 
         // when
-        ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);
+        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
@@ -98,7 +102,7 @@ public class CommitCombinatorTests {
             sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("1", 1))));
 
         // when
-        ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);
+        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
@@ -118,7 +122,7 @@ public class CommitCombinatorTests {
             sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("2", 1))));
 
         // expect
-        assertThatThrownBy(() -> this.commitCombinator.combineCommits(commits))
+        assertThatThrownBy(() -> CommitCombinator.combineCommits(commits))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("Current item does not match with deleted item.");
     }
@@ -134,7 +138,7 @@ public class CommitCombinatorTests {
                 deleteItem("1", 1), deleteItem("2", 1))));
 
         // expect
-        assertThatThrownBy(() -> this.commitCombinator.combineCommits(commits))
+        assertThatThrownBy(() -> CommitCombinator.combineCommits(commits))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("Commit must not have a few deletion items in one position.");
     }
@@ -161,7 +165,7 @@ public class CommitCombinatorTests {
                 deleteItem("9", 7))));
 
         // when
-        ProjectDataProjection projection = this.commitCombinator.combineCommits(commits);
+        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);

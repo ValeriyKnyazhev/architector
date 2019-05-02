@@ -21,21 +21,21 @@ public class FileData {
     private String isoId;
 
     @Nonnull
-    private FileDescription description;
+    private FileMetadata metadata;
 
     @Nonnull
-    private FileMetadata metadata;
+    private FileDescription description;
 
     @Nonnull
     private FileContent content;
 
     public FileData(@Nonnull String isoId,
-                    @Nonnull FileDescription description,
                     @Nonnull FileMetadata metadata,
+                    @Nonnull FileDescription description,
                     @Nonnull FileContent content) {
         this.isoId = isoId;
-        this.description = description;
         this.metadata = metadata;
+        this.description = description;
         this.content = content;
     }
 
@@ -50,13 +50,13 @@ public class FileData {
     }
 
     @Nonnull
-    public FileDescription description() {
-        return this.description;
+    public FileMetadata metadata() {
+        return this.metadata;
     }
 
     @Nonnull
-    public FileMetadata metadata() {
-        return this.metadata;
+    public FileDescription description() {
+        return this.description;
     }
 
     @Nonnull
