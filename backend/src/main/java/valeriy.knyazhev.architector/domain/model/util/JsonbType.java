@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.usertype.DynamicParameterizedType;
 import org.hibernate.usertype.UserType;
 
 import java.io.IOException;
@@ -14,16 +15,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RequiredArgsConstructor
-public abstract class JsonbType<T extends Serializable> implements UserType {
+public class JsonbType implements UserType, DynamicParameterizedType {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private final Class<T> clazz;
+    private Class targetClass;
+
+    private static String asString(Object value) {
+        try {
+            return OBJECT_MAPPER.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new HibernateException("Unable to write JSON-formatted value.", e);
+        }
+    }
 
     @Override
     public int[] sqlTypes() {
@@ -31,43 +41,44 @@ public abstract class JsonbType<T extends Serializable> implements UserType {
     }
 
     @Override
-    public Class<T> returnedClass() {
-        return this.clazz;
+    public Class returnedClass() {
+        return this.targetClass;
     }
 
     @Override
-    public boolean equals(Object x, Object y)
-            throws HibernateException {
+    public boolean equals(Object x, Object y) {
         return Objects.equals(x, y);
     }
 
     @Override
-    public int hashCode(Object x)
-            throws HibernateException {
+    public int hashCode(Object x) {
         return Objects.hash(x);
     }
 
     @Override
-    public T nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
-            throws HibernateException, SQLException {
+    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+        throws SQLException {
         String json = rs.getString(names[0]);
-        return json == null ? null : asObject(json);
-    }
-
-    @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
-            throws HibernateException, SQLException {
-        if (value == null) {
-            st.setNull(index, Types.OTHER);
+        if (json == null) {
+            return null;
         } else {
-            st.setObject(index, asString(assertType(value)), Types.OTHER);
+            return returnedClass().cast(asObject(json));
         }
     }
 
     @Override
-    public T deepCopy(Object value)
-            throws HibernateException {
-        return doCopy(value);
+    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
+        throws SQLException {
+        if (value == null) {
+            st.setNull(index, Types.OTHER);
+        } else {
+            st.setObject(index, asString(value), Types.OTHER);
+        }
+    }
+
+    @Override
+    public Object deepCopy(Object value) {
+        return returnedClass().cast(nullSafeDeepCopy(value));
     }
 
     @Override
@@ -76,49 +87,40 @@ public abstract class JsonbType<T extends Serializable> implements UserType {
     }
 
     @Override
-    public Serializable disassemble(Object value)
-            throws HibernateException {
-        return doCopy(value);
+    public Serializable disassemble(Object value) {
+        return asString(value);
     }
 
     @Override
-    public Object assemble(Serializable cached, Object owner)
-            throws HibernateException {
-        return doCopy(cached);
+    public Object assemble(Serializable cached, Object owner) {
+        return asObject((String) cached);
     }
 
     @Override
-    public Object replace(Object original, Object target, Object owner)
-            throws HibernateException {
-        return doCopy(original);
+    public Object replace(Object original, Object target, Object owner) {
+        return nullSafeDeepCopy(original);
     }
 
-    private T doCopy(Object value) {
-        return value == null ? null : asObject(asString(assertType(value)));
+    @Override
+    public void setParameterValues(Properties parameters) {
+        ParameterType parameterType = (ParameterType) parameters.get(DynamicParameterizedType.PARAMETER_TYPE);
+        this.targetClass = parameterType.getReturnedClass();
     }
 
-    private T asObject(String json) {
-        try {
-            return OBJECT_MAPPER.readValue(json, this.clazz);
-        } catch (IOException e) {
-            throw new HibernateException(e);
-        }
-    }
-
-    private String asString(T value)
-            throws HibernateException {
-        try {
-            return OBJECT_MAPPER.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
-            throw new HibernateException(e);
-        }
-    }
-
-    private T assertType(Object o) {
-        if (this.clazz.isInstance(o)) {
-            return this.clazz.cast(o);
+    private Object nullSafeDeepCopy(Object value) {
+        if (value == null) {
+            return null;
         } else {
-            throw new IllegalArgumentException("Illegal jsonb type: " + o.getClass());
+            return asObject(asString(value));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object asObject(String json) {
+        try {
+            return OBJECT_MAPPER.readValue(json, returnedClass());
+        } catch (IOException e) {
+            throw new HibernateException("Unable to read JSON-formatted value", e);
         }
     }
 

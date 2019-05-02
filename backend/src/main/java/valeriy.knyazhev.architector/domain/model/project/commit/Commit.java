@@ -3,7 +3,6 @@ package valeriy.knyazhev.architector.domain.model.project.commit;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 
 import javax.annotation.Nonnull;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 
 import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
-import static valeriy.knyazhev.architector.domain.model.project.commit.CommitDescription.CommitDescriptionJsonbType;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -21,7 +19,6 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.CommitDes
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "commits")
-@TypeDef(typeClass = CommitDescriptionJsonbType.class, name = "commit_jsonb")
 public class Commit {
 
 
@@ -48,7 +45,7 @@ public class Commit {
 
     @Nonnull
     @Column(columnDefinition = "jsonb")
-    @Type(type = "commit_jsonb")
+    @Type(type = "jsonb_type")
     private CommitDescription data;
 
     @Builder

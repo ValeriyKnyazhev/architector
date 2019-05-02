@@ -1,10 +1,7 @@
 package valeriy.knyazhev.architector.domain.model.project.commit;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import valeriy.knyazhev.architector.domain.model.util.JsonbType;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
@@ -17,7 +14,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  */
 @EqualsAndHashCode
 @JsonAutoDetect(fieldVisibility = ANY)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommitDescription implements Serializable {
 
     @Nonnull
@@ -28,6 +24,10 @@ public class CommitDescription implements Serializable {
         this.changedFiles = files;
     }
 
+    protected CommitDescription() {
+        // empty
+    }
+
     @Nonnull
     public static CommitDescription of(@Nonnull List<CommitFileItem> files) {
         return new CommitDescription(files);
@@ -36,13 +36,6 @@ public class CommitDescription implements Serializable {
     @Nonnull
     public List<CommitFileItem> changedFiles() {
         return this.changedFiles;
-    }
-
-    public static class CommitDescriptionJsonbType extends JsonbType<CommitDescription> {
-
-        public CommitDescriptionJsonbType() {
-            super(CommitDescription.class);
-        }
     }
 
 }

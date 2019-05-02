@@ -3,8 +3,6 @@ package valeriy.knyazhev.architector.domain.model.project.file;
 import lombok.NoArgsConstructor;
 import org.bimserver.emf.Schema;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import valeriy.knyazhev.architector.domain.model.project.file.FileContent.FileContentJsonbType;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
@@ -21,7 +19,6 @@ import static org.bimserver.emf.Schema.IFC2X3TC1;
 @EntityListeners(FileEntityListener.class)
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "files")
-@TypeDef(typeClass = FileContentJsonbType.class, name = "file_content_jsonb")
 public class File {
 
 
@@ -79,7 +76,7 @@ public class File {
 
     @Nonnull
     @Column(columnDefinition = "jsonb")
-    @Type(type = "file_content_jsonb")
+    @Type(type = "jsonb_type")
     private FileContent content;
 
     @Nonnull
