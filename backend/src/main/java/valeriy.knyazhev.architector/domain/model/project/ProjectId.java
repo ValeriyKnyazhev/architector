@@ -25,6 +25,12 @@ public final class ProjectId
     }
 
     @Nonnull
+    public String id()
+    {
+        return this.id;
+    }
+
+    @Nonnull
     public static ProjectId of(@Nonnull String id)
     {
         return new ProjectId(id);
@@ -34,12 +40,6 @@ public final class ProjectId
     public static ProjectId nextId()
     {
         return new ProjectId(UUID.randomUUID().toString());
-    }
-
-    @Nonnull
-    public String id()
-    {
-        return this.id;
     }
 
 }

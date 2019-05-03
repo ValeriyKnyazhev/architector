@@ -32,6 +32,18 @@ public class FileDescription
     }
 
     @Nonnull
+    public List<String> descriptions()
+    {
+        return this.descriptions;
+    }
+
+    @Nonnull
+    public String implementationLevel()
+    {
+        return this.implementationLevel;
+    }
+
+    @Nonnull
     // TODO remove later
     private static List<String> checkAndMapList(@Nonnull List<String> items)
     {
@@ -44,18 +56,6 @@ public class FileDescription
     public static FileDescription of(@Nonnull List<String> descriptions, @Nonnull String implementationLevel)
     {
         return new FileDescription(descriptions, implementationLevel);
-    }
-
-    @Nonnull
-    public List<String> descriptions()
-    {
-        return this.descriptions;
-    }
-
-    @Nonnull
-    public String implementationLevel()
-    {
-        return this.implementationLevel;
     }
 
 }

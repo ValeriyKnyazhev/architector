@@ -39,21 +39,6 @@ public class CommitCombinatorTests
         .implementationLevel("")
         .build();
 
-    private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items)
-    {
-        CommitDescription data = CommitDescription.of(
-            singletonList(
-                CommitFileItem.of(fileId, FILE_METADATA, FILE_DESCRIPTION, items)
-            )
-        );
-        return Commit.builder()
-            .parentId(parentId)
-            .projectId(PROJECT_ID)
-            .author("author")
-            .data(data)
-            .build();
-    }
-
     @Test
     public void shouldCombineCommitItemsToProjection()
     {
@@ -182,6 +167,21 @@ public class CommitCombinatorTests
         softly.assertThat(fileProjection.fileId()).isEqualTo(fileId);
         softly.assertThat(fileProjection.items()).isEqualTo(asList("0", "1", "2", "5", "6", "7", "8"));
         softly.assertAll();
+    }
+
+    private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items)
+    {
+        CommitDescription data = CommitDescription.of(
+            singletonList(
+                CommitFileItem.of(fileId, FILE_METADATA, FILE_DESCRIPTION, items)
+            )
+        );
+        return Commit.builder()
+            .parentId(parentId)
+            .projectId(PROJECT_ID)
+            .author("author")
+            .data(data)
+            .build();
     }
 
 }

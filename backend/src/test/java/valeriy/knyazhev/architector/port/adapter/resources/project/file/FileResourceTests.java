@@ -40,13 +40,6 @@ public class FileResourceTests
     @Autowired
     private MockMvc mockMvc;
 
-    private static Project sampleProject(ProjectId projectId)
-    {
-        return Project.constructor()
-            .projectId(projectId)
-            .construct();
-    }
-
     @Test
     public void shouldAddFile()
         throws
@@ -69,6 +62,13 @@ public class FileResourceTests
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.info").exists());
         verify(this.projectRepository, times(1)).save(project);
+    }
+
+    private static Project sampleProject(ProjectId projectId)
+    {
+        return Project.constructor()
+            .projectId(projectId)
+            .construct();
     }
 
 }

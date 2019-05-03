@@ -75,12 +75,6 @@ public class Project
     }
 
     @Nonnull
-    public static ProjectConstructor constructor()
-    {
-        return new ProjectConstructor();
-    }
-
-    @Nonnull
     public ProjectId projectId()
     {
         return this.projectId;
@@ -165,6 +159,12 @@ public class Project
     void setUpdatedDate(@Nonnull LocalDateTime date)
     {
         this.updatedDate = date;
+    }
+
+    @Nonnull
+    public static ProjectConstructor constructor()
+    {
+        return new ProjectConstructor();
     }
 
     public static class ProjectConstructor

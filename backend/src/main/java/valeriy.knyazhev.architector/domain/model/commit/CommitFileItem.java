@@ -45,15 +45,6 @@ public class CommitFileItem
     }
 
     @Nonnull
-    public static CommitFileItem of(@Nonnull FileId fileId,
-                                    @Nonnull FileMetadataChanges metadata,
-                                    @Nonnull FileDescriptionChanges description,
-                                    @Nonnull List<CommitItem> items)
-    {
-        return new CommitFileItem(fileId, metadata, description, items);
-    }
-
-    @Nonnull
     public FileId fileId()
     {
         return this.fileId;
@@ -75,6 +66,15 @@ public class CommitFileItem
     public List<CommitItem> items()
     {
         return this.items;
+    }
+
+    @Nonnull
+    public static CommitFileItem of(@Nonnull FileId fileId,
+                                    @Nonnull FileMetadataChanges metadata,
+                                    @Nonnull FileDescriptionChanges description,
+                                    @Nonnull List<CommitItem> items)
+    {
+        return new CommitFileItem(fileId, metadata, description, items);
     }
 
 }

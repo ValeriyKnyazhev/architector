@@ -30,15 +30,15 @@ public class FileContent
     }
 
     @Nonnull
-    public static FileContent of(@Nonnull List<String> items)
-    {
-        return new FileContent(items);
-    }
-
-    @Nonnull
     public List<String> items()
     {
         return this.items;
+    }
+
+    @Nonnull
+    public static FileContent of(@Nonnull List<String> items)
+    {
+        return new FileContent(items);
     }
 
 }

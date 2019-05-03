@@ -73,12 +73,6 @@ public class File
     }
 
     @Nonnull
-    public static FileConstructor constructor()
-    {
-        return new FileConstructor();
-    }
-
-    @Nonnull
     public FileId fileId()
     {
         return this.fileId;
@@ -143,6 +137,12 @@ public class File
     void setUpdatedDate(@Nonnull LocalDateTime date)
     {
         this.updatedDate = date;
+    }
+
+    @Nonnull
+    public static FileConstructor constructor()
+    {
+        return new FileConstructor();
     }
 
     public static class FileConstructor

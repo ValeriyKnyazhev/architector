@@ -28,17 +28,6 @@ public class JsonbType implements UserType, DynamicParameterizedType
 
     private Class targetClass;
 
-    private static String asString(Object value)
-    {
-        try
-        {
-            return OBJECT_MAPPER.writeValueAsString(value);
-        } catch (JsonProcessingException e)
-        {
-            throw new HibernateException("Unable to write JSON-formatted value.", e);
-        }
-    }
-
     @Override
     public int[] sqlTypes()
     {
@@ -149,6 +138,17 @@ public class JsonbType implements UserType, DynamicParameterizedType
         } catch (IOException e)
         {
             throw new HibernateException("Unable to read JSON-formatted value", e);
+        }
+    }
+
+    private static String asString(Object value)
+    {
+        try
+        {
+            return OBJECT_MAPPER.writeValueAsString(value);
+        } catch (JsonProcessingException e)
+        {
+            throw new HibernateException("Unable to write JSON-formatted value.", e);
         }
     }
 

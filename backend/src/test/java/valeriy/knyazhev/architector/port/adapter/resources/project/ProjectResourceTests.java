@@ -39,13 +39,6 @@ public class ProjectResourceTests
     @Autowired
     private MockMvc mockMvc;
 
-    private static Project sampleProject(ProjectId projectId)
-    {
-        return Project.constructor()
-            .projectId(projectId)
-            .construct();
-    }
-
     @Test
     public void shouldCreateProject()
         throws
@@ -74,6 +67,13 @@ public class ProjectResourceTests
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.projectId").value(projectId.id()))
             .andExpect(jsonPath("$.files").exists());
+    }
+
+    private static Project sampleProject(ProjectId projectId)
+    {
+        return Project.constructor()
+            .projectId(projectId)
+            .construct();
     }
 
 }

@@ -44,17 +44,6 @@ public class CommitsResource
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
     }
 
-    @Nonnull
-    private static FileContentModel constructFileContent(@Nonnull Projection.FileProjection file)
-    {
-        return new FileContentModel(
-            file.fileId().id(),
-            MetadataModel.of(file.metadata()),
-            DescriptionModel.of(file.description()),
-            file.items()
-        );
-    }
-
     @GetMapping(value = "api/projects/{qProjectId}/commits",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId)
@@ -119,6 +108,17 @@ public class CommitsResource
         );
         return ResponseEntity.ok(
             constructFileContent(projection)
+        );
+    }
+
+    @Nonnull
+    private static FileContentModel constructFileContent(@Nonnull Projection.FileProjection file)
+    {
+        return new FileContentModel(
+            file.fileId().id(),
+            MetadataModel.of(file.metadata()),
+            DescriptionModel.of(file.description()),
+            file.items()
         );
     }
 

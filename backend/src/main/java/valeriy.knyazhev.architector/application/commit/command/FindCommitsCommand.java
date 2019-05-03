@@ -39,14 +39,6 @@ public class FindCommitsCommand
             .orElse(null);
     }
 
-    private static boolean commitRelatedToFile(@Nonnull Commit commit, @Nonnull FileId fileId)
-    {
-        return commit.data()
-            .changedFiles()
-            .stream()
-            .anyMatch(file -> fileId.equals(file.fileId()));
-    }
-
     @Nonnull
     public ProjectId projectId()
     {
@@ -72,6 +64,14 @@ public class FindCommitsCommand
                : new FileHistoryData(
                    this.fileId.id(), filteredCommits
                );
+    }
+
+    private static boolean commitRelatedToFile(@Nonnull Commit commit, @Nonnull FileId fileId)
+    {
+        return commit.data()
+            .changedFiles()
+            .stream()
+            .anyMatch(file -> fileId.equals(file.fileId()));
     }
 
 }

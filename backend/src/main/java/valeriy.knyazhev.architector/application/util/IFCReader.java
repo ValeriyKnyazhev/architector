@@ -22,32 +22,6 @@ public abstract class IFCReader<T>
 {
 
     @Nonnull
-    private static String readFullLine(@Nonnull String line, @Nonnull BufferedReader reader)
-    {
-
-        StringBuilder fullLine = new StringBuilder();
-        while (!line.endsWith(";"))
-        {
-            fullLine.append(line);
-            line = readNextLine(reader);
-        }
-        return fullLine.append(line).toString();
-    }
-
-    @Nonnull
-    private static String readNextLine(@Nonnull BufferedReader reader)
-    {
-        try
-        {
-            return Optional.ofNullable(reader.readLine())
-                .orElseThrow(() -> new IllegalStateException("Unable to read next line of the content stream."));
-        } catch (IOException e)
-        {
-            throw new IllegalStateException("Unable to read stream.", e);
-        }
-    }
-
-    @Nonnull
     protected T read(@Nonnull InputStream contentStream)
     {
         String isoId = null;
@@ -138,4 +112,30 @@ public abstract class IFCReader<T>
 
     @Nonnull
     protected abstract T constructResult(@Nonnull String isoId, IfcHeader header, List<String> contentItems);
+
+    @Nonnull
+    private static String readFullLine(@Nonnull String line, @Nonnull BufferedReader reader)
+    {
+
+        StringBuilder fullLine = new StringBuilder();
+        while (!line.endsWith(";"))
+        {
+            fullLine.append(line);
+            line = readNextLine(reader);
+        }
+        return fullLine.append(line).toString();
+    }
+
+    @Nonnull
+    private static String readNextLine(@Nonnull BufferedReader reader)
+    {
+        try
+        {
+            return Optional.ofNullable(reader.readLine())
+                .orElseThrow(() -> new IllegalStateException("Unable to read next line of the content stream."));
+        } catch (IOException e)
+        {
+            throw new IllegalStateException("Unable to read stream.", e);
+        }
+    }
 }

@@ -30,16 +30,6 @@ public class FileDiffCalculatorTests
     @Autowired
     private FileDiffCalculator diffCalculator;
 
-    private static FileContent sampleFile(List<String> content)
-    {
-        return FileContent.of(content);
-    }
-
-    private static List<String> generateContent(List<String> values)
-    {
-        return values;
-    }
-
     @Test
     public void shouldFilesAreEquals()
     {
@@ -285,6 +275,16 @@ public class FileDiffCalculatorTests
         softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
         softly.assertThat(changedItem1.position()).isEqualTo(1);
         softly.assertAll();
+    }
+
+    private static FileContent sampleFile(List<String> content)
+    {
+        return FileContent.of(content);
+    }
+
+    private static List<String> generateContent(List<String> values)
+    {
+        return values;
     }
 
 }

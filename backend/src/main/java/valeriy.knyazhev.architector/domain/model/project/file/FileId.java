@@ -29,6 +29,12 @@ public final class FileId
     }
 
     @Nonnull
+    public String id()
+    {
+        return this.id;
+    }
+
+    @Nonnull
     public static FileId of(@Nonnull String id)
     {
         return new FileId(id);
@@ -38,12 +44,6 @@ public final class FileId
     public static FileId nextId()
     {
         return new FileId(UUID.randomUUID().toString());
-    }
-
-    @Nonnull
-    public String id()
-    {
-        return this.id;
     }
 
 }

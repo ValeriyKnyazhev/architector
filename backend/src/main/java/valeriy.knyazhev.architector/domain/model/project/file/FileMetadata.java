@@ -63,15 +63,6 @@ public class FileMetadata
     }
 
     @Nonnull
-    // TODO remove later
-    private static List<String> checkAndMapList(@Nonnull List<String> items)
-    {
-        return items.stream().anyMatch(item -> !item.isEmpty())
-               ? items
-               : emptyList();
-    }
-
-    @Nonnull
     public String name()
     {
         return this.name;
@@ -111,6 +102,15 @@ public class FileMetadata
     public String authorization()
     {
         return this.authorization;
+    }
+
+    @Nonnull
+    // TODO remove later
+    private static List<String> checkAndMapList(@Nonnull List<String> items)
+    {
+        return items.stream().anyMatch(item -> !item.isEmpty())
+               ? items
+               : emptyList();
     }
 
 }

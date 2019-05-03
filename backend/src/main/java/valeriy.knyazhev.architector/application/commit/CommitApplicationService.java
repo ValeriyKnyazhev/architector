@@ -46,19 +46,6 @@ public class CommitApplicationService
     }
 
     @Nonnull
-    private static Commit findCommitById(@Nonnull List<Commit> commits,
-                                         long commitId)
-    {
-        return commits.stream()
-            .filter(commit -> commitId == commit.id())
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException(
-                    "Commit with id " + commitId + " not found."
-                )
-            );
-    }
-
-    @Nonnull
     public AbstractHistoryData fetchProjectHistory(@Nonnull FindCommitsCommand command)
     {
         Args.notNull(command, "Find commit command is required.");
@@ -116,6 +103,19 @@ public class CommitApplicationService
             .filter(commit -> identifiers.contains(commit.id()))
             .sorted(Comparator.comparingLong(Commit::id))
             .collect(toList());
+    }
+
+    @Nonnull
+    private static Commit findCommitById(@Nonnull List<Commit> commits,
+                                         long commitId)
+    {
+        return commits.stream()
+            .filter(commit -> commitId == commit.id())
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException(
+                    "Commit with id " + commitId + " not found."
+                )
+            );
     }
 
 }

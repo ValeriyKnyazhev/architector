@@ -30,15 +30,15 @@ public class CommitDescription implements Serializable
     }
 
     @Nonnull
-    public static CommitDescription of(@Nonnull List<CommitFileItem> files)
-    {
-        return new CommitDescription(files);
-    }
-
-    @Nonnull
     public List<CommitFileItem> changedFiles()
     {
         return this.changedFiles;
+    }
+
+    @Nonnull
+    public static CommitDescription of(@Nonnull List<CommitFileItem> files)
+    {
+        return new CommitDescription(files);
     }
 
 }

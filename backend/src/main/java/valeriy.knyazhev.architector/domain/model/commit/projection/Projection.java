@@ -29,17 +29,6 @@ public class Projection
         this.files = Args.notNull(files, "Project files are required.");
     }
 
-    public static Projection empty()
-    {
-        return new Projection(ImmutableList.of());
-    }
-
-    @Nonnull
-    public static Projection of(@Nonnull List<FileProjection> files)
-    {
-        return new Projection(files);
-    }
-
     public boolean addNewFile(@Nonnull FileProjection fileProjection)
     {
         Args.notNull(fileProjection, "File projection is required.");
@@ -57,6 +46,17 @@ public class Projection
     public List<FileProjection> files()
     {
         return this.files;
+    }
+
+    public static Projection empty()
+    {
+        return new Projection(ImmutableList.of());
+    }
+
+    @Nonnull
+    public static Projection of(@Nonnull List<FileProjection> files)
+    {
+        return new Projection(files);
     }
 
     public static class FileProjection
@@ -83,15 +83,6 @@ public class Projection
             this.metadata = Args.notNull(metadata, "File metadata is required.");
             this.description = Args.notNull(description, "File description is required.");
             this.items = Args.notNull(items, "File items are required.");
-        }
-
-        @Nonnull
-        public static FileProjection of(@Nonnull FileId fileId,
-                                        @Nonnull FileMetadata metadata,
-                                        @Nonnull FileDescription description,
-                                        @Nonnull List<String> items)
-        {
-            return new FileProjection(fileId, metadata, description, items);
         }
 
         @Nonnull
@@ -125,6 +116,15 @@ public class Projection
             this.metadata = Args.notNull(metadata, "File metadata is required.");
             this.description = Args.notNull(description, "File description is required.");
             this.items = Args.notNull(items, "File projection items are required.");
+        }
+
+        @Nonnull
+        public static FileProjection of(@Nonnull FileId fileId,
+                                        @Nonnull FileMetadata metadata,
+                                        @Nonnull FileDescription description,
+                                        @Nonnull List<String> items)
+        {
+            return new FileProjection(fileId, metadata, description, items);
         }
 
     }

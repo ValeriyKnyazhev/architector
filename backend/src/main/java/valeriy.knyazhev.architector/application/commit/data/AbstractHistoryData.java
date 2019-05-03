@@ -26,6 +26,12 @@ public abstract class AbstractHistoryData
     }
 
     @Nonnull
+    public List<CommitDescriptorData> commits()
+    {
+        return Collections.unmodifiableList(this.commits);
+    }
+
+    @Nonnull
     private static CommitDescriptorData constructDescription(@Nonnull Commit commit)
     {
         return new CommitDescriptorData(
@@ -35,12 +41,6 @@ public abstract class AbstractHistoryData
             commit.message(),
             commit.timestamp()
         );
-    }
-
-    @Nonnull
-    public List<CommitDescriptorData> commits()
-    {
-        return Collections.unmodifiableList(this.commits);
     }
 
 }

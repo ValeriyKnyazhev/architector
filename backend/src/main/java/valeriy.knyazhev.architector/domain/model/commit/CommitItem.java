@@ -35,18 +35,6 @@ public class CommitItem implements Comparable<CommitItem>
     }
 
     @Nonnull
-    public static CommitItem addItem(@Nonnull String value, int position)
-    {
-        return new CommitItem(value, ADDITION, position);
-    }
-
-    @Nonnull
-    public static CommitItem deleteItem(@Nonnull String value, int position)
-    {
-        return new CommitItem(value, DELETION, position);
-    }
-
-    @Nonnull
     public String value()
     {
         return this.value;
@@ -69,6 +57,18 @@ public class CommitItem implements Comparable<CommitItem>
         return Comparator.comparing(CommitItem::position)
             .thenComparing(CommitItem::type)
             .compare(this, item);
+    }
+
+    @Nonnull
+    public static CommitItem addItem(@Nonnull String value, int position)
+    {
+        return new CommitItem(value, ADDITION, position);
+    }
+
+    @Nonnull
+    public static CommitItem deleteItem(@Nonnull String value, int position)
+    {
+        return new CommitItem(value, DELETION, position);
     }
 
 }

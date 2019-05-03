@@ -40,18 +40,6 @@ public class FileManagementService
 
     private final CommitRepository commitRepository;
 
-    @Nonnull
-    private static File constructFile(@Nonnull FileId fileId,
-                                      @Nonnull FileData fileData)
-    {
-        return File.constructor()
-            .withFileId(fileId)
-            .withDescription(fileData.description())
-            .withMetadata(fileData.metadata())
-            .withContent(fileData.content())
-            .construct();
-    }
-
     @Nullable
     public File addFile(@Nonnull AddFileFromUrlCommand command)
     {
@@ -307,6 +295,18 @@ public class FileManagementService
             .build();
         this.commitRepository.save(newCommit);
         return true;
+    }
+
+    @Nonnull
+    private static File constructFile(@Nonnull FileId fileId,
+                                      @Nonnull FileData fileData)
+    {
+        return File.constructor()
+            .withFileId(fileId)
+            .withDescription(fileData.description())
+            .withMetadata(fileData.metadata())
+            .withContent(fileData.content())
+            .construct();
     }
 }
 
