@@ -124,6 +124,7 @@ public class Project {
             .updateContent(content);
     }
 
+    @Nonnull
     public File deleteFile(@Nonnull FileId fileId) {
         File deleted = this.files.stream()
             .filter(f -> fileId.equals(f.fileId()))
@@ -131,6 +132,16 @@ public class Project {
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         this.files.remove(deleted);
         return deleted;
+    }
+
+    public void updateName(@Nonnull String name)
+    {
+        this.name = name;
+    }
+
+    public void updateDescription(@Nonnull String description)
+    {
+        this.description = description;
     }
 
     void setCreatedDate(@Nonnull LocalDateTime date) {

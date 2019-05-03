@@ -6,14 +6,19 @@ import org.springframework.web.bind.annotation.*;
 import valeriy.knyazhev.architector.application.project.ProjectManagementService;
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
 import valeriy.knyazhev.architector.application.project.command.CreateProjectCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectDescriptionCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectNameCommand;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectMapper;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.CreateProjectRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectDescriptionRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectNameRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,12 +46,13 @@ public class ProjectResource {
     @PostMapping(value = "/api/projects/",
         consumes = APPLICATION_JSON_UTF8_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> createFromUrl(@RequestBody CreateProjectRequest request) {
+    public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request) {
         ProjectId projectId = this.managementService.createProject(
-            // TODO author constant should be replaced by user email
+            //  TODO author constant should be replaced by user email
             new CreateProjectCommand(request.name(), "author", request.description()));
-        return ResponseEntity.ok().body(new ResponseMessage()
-            .info("Project " + projectId.id() + " was created."));
+        return ResponseEntity.ok().body(
+            new ResponseMessage().info("Project " + projectId.id() + " was created.")
+        );
     }
 
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -65,6 +71,40 @@ public class ProjectResource {
                 .error("Project with identifier " + qProjectId + " not found."));
         }
         return ResponseEntity.ok(buildProject(project));
+    }
+
+    @PutMapping(value = "/api/projects/{qProjectId}/name",
+        consumes = APPLICATION_JSON_UTF8_VALUE,
+        produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> updateProjectName(
+        @PathVariable String qProjectId,
+        @RequestBody @Valid UpdateProjectNameRequest request) {
+        this.managementService.updateProjectName(
+            new UpdateProjectNameCommand(
+                //  TODO author constant should be replaced by user email
+                qProjectId, "author", request.name()
+            )
+        );
+        return ResponseEntity.ok().body(
+            new ResponseMessage().info("Project " + qProjectId + " name was updated.")
+        );
+    }
+
+    @PutMapping(value = "/api/projects/{qProjectId}/description",
+        consumes = APPLICATION_JSON_UTF8_VALUE,
+        produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> updateProjectDescription(
+        @PathVariable String qProjectId,
+        @RequestBody @Valid UpdateProjectDescriptionRequest request) {
+        this.managementService.updateProjectDescription(
+            new UpdateProjectDescriptionCommand(
+                //  TODO author constant should be replaced by user email
+                qProjectId, "author", request.description()
+            )
+        );
+        return ResponseEntity.ok().body(
+            new ResponseMessage().info("Project " + qProjectId + " description was updated.")
+        );
     }
 
 }
