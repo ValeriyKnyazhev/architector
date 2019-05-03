@@ -86,15 +86,21 @@ public class ProjectResource
         @PathVariable String qProjectId,
         @RequestBody @Valid UpdateProjectNameRequest request)
     {
-        this.managementService.updateProjectName(
+        boolean updated = this.managementService.updateProjectName(
             new UpdateProjectNameCommand(
                 //  TODO author constant should be replaced by user email
                 qProjectId, "author", request.name()
             )
         );
-        return ResponseEntity.ok().body(
-            new ResponseMessage().info("Project " + qProjectId + " name was updated.")
-        );
+        return updated
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage().info("Project " + qProjectId + " name was updated.")
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to update project " + qProjectId + " name.")
+                   );
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/description",
@@ -104,15 +110,21 @@ public class ProjectResource
         @PathVariable String qProjectId,
         @RequestBody @Valid UpdateProjectDescriptionRequest request)
     {
-        this.managementService.updateProjectDescription(
+        boolean updated = this.managementService.updateProjectDescription(
             new UpdateProjectDescriptionCommand(
                 //  TODO author constant should be replaced by user email
                 qProjectId, "author", request.description()
             )
         );
-        return ResponseEntity.ok().body(
-            new ResponseMessage().info("Project " + qProjectId + " description was updated.")
-        );
+        return updated
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage().info("Project " + qProjectId + " description was updated.")
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to update project " + qProjectId + " description.")
+                   );
     }
 
 }

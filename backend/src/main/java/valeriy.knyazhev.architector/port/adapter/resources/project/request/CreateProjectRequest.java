@@ -19,10 +19,13 @@ public class CreateProjectRequest
     @NotNull(message = "Project name is required.")
     private String description;
 
-    public CreateProjectRequest(@Nonnull String name,
-                                @Nonnull String description)
+    public void setName(@Nonnull String name)
     {
         this.name = Args.notBlank(name, "Project name is required.");
+    }
+
+    public void setDescription(@Nonnull String description)
+    {
         this.description = Args.notNull(description, "Project description is required.");
     }
 

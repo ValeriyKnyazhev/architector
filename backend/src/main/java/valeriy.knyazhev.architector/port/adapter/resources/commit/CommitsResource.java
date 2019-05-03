@@ -11,10 +11,7 @@ import valeriy.knyazhev.architector.application.commit.command.MakeFileProjectio
 import valeriy.knyazhev.architector.application.commit.command.MakeProjectProjectionCommand;
 import valeriy.knyazhev.architector.application.commit.data.FileHistoryData;
 import valeriy.knyazhev.architector.application.commit.data.ProjectHistoryData;
-import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
-import valeriy.knyazhev.architector.domain.model.project.Project;
-import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.DescriptionModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileContentModel;
@@ -76,21 +73,17 @@ public class CommitsResource
         @PathVariable String qProjectId,
         @PathVariable long commitId)
     {
-        ProjectId projectId = ProjectId.of(qProjectId);
-        Project project = this.projectRepository.findByProjectId(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException(projectId));
         Projection projection = this.applicationService.makeProjection(
             new MakeProjectProjectionCommand(qProjectId, commitId)
         );
         return ResponseEntity.ok(
             new ProjectContentModel(
                 qProjectId,
-                project.name(),
-                project.description(),
+                projection.name(),
+                projection.description(),
                 projection.files().stream()
                     .filter(file -> !file.items().isEmpty())
-                    .map(CommitsResource::constructFileContent
-                    )
+                    .map(CommitsResource::constructFileContent)
                     .collect(toList())
             )
         );

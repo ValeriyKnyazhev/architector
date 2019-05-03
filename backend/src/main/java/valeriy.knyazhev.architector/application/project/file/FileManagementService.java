@@ -174,18 +174,20 @@ public class FileManagementService
         File newFile = constructFile(FileId.nextId(), newFileData);
         project.addFile(newFile);
         projectRepository.save(project);
-        CommitDescription commitData = CommitDescription.of(
-            singletonList(
-                CommitFileItem.of(
-                    newFile.fileId(),
-                    FileDiffCalculator.defineMetadataChanges(null, newFile.metadata()),
-                    FileDiffCalculator.defineDescriptionChanges(null, newFile.description()),
-                    FileDiffCalculator.calculateDiff(
-                        null, newFile.content()
+        CommitDescription commitData = CommitDescription.builder()
+            .files(
+                singletonList(
+                    CommitFileItem.of(
+                        newFile.fileId(),
+                        FileDiffCalculator.defineMetadataChanges(null, newFile.metadata()),
+                        FileDiffCalculator.defineDescriptionChanges(null, newFile.description()),
+                        FileDiffCalculator.calculateDiff(
+                            null, newFile.content()
+                        )
                     )
                 )
             )
-        );
+            .build();
         boolean added = commitChanges(
             project.projectId(),
             author,
@@ -215,22 +217,19 @@ public class FileManagementService
         FileDescriptionChanges fileDescriptionChanges = FileDiffCalculator.defineDescriptionChanges(
             oldFile.description(), newFile.description()
         );
-        if (commitItems.isEmpty() && fileMetadataChanges.isEmpty() && fileDescriptionChanges.isEmpty())
-        {
-            // FIXME add specific exception
-            throw new IllegalStateException("Nothing to commit.");
-        }
-        updateFileContent(project, oldFile.fileId(), newFile);
-        CommitDescription commitData = CommitDescription.of(
-            singletonList(
-                CommitFileItem.of(
-                    oldFile.fileId(),
-                    fileMetadataChanges,
-                    fileDescriptionChanges,
-                    commitItems
+        CommitDescription commitData = CommitDescription.builder()
+            .files(
+                singletonList(
+                    CommitFileItem.of(
+                        oldFile.fileId(),
+                        fileMetadataChanges,
+                        fileDescriptionChanges,
+                        commitItems
+                    )
                 )
             )
-        );
+            .build();
+        updateFileContent(project, oldFile.fileId(), newFile);
         return commitChanges(project.projectId(), author, commitMessage, commitData);
     }
 
@@ -241,18 +240,20 @@ public class FileManagementService
         Project project = findProject(projectId);
         File deleted = project.deleteFile(fileId);
         this.projectRepository.save(project);
-        CommitDescription commitData = CommitDescription.of(
-            singletonList(
-                CommitFileItem.of(
-                    deleted.fileId(),
-                    FileDiffCalculator.defineMetadataChanges(deleted.metadata(), null),
-                    FileDiffCalculator.defineDescriptionChanges(deleted.description(), null),
-                    FileDiffCalculator.calculateDiff(
-                        deleted.content(), null
+        CommitDescription commitData = CommitDescription.builder()
+            .files(
+                singletonList(
+                    CommitFileItem.of(
+                        deleted.fileId(),
+                        FileDiffCalculator.defineMetadataChanges(deleted.metadata(), null),
+                        FileDiffCalculator.defineDescriptionChanges(deleted.description(), null),
+                        FileDiffCalculator.calculateDiff(
+                            deleted.content(), null
+                        )
                     )
                 )
             )
-        );
+            .build();
         return commitChanges(
             project.projectId(),
             author,
@@ -276,11 +277,13 @@ public class FileManagementService
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
     }
 
+    // TODO move to commit service
     private boolean commitChanges(@Nonnull ProjectId projectId,
                                   @Nonnull String author,
                                   @Nonnull String commitMessage,
                                   @Nonnull CommitDescription commitData)
     {
+        // FIXME get next id from db
         Long parentId = this.commitRepository.findByProjectIdOrderById(projectId)
             .stream()
             .map(Commit::id)

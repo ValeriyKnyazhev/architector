@@ -22,10 +22,20 @@ public class Projection
 {
 
     @Nonnull
+    private String name;
+
+    @Nonnull
+    private String description;
+
+    @Nonnull
     private List<FileProjection> files;
 
-    private Projection(@Nonnull List<FileProjection> files)
+    private Projection(@Nonnull String name,
+                       @Nonnull String description,
+                       @Nonnull List<FileProjection> files)
     {
+        this.name = Args.notBlank(name, "Project name is required.");
+        this.description = Args.notNull(description, "Project description is required.");
         this.files = Args.notNull(files, "Project files are required.");
     }
 
@@ -43,6 +53,18 @@ public class Projection
     }
 
     @Nonnull
+    public String name()
+    {
+        return this.name;
+    }
+
+    @Nonnull
+    public String description()
+    {
+        return this.description;
+    }
+
+    @Nonnull
     public List<FileProjection> files()
     {
         return this.files;
@@ -50,13 +72,16 @@ public class Projection
 
     public static Projection empty()
     {
-        return new Projection(ImmutableList.of());
+        // FIXME initial projection for combinator
+        return new Projection("INIT", "", ImmutableList.of());
     }
 
     @Nonnull
-    public static Projection of(@Nonnull List<FileProjection> files)
+    public static Projection of(@Nonnull String name,
+                                @Nonnull String description,
+                                @Nonnull List<FileProjection> files)
     {
-        return new Projection(files);
+        return new Projection(name, description, files);
     }
 
     public static class FileProjection

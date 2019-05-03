@@ -59,7 +59,7 @@ public class CommitApplicationService
     public Projection makeProjection(@Nonnull MakeProjectProjectionCommand command)
     {
         ProjectId projectId = command.projectId();
-        Project project = findProject(projectId);
+        findProject(projectId);
         List<Commit> history = extractHistoryForId(projectId, command.commitId());
         return CommitCombinator.combineCommits(history);
     }
@@ -68,7 +68,7 @@ public class CommitApplicationService
     public FileProjection makeProjection(@Nonnull MakeFileProjectionCommand command)
     {
         ProjectId projectId = command.projectId();
-        Project project = findProject(projectId);
+        findProject(projectId);
         List<Commit> history = extractHistoryForId(projectId, command.commitId());
         Projection projection = CommitCombinator.combineCommits(history);
         FileId fileId = command.fileId();

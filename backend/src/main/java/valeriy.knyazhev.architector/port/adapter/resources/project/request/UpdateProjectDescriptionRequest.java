@@ -14,7 +14,7 @@ public class UpdateProjectDescriptionRequest
     @NotNull(message = "Project description is required.")
     private String description;
 
-    public UpdateProjectDescriptionRequest(@Nonnull String description)
+    public void setDescription(@Nonnull String description)
     {
         this.description = Args.notNull(description, "Project description is required.");
     }

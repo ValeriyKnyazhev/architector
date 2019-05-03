@@ -33,10 +33,12 @@ public class CommitCombinatorTests
 
     private static FileMetadataChanges FILE_METADATA = FileMetadataChanges.builder()
         .name("")
+        .authors(emptyList())
+        .organizations(emptyList())
         .build();
 
     private static FileDescriptionChanges FILE_DESCRIPTION = FileDescriptionChanges.builder()
-        .implementationLevel("")
+        .descriptions(emptyList())
         .build();
 
     @Test
@@ -171,11 +173,13 @@ public class CommitCombinatorTests
 
     private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items)
     {
-        CommitDescription data = CommitDescription.of(
-            singletonList(
-                CommitFileItem.of(fileId, FILE_METADATA, FILE_DESCRIPTION, items)
+        CommitDescription data = CommitDescription.builder()
+            .files(
+                singletonList(
+                    CommitFileItem.of(fileId, FILE_METADATA, FILE_DESCRIPTION, items)
+                )
             )
-        );
+            .build();
         return Commit.builder()
             .parentId(parentId)
             .projectId(PROJECT_ID)

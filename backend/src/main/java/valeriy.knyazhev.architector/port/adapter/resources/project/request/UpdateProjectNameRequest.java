@@ -16,7 +16,7 @@ public class UpdateProjectNameRequest
     @Size(min = 1, max = 50, message = "Project name must have minimum 1 and maximum 50 symbols.")
     private String name;
 
-    public UpdateProjectNameRequest(@Nonnull String name)
+    public void setName(@Nonnull String name)
     {
         this.name = Args.notBlank(name, "Project name is required.");
     }

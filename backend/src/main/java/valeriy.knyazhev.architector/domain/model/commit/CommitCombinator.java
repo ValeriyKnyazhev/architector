@@ -36,12 +36,12 @@ public final class CommitCombinator
         commits.stream()
             .sorted(Comparator.comparing(Commit::timestamp))
             .map(Commit::data)
-            .forEach(commit -> addNextProjectChangesToProjection(projection, commit));
+            .forEach(commit -> addNextChangesToProjection(projection, commit));
         return projection;
     }
 
-    private static void addNextProjectChangesToProjection(@Nonnull Projection projection,
-                                                          @Nonnull CommitDescription nextCommit)
+    private static void addNextChangesToProjection(@Nonnull Projection projection,
+                                                   @Nonnull CommitDescription nextCommit)
     {
         nextCommit.changedFiles().forEach(file -> addNextFileChangesToProjection(projection, file));
     }
