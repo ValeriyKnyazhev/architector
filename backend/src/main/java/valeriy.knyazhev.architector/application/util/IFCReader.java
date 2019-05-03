@@ -77,15 +77,21 @@ public abstract class IFCReader<T>
                     // like as in IfcStepDeserializer::processHeader
                     if (fullLine.startsWith("FILE_DESCRIPTION"))
                     {
-                        fileDescription = fullLine.substring("FILE_DESCRIPTION".length() + 1, fullLine.length() - 2).trim();
+                        fileDescription = fullLine
+                            .substring("FILE_DESCRIPTION".length() + 1, fullLine.length() - 2)
+                            .trim();
                     }
                     if (fullLine.startsWith("FILE_NAME"))
                     {
-                        fileName = fullLine.substring("FILE_NAME".length() + 1, fullLine.length() - 2).trim();
+                        fileName = fullLine
+                            .substring("FILE_NAME".length() + 1, fullLine.length() - 2)
+                            .trim();
                     }
                     if (fullLine.startsWith("FILE_SCHEMA"))
                     {
-                        fileSchema = fullLine.substring("FILE_SCHEMA".length() + 1, fullLine.length() - 2).trim();
+                        fileSchema = fullLine
+                            .substring("FILE_SCHEMA".length() + 1, fullLine.length() - 2)
+                            .trim();
                     }
                 }
 

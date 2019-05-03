@@ -6,11 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import valeriy.knyazhev.architector.application.commit.command.FindCommitsCommand;
 import valeriy.knyazhev.architector.application.commit.data.AbstractHistoryData;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
+import valeriy.knyazhev.architector.domain.model.commit.Commit;
+import valeriy.knyazhev.architector.domain.model.commit.CommitRepository;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
-import valeriy.knyazhev.architector.domain.model.commit.Commit;
-import valeriy.knyazhev.architector.domain.model.commit.CommitRepository;
 
 import javax.annotation.Nonnull;
 import java.util.List;

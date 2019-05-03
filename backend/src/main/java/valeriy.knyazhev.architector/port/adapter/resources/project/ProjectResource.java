@@ -46,8 +46,8 @@ public class ProjectResource
     }
 
     @PostMapping(value = "/api/projects/",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                 consumes = APPLICATION_JSON_UTF8_VALUE,
+                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request)
     {
         ProjectId projectId = this.managementService.createProject(
@@ -80,8 +80,8 @@ public class ProjectResource
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/name",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                consumes = APPLICATION_JSON_UTF8_VALUE,
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateProjectName(
         @PathVariable String qProjectId,
         @RequestBody @Valid UpdateProjectNameRequest request)
@@ -98,8 +98,8 @@ public class ProjectResource
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/description",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                consumes = APPLICATION_JSON_UTF8_VALUE,
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateProjectDescription(
         @PathVariable String qProjectId,
         @RequestBody @Valid UpdateProjectDescriptionRequest request)

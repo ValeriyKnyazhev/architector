@@ -62,8 +62,8 @@ public final class FileMapper
     private static List<String> checkAndMapList(@Nonnull List<String> items)
     {
         return items.stream().anyMatch(item -> !item.isEmpty())
-            ? items
-            : emptyList();
+               ? items
+               : emptyList();
     }
 
     @Nonnull

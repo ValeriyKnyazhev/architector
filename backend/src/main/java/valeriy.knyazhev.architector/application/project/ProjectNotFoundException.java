@@ -13,8 +13,10 @@ public class ProjectNotFoundException extends IllegalStateException
 
     public ProjectNotFoundException(@Nonnull ProjectId projectId)
     {
-        super("Unable to find project with identifier " +
-            Args.notNull(projectId, "Project identifier is required.").id() + ".");
+        super(
+            "Unable to find project with identifier " +
+            Args.notNull(projectId, "Project identifier is required.").id() + "."
+        );
     }
 
 }

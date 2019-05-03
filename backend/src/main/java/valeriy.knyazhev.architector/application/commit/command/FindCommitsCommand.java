@@ -5,9 +5,9 @@ import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.application.commit.data.AbstractHistoryData;
 import valeriy.knyazhev.architector.application.commit.data.FileHistoryData;
 import valeriy.knyazhev.architector.application.commit.data.ProjectHistoryData;
+import valeriy.knyazhev.architector.domain.model.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
-import valeriy.knyazhev.architector.domain.model.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;

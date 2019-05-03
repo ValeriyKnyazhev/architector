@@ -57,8 +57,9 @@ public final class CommitCombinator
             if (fileChanges.items().stream().anyMatch(item -> DELETION == item.type()))
             {
                 log.warn("Commit with new file " + fileChanges.fileId() + " has a few deletion items.");
-                throw new IllegalStateException("Commit with new file " + fileChanges.fileId() +
-                    " has a few deletion items.");
+                throw new IllegalStateException(
+                    "Commit with new file " + fileChanges.fileId() + " has a few deletion items."
+                );
             }
             List<String> items = fileChanges.items().stream()
                 .map(CommitItem::value)

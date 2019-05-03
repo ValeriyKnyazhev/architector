@@ -45,7 +45,7 @@ public class FileResource
     }
 
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findFile(@PathVariable String qProjectId,
                                            @PathVariable String qFileId)
     {
@@ -58,7 +58,7 @@ public class FileResource
     }
 
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/content",
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchFileContent(@PathVariable String qProjectId,
                                                    @PathVariable String qFileId)
     {
@@ -71,8 +71,8 @@ public class FileResource
     }
 
     @PostMapping(value = "/api/projects/{qProjectId}/files/source",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                 consumes = APPLICATION_JSON_UTF8_VALUE,
+                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
                                                  @RequestBody CreateFileFromUrlRequest request)
     {
@@ -85,15 +85,15 @@ public class FileResource
             )
         );
         return newFile != null
-            ? ResponseEntity.ok().body(
+               ? ResponseEntity.ok().body(
             new ResponseMessage().info("File " + newFile.fileId().id() + " was added to project " + qProjectId))
-            : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to add file to project " + qProjectId + " from source URL."));
+               : ResponseEntity.badRequest().body(
+                   new ResponseMessage().error("Unable to add file to project " + qProjectId + " from source URL."));
     }
 
     @PostMapping(value = "/api/projects/{qProjectId}/files/import",
-        consumes = MULTIPART_FORM_DATA_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                 consumes = MULTIPART_FORM_DATA_VALUE,
+                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,
                                                            @RequestParam("file") MultipartFile multipartFile)
     {
@@ -106,16 +106,16 @@ public class FileResource
             )
         );
         return newFile != null
-            ? ResponseEntity.ok().body(
+               ? ResponseEntity.ok().body(
             new ResponseMessage().info("File " + newFile.fileId().id() + " was added to project " + qProjectId))
-            : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to add file to project " + qProjectId + " from upload file."));
+               : ResponseEntity.badRequest().body(
+                   new ResponseMessage().error("Unable to add file to project " + qProjectId + " from upload file."));
 
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/source",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                consumes = APPLICATION_JSON_UTF8_VALUE,
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
                                                 @RequestBody UpdateFileFromUrlRequest request)
@@ -127,15 +127,15 @@ public class FileResource
             )
         );
         return updated
-            ? ResponseEntity.ok().body(
+               ? ResponseEntity.ok().body(
             new ResponseMessage().info("File " + qFileId + " was updated from source URL."))
-            : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to update file " + qFileId + " from source URL."));
+               : ResponseEntity.badRequest().body(
+                   new ResponseMessage().error("Unable to update file " + qFileId + " from source URL."));
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/import",
-        consumes = MULTIPART_FORM_DATA_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                consumes = MULTIPART_FORM_DATA_VALUE,
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
                                                           @RequestParam("file") MultipartFile multipartFile)
@@ -147,15 +147,15 @@ public class FileResource
             )
         );
         return updated
-            ? ResponseEntity.ok().body(
+               ? ResponseEntity.ok().body(
             new ResponseMessage().info("File " + qFileId + " was updated from received file."))
-            : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to update file " + qFileId + " from received file."));
+               : ResponseEntity.badRequest().body(
+                   new ResponseMessage().error("Unable to update file " + qFileId + " from received file."));
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/description",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                consumes = APPLICATION_JSON_UTF8_VALUE,
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
                                                               @RequestBody UpdateFileDescriptionRequest request)
@@ -171,15 +171,15 @@ public class FileResource
                 .build()
         );
         return updated
-            ? ResponseEntity.ok().body(
+               ? ResponseEntity.ok().body(
             new ResponseMessage().info("File " + qFileId + " description was updated."))
-            : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to update file " + qFileId + " description."));
+               : ResponseEntity.badRequest().body(
+                   new ResponseMessage().error("Unable to update file " + qFileId + " description."));
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                consumes = APPLICATION_JSON_UTF8_VALUE,
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
                                                               @RequestBody UpdateFileMetadataRequest request)
@@ -200,14 +200,14 @@ public class FileResource
                 .build()
         );
         return updated
-            ? ResponseEntity.ok().body(
+               ? ResponseEntity.ok().body(
             new ResponseMessage().info("File " + qFileId + " metadata was updated."))
-            : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to update file " + qFileId + " metadata."));
+               : ResponseEntity.badRequest().body(
+                   new ResponseMessage().error("Unable to update file " + qFileId + " metadata."));
     }
 
     @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                   produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId)
     {
@@ -215,10 +215,10 @@ public class FileResource
             new DeleteFileCommand(qProjectId, qFileId, "author")
         );
         return deleted
-            ? ResponseEntity.ok().body(
+               ? ResponseEntity.ok().body(
             new ResponseMessage().info("File " + qFileId + " was deleted from project."))
-            : ResponseEntity.badRequest().body(
-            new ResponseMessage().error("Unable to delete file " + qFileId + " from project."));
+               : ResponseEntity.badRequest().body(
+                   new ResponseMessage().error("Unable to delete file " + qFileId + " from project."));
     }
 
     @Nonnull

@@ -58,8 +58,8 @@ public class FileMetadataChanges
     public boolean isEmpty()
     {
         return this.name == null && this.timestamp == null && this.authors == null &&
-            this.organizations == null && this.preprocessorVersion == null &&
-            this.originatingSystem == null && this.authorization == null;
+               this.organizations == null && this.preprocessorVersion == null &&
+               this.originatingSystem == null && this.authorization == null;
     }
 
     public String name()

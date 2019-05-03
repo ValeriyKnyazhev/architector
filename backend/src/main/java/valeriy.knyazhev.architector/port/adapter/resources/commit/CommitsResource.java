@@ -10,11 +10,11 @@ import valeriy.knyazhev.architector.application.commit.command.FindCommitsComman
 import valeriy.knyazhev.architector.application.commit.data.FileHistoryData;
 import valeriy.knyazhev.architector.application.commit.data.ProjectHistoryData;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
-import valeriy.knyazhev.architector.domain.model.project.Project;
-import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.commit.CommitCombinator;
 import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection;
+import valeriy.knyazhev.architector.domain.model.project.Project;
+import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.port.adapter.resources.commit.model.ProjectContentModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileContentModel;
 
@@ -54,7 +54,7 @@ public class CommitsResource
     }
 
     @GetMapping(value = "api/projects/{qProjectId}/commits",
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId)
     {
         ProjectHistoryData projectHistory = (ProjectHistoryData) this.applicationService.fetchProjectHistory(
@@ -80,7 +80,7 @@ public class CommitsResource
     }
 
     @GetMapping(value = "api/projects/{qProjectId}/commits/{commitId}/content",
-        produces = APPLICATION_JSON_UTF8_VALUE)
+                produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId,
                                                       @PathVariable long commitId)
     {
