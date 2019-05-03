@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import valeriy.knyazhev.architector.domain.model.commit.*;
-import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection;
-import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection.FileDataProjection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.Projection.FileProjection;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
@@ -65,12 +65,12 @@ public class CommitCombinatorTests
                 addItem("2", 1))));
 
         // when
-        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
         SoftAssertions softly = new SoftAssertions();
-        FileDataProjection fileProjection = projection.files().get(0);
+        FileProjection fileProjection = projection.files().get(0);
         softly.assertThat(fileProjection.fileId()).isEqualTo(fileId);
         softly.assertThat(fileProjection.items()).isEqualTo(asList("1", "2"));
         softly.assertAll();
@@ -86,12 +86,12 @@ public class CommitCombinatorTests
             sampleCommit(firstCommit.id(), fileId, singletonList(addItem("2", 1))));
 
         // when
-        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
         SoftAssertions softly = new SoftAssertions();
-        FileDataProjection fileProjection = projection.files().get(0);
+        FileProjection fileProjection = projection.files().get(0);
         softly.assertThat(fileProjection.fileId()).isEqualTo(fileId);
         softly.assertThat(fileProjection.items()).isEqualTo(asList("1", "2"));
         softly.assertAll();
@@ -107,12 +107,12 @@ public class CommitCombinatorTests
             sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("1", 1))));
 
         // when
-        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
         SoftAssertions softly = new SoftAssertions();
-        FileDataProjection fileProjection = projection.files().get(0);
+        FileProjection fileProjection = projection.files().get(0);
         softly.assertThat(fileProjection.fileId()).isEqualTo(fileId);
         softly.assertThat(fileProjection.items()).isEqualTo(emptyList());
         softly.assertAll();
@@ -173,12 +173,12 @@ public class CommitCombinatorTests
                 deleteItem("9", 7))));
 
         // when
-        ProjectDataProjection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
         SoftAssertions softly = new SoftAssertions();
-        FileDataProjection fileProjection = projection.files().get(0);
+        FileProjection fileProjection = projection.files().get(0);
         softly.assertThat(fileProjection.fileId()).isEqualTo(fileId);
         softly.assertThat(fileProjection.items()).isEqualTo(asList("0", "1", "2", "5", "6", "7", "8"));
         softly.assertAll();

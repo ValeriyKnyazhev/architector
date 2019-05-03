@@ -3,8 +3,8 @@ package valeriy.knyazhev.architector.domain.model.commit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection;
-import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection.FileDataProjection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.Projection.FileProjection;
 import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
@@ -30,9 +30,9 @@ public final class CommitCombinator
 {
 
     @Nonnull
-    public static ProjectDataProjection combineCommits(@Nonnull List<Commit> commits)
+    public static Projection combineCommits(@Nonnull List<Commit> commits)
     {
-        ProjectDataProjection projection = ProjectDataProjection.empty();
+        Projection projection = Projection.empty();
         commits.stream()
             .sorted(Comparator.comparing(Commit::timestamp))
             .map(Commit::data)
@@ -40,16 +40,16 @@ public final class CommitCombinator
         return projection;
     }
 
-    private static void addNextProjectChangesToProjection(@Nonnull ProjectDataProjection projection,
+    private static void addNextProjectChangesToProjection(@Nonnull Projection projection,
                                                           @Nonnull CommitDescription nextCommit)
     {
         nextCommit.changedFiles().forEach(file -> addNextFileChangesToProjection(projection, file));
     }
 
-    private static void addNextFileChangesToProjection(@Nonnull ProjectDataProjection projection,
+    private static void addNextFileChangesToProjection(@Nonnull Projection projection,
                                                        @Nonnull CommitFileItem fileChanges)
     {
-        FileDataProjection foundFile = projection.files().stream()
+        FileProjection foundFile = projection.files().stream()
             .filter(file -> fileChanges.fileId().equals(file.fileId()))
             .findFirst().orElse(null);
         if (foundFile == null)
@@ -65,7 +65,7 @@ public final class CommitCombinator
                 .map(CommitItem::value)
                 .collect(Collectors.toList());
             projection.addNewFile(
-                FileDataProjection.of(
+                FileProjection.of(
                     fileChanges.fileId(),
                     combineMetadataChanges(null, fileChanges.metadata()),
                     combineDescriptionChanges(null, fileChanges.description()),

@@ -144,7 +144,7 @@ public class FileManagementService
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         FileMetadata newMetadata = command.constructMetadata();
         updateFile(projectId, fileId, command.author(),
-            "FIXME later",
+            "File " + fileId.id() + " metadata was updated.",
             new FileData("FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content())
         );
         foundFile.updateMetadata(newMetadata);
@@ -163,7 +163,7 @@ public class FileManagementService
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         FileDescription newDescription = command.constructDescription();
         updateFile(projectId, fileId, command.author(),
-            "FIXME later",
+            "File " + fileId.id() + " description was updated.",
             new FileData("FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content())
         );
         foundFile.updateDescription(newDescription);

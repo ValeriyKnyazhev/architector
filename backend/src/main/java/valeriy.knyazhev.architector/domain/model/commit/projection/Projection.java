@@ -18,29 +18,29 @@ import java.util.stream.Stream;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProjectDataProjection
+public class Projection
 {
 
     @Nonnull
-    private List<FileDataProjection> files;
+    private List<FileProjection> files;
 
-    private ProjectDataProjection(@Nonnull List<FileDataProjection> files)
+    private Projection(@Nonnull List<FileProjection> files)
     {
         this.files = Args.notNull(files, "Project files are required.");
     }
 
-    public static ProjectDataProjection empty()
+    public static Projection empty()
     {
-        return new ProjectDataProjection(ImmutableList.of());
+        return new Projection(ImmutableList.of());
     }
 
     @Nonnull
-    public static ProjectDataProjection of(@Nonnull List<FileDataProjection> files)
+    public static Projection of(@Nonnull List<FileProjection> files)
     {
-        return new ProjectDataProjection(files);
+        return new Projection(files);
     }
 
-    public boolean addNewFile(@Nonnull FileDataProjection fileProjection)
+    public boolean addNewFile(@Nonnull FileProjection fileProjection)
     {
         Args.notNull(fileProjection, "File projection is required.");
         if (this.files.stream().anyMatch(file -> fileProjection.fileId.equals(file.fileId)))
@@ -54,12 +54,12 @@ public class ProjectDataProjection
     }
 
     @Nonnull
-    public List<FileDataProjection> files()
+    public List<FileProjection> files()
     {
         return this.files;
     }
 
-    public static class FileDataProjection
+    public static class FileProjection
     {
 
         @Nonnull
@@ -74,10 +74,10 @@ public class ProjectDataProjection
         @Nonnull
         private List<String> items;
 
-        private FileDataProjection(@Nonnull FileId fileId,
-                                   @Nonnull FileMetadata metadata,
-                                   @Nonnull FileDescription description,
-                                   @Nonnull List<String> items)
+        private FileProjection(@Nonnull FileId fileId,
+                               @Nonnull FileMetadata metadata,
+                               @Nonnull FileDescription description,
+                               @Nonnull List<String> items)
         {
             this.fileId = Args.notNull(fileId, "File identifier is required.");
             this.metadata = Args.notNull(metadata, "File metadata is required.");
@@ -86,12 +86,12 @@ public class ProjectDataProjection
         }
 
         @Nonnull
-        public static FileDataProjection of(@Nonnull FileId fileId,
-                                            @Nonnull FileMetadata metadata,
-                                            @Nonnull FileDescription description,
-                                            @Nonnull List<String> items)
+        public static FileProjection of(@Nonnull FileId fileId,
+                                        @Nonnull FileMetadata metadata,
+                                        @Nonnull FileDescription description,
+                                        @Nonnull List<String> items)
         {
-            return new FileDataProjection(fileId, metadata, description, items);
+            return new FileProjection(fileId, metadata, description, items);
         }
 
         @Nonnull

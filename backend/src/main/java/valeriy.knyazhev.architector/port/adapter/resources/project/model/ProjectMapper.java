@@ -32,11 +32,9 @@ public final class ProjectMapper
         );
     }
 
-
     @Nonnull
     private static FileBriefModel constructFile(@Nonnull File file)
     {
-
         return new FileBriefModel(
             file.fileId().id(),
             file.metadata().name(),
