@@ -1,15 +1,8 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import valeriy.knyazhev.architector.domain.model.project.file.File;
-import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
-import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileModel.DescriptionModel;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileModel.MetadataModel;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-
-import static java.util.Collections.emptyList;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -21,56 +14,22 @@ public final class FileMapper
     public static FileContentModel buildContent(@Nonnull File file)
     {
         return new FileContentModel(
-            file.fileId().id(), extractFileName(file), file.content().items()
+            file.fileId().id(),
+            MetadataModel.of(file.metadata()),
+            DescriptionModel.of(file.description()),
+            file.content().items()
         );
     }
 
     @Nonnull
-    public static FileModel buildFile(@Nonnull File file)
+    public static FileDescriptorModel buildFile(@Nonnull File file)
     {
-        DescriptionModel description = constructDescription(file.description());
-        MetadataModel metadata = constructMetadata(file.metadata());
-        return new FileModel(
-            file.fileId().id(), extractFileName(file), file.createdDate(), file.updatedDate(),
-            file.schema(), description, metadata
+        MetadataModel metadata = MetadataModel.of(file.metadata());
+        DescriptionModel description = DescriptionModel.of(file.description());
+        return new FileDescriptorModel(
+            file.fileId().id(), file.createdDate(), file.updatedDate(),
+            file.schema(), metadata, description
         );
     }
-
-    @Nonnull
-    private static DescriptionModel constructDescription(@Nonnull FileDescription description)
-    {
-        return new DescriptionModel(
-            description.descriptions(), description.implementationLevel()
-        );
-    }
-
-    @Nonnull
-    private static MetadataModel constructMetadata(@Nonnull FileMetadata metadata)
-    {
-        return MetadataModel.builder()
-            .name(metadata.name())
-            .timestamp(metadata.timestamp())
-            .authors(checkAndMapList(metadata.authors()))
-            .organizations(checkAndMapList(metadata.organizations()))
-            .preprocessorVersion(metadata.preprocessorVersion())
-            .originatingSystem(metadata.originatingSystem())
-            .authorization(metadata.authorization())
-            .build();
-    }
-
-    @Nonnull
-    private static List<String> checkAndMapList(@Nonnull List<String> items)
-    {
-        return items.stream().anyMatch(item -> !item.isEmpty())
-               ? items
-               : emptyList();
-    }
-
-    @Nonnull
-    private static String extractFileName(@Nonnull File file)
-    {
-        return file.metadata().name();
-    }
-
 
 }

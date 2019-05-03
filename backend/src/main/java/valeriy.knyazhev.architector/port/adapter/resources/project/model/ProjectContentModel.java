@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.port.adapter.resources.commit.model;
+package valeriy.knyazhev.architector.port.adapter.resources.project.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileContentModel;
@@ -19,17 +19,22 @@ public class ProjectContentModel
     private String projectId;
 
     @Nonnull
-    private String projectName;
+    private String name;
+
+    @Nonnull
+    private String description;
 
     @Nonnull
     private List<FileContentModel> files;
 
     public ProjectContentModel(@Nonnull String projectId,
-                               @Nonnull String projectName,
+                               @Nonnull String name,
+                               @Nonnull String description,
                                @Nonnull List<FileContentModel> files)
     {
         this.projectId = projectId;
-        this.projectName = projectName;
+        this.name = name;
+        this.description = description;
         this.files = files;
     }
 

@@ -13,7 +13,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class ProjectModel
+public class ProjectDescriptorModel
 {
 
 
@@ -38,10 +38,10 @@ public class ProjectModel
     @Nonnull
     private List<FileBriefModel> files;
 
-    public ProjectModel(@Nonnull String projectId, @Nonnull LocalDateTime createdDate,
-                        @Nonnull LocalDateTime updatedDate, @Nonnull String projectName,
-                        @Nonnull String author, @Nonnull String description,
-                        @Nonnull List<FileBriefModel> files)
+    public ProjectDescriptorModel(@Nonnull String projectId, @Nonnull LocalDateTime createdDate,
+                                  @Nonnull LocalDateTime updatedDate, @Nonnull String projectName,
+                                  @Nonnull String author, @Nonnull String description,
+                                  @Nonnull List<FileBriefModel> files)
     {
         this.projectId = projectId;
         this.createdDate = createdDate;

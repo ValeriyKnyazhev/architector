@@ -16,8 +16,10 @@ import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
-import valeriy.knyazhev.architector.port.adapter.resources.commit.model.ProjectContentModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.DescriptionModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileContentModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.MetadataModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectContentModel;
 
 import javax.annotation.Nonnull;
 
@@ -40,6 +42,17 @@ public class CommitsResource
     {
         this.applicationService = Args.notNull(applicationService, "Commit application service is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
+    }
+
+    @Nonnull
+    private static FileContentModel constructFileContent(@Nonnull Projection.FileProjection file)
+    {
+        return new FileContentModel(
+            file.fileId().id(),
+            MetadataModel.of(file.metadata()),
+            DescriptionModel.of(file.description()),
+            file.items()
+        );
     }
 
     @GetMapping(value = "api/projects/{qProjectId}/commits",
@@ -84,13 +97,10 @@ public class CommitsResource
             new ProjectContentModel(
                 qProjectId,
                 project.name(),
+                project.description(),
                 projection.files().stream()
                     .filter(file -> !file.items().isEmpty())
-                    .map(file -> new FileContentModel(
-                            file.fileId().id(),
-                            file.metadata().name(),
-                            file.items()
-                        )
+                    .map(CommitsResource::constructFileContent
                     )
                     .collect(toList())
             )
@@ -108,13 +118,8 @@ public class CommitsResource
             new MakeFileProjectionCommand(qProjectId, qFileId, commitId)
         );
         return ResponseEntity.ok(
-            new FileContentModel(
-                qFileId,
-                projection.metadata().name(),
-                projection.items()
-            )
+            constructFileContent(projection)
         );
     }
-
 
 }

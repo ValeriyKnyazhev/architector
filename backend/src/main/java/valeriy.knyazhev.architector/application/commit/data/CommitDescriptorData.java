@@ -12,7 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class CommitDescriptionData
+public class CommitDescriptorData
 {
 
     private long id;
@@ -29,8 +29,8 @@ public class CommitDescriptionData
     @Nonnull
     private LocalDateTime timestamp;
 
-    public CommitDescriptionData(long id, @Nullable Long parentId, @Nonnull String author,
-                                 @Nonnull String message, @Nonnull LocalDateTime timestamp)
+    public CommitDescriptorData(long id, @Nullable Long parentId, @Nonnull String author,
+                                @Nonnull String message, @Nonnull LocalDateTime timestamp)
     {
         this.id = id;
         this.parentId = parentId;

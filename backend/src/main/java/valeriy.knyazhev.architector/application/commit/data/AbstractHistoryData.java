@@ -15,7 +15,7 @@ public abstract class AbstractHistoryData
 {
 
     @Nonnull
-    private final List<CommitDescriptionData> commits;
+    private final List<CommitDescriptorData> commits;
 
     public AbstractHistoryData(@Nonnull List<Commit> commits)
     {
@@ -26,9 +26,9 @@ public abstract class AbstractHistoryData
     }
 
     @Nonnull
-    private static CommitDescriptionData constructDescription(@Nonnull Commit commit)
+    private static CommitDescriptorData constructDescription(@Nonnull Commit commit)
     {
-        return new CommitDescriptionData(
+        return new CommitDescriptorData(
             commit.id(),
             commit.parentId(),
             commit.author(),
@@ -38,7 +38,7 @@ public abstract class AbstractHistoryData
     }
 
     @Nonnull
-    public List<CommitDescriptionData> commits()
+    public List<CommitDescriptorData> commits()
     {
         return Collections.unmodifiableList(this.commits);
     }

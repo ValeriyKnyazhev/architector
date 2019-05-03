@@ -16,12 +16,12 @@ public final class ProjectMapper
 {
 
     @Nonnull
-    public static ProjectModel buildProject(@Nonnull Project project)
+    public static ProjectDescriptorModel buildProject(@Nonnull Project project)
     {
         List<FileBriefModel> files = project.files().stream()
             .map(ProjectMapper::constructFile)
             .collect(toList());
-        return new ProjectModel(
+        return new ProjectDescriptorModel(
             project.projectId().id(),
             project.createdDate(),
             project.updatedDate(),

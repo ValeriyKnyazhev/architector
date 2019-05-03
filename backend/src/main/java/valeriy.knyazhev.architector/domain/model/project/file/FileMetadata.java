@@ -11,6 +11,8 @@ import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
@@ -48,8 +50,8 @@ public class FileMetadata
     {
         this.name = name;
         this.timestamp = timestamp;
-        this.authors = authors;
-        this.organizations = organizations;
+        this.authors = checkAndMapList(authors);
+        this.organizations = checkAndMapList(organizations);
         this.preprocessorVersion = preprocessorVersion;
         this.originatingSystem = originatingSystem;
         this.authorization = authorization;
@@ -58,6 +60,15 @@ public class FileMetadata
     protected FileMetadata()
     {
         // empty
+    }
+
+    @Nonnull
+    // TODO remove later
+    private static List<String> checkAndMapList(@Nonnull List<String> items)
+    {
+        return items.stream().anyMatch(item -> !item.isEmpty())
+               ? items
+               : emptyList();
     }
 
     @Nonnull

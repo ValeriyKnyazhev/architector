@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
@@ -20,13 +22,22 @@ public class FileDescription
 
     private FileDescription(@Nonnull List<String> descriptions, @Nonnull String implementationLevel)
     {
-        this.descriptions = descriptions;
+        this.descriptions = checkAndMapList(descriptions);
         this.implementationLevel = implementationLevel;
     }
 
     protected FileDescription()
     {
         // empty
+    }
+
+    @Nonnull
+    // TODO remove later
+    private static List<String> checkAndMapList(@Nonnull List<String> items)
+    {
+        return items.stream().anyMatch(item -> !item.isEmpty())
+               ? items
+               : emptyList();
     }
 
     @Nonnull

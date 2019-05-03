@@ -10,8 +10,8 @@ import valeriy.knyazhev.architector.application.project.command.UpdateProjectDes
 import valeriy.knyazhev.architector.application.project.command.UpdateProjectNameCommand;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectDescriptorModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectMapper;
-import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.CreateProjectRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectDescriptionRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectNameRequest;
@@ -61,7 +61,7 @@ public class ProjectResource
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findAllProjects()
     {
-        List<ProjectModel> projects = this.queryService.findAllProjects().stream()
+        List<ProjectDescriptorModel> projects = this.queryService.findAllProjects().stream()
             .map(ProjectMapper::buildProject)
             .collect(toList());
         return ResponseEntity.ok(Collections.singletonMap("projects", projects));
