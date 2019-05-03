@@ -1,21 +1,21 @@
-package valeriy.knyazhev.architector.port.adapter.resources.project.commit;
+package valeriy.knyazhev.architector.port.adapter.resources.commit;
 
 import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import valeriy.knyazhev.architector.application.commit.CommitApplicationService;
+import valeriy.knyazhev.architector.application.commit.command.FindCommitsCommand;
+import valeriy.knyazhev.architector.application.commit.data.FileHistoryData;
+import valeriy.knyazhev.architector.application.commit.data.ProjectHistoryData;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
-import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.project.commit.CommitCombinator;
-import valeriy.knyazhev.architector.domain.model.project.commit.CommitRepository;
 import valeriy.knyazhev.architector.domain.model.project.commit.projection.ProjectDataProjection;
-import valeriy.knyazhev.architector.port.adapter.resources.project.commit.model.ProjectCommitBriefModel;
-import valeriy.knyazhev.architector.port.adapter.resources.project.commit.model.ProjectCommitsModel;
-import valeriy.knyazhev.architector.port.adapter.resources.project.commit.model.ProjectContentModel;
+import valeriy.knyazhev.architector.port.adapter.resources.commit.model.ProjectContentModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileContentModel;
 
 import javax.annotation.Nonnull;
@@ -30,30 +30,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RestController
-public class ProjectCommitsResource
+public class CommitsResource
 {
 
-    private final CommitRepository commitRepository;
+    private final CommitApplicationService applicationService;
 
-    private final ProjectRepository projectRepository;
-
-    public ProjectCommitsResource(@Nonnull CommitRepository commitRepository,
-                                  @Nonnull ProjectRepository projectRepository)
+    public CommitsResource(@Nonnull CommitApplicationService applicationService)
     {
-        this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
-        this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
-    }
-
-    @Nonnull
-    private static ProjectCommitBriefModel constructBriefDescription(@Nonnull Commit commit)
-    {
-        return new ProjectCommitBriefModel(
-            commit.id(),
-            commit.parentId(),
-            commit.author(),
-            commit.message(),
-            commit.timestamp()
-        );
+        this.applicationService = Args.notNull(applicationService, "Commit application service is required.");
     }
 
     @Nonnull
@@ -73,21 +57,26 @@ public class ProjectCommitsResource
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId)
     {
-        ProjectId projectId = ProjectId.of(qProjectId);
-        Project project = this.projectRepository.findByProjectId(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        List<ProjectCommitBriefModel> commits = this.commitRepository
-            .findByProjectIdOrderByIdDesc(projectId)
-            .stream()
-            .map(ProjectCommitsResource::constructBriefDescription)
-            .collect(toList());
-        return ResponseEntity.ok(
-            new ProjectCommitsModel(
-                projectId.id(),
-                project.name(),
-                commits
-            )
+        ProjectHistoryData projectHistory = (ProjectHistoryData) this.applicationService.fetchProjectHistory(
+            FindCommitsCommand.builder()
+                .projectId(qProjectId)
+                .build()
         );
+        return ResponseEntity.ok(projectHistory);
+    }
+
+    @GetMapping(value = "api/projects/{qProjectId}/files/{qFileId}/commits",
+                produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> fetchFileChanges(@PathVariable String qProjectId,
+                                                   @PathVariable String qFileId)
+    {
+        FileHistoryData fileHistory = (FileHistoryData) this.applicationService.fetchProjectHistory(
+            FindCommitsCommand.builder()
+                .projectId(qProjectId)
+                .fileId(qFileId)
+                .build()
+        );
+        return ResponseEntity.ok(fileHistory);
     }
 
     @GetMapping(value = "api/projects/{qProjectId}/commits/{commitId}/content",
@@ -129,4 +118,5 @@ public class ProjectCommitsResource
             )
         );
     }
+
 }

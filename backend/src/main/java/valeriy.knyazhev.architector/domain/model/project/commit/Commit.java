@@ -22,7 +22,6 @@ import static lombok.AccessLevel.PROTECTED;
 public class Commit
 {
 
-
     @Id
     @GeneratedValue(strategy = TABLE)
     private long id;

@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.port.adapter.resources.project.file.commit.model;
+package valeriy.knyazhev.architector.application.commit.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -12,9 +12,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileCommitBriefModel
+public class CommitDescriptionData
 {
-
 
     private long id;
 
@@ -30,8 +29,8 @@ public class FileCommitBriefModel
     @Nonnull
     private LocalDateTime timestamp;
 
-    public FileCommitBriefModel(long id, @Nullable Long parentId, @Nonnull String author,
-                                @Nonnull String message, @Nonnull LocalDateTime timestamp)
+    public CommitDescriptionData(long id, @Nullable Long parentId, @Nonnull String author,
+                                 @Nonnull String message, @Nonnull LocalDateTime timestamp)
     {
         this.id = id;
         this.parentId = parentId;

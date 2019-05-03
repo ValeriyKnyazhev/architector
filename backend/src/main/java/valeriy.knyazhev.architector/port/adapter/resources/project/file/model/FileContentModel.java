@@ -15,7 +15,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 public class FileContentModel
 {
 
-
     @Nonnull
     private String fileId;
 
