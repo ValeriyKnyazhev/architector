@@ -10,7 +10,7 @@ import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
-import valeriy.knyazhev.architector.domain.model.project.commit.*;
+import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;

@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project.commit;
+package valeriy.knyazhev.architector.domain.model.commit;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;
@@ -8,8 +8,8 @@ import javax.annotation.Nonnull;
 import java.util.Comparator;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.ADDITION;
-import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.DELETION;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.ADDITION;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.DELETION;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>

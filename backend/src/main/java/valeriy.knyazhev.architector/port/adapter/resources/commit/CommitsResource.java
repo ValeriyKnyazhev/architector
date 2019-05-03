@@ -12,9 +12,9 @@ import valeriy.knyazhev.architector.application.commit.data.ProjectHistoryData;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
-import valeriy.knyazhev.architector.domain.model.project.commit.Commit;
-import valeriy.knyazhev.architector.domain.model.project.commit.CommitCombinator;
-import valeriy.knyazhev.architector.domain.model.project.commit.projection.ProjectDataProjection;
+import valeriy.knyazhev.architector.domain.model.commit.Commit;
+import valeriy.knyazhev.architector.domain.model.commit.CommitCombinator;
+import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection;
 import valeriy.knyazhev.architector.port.adapter.resources.commit.model.ProjectContentModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileContentModel;
 

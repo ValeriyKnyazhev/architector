@@ -1,10 +1,10 @@
-package valeriy.knyazhev.architector.domain.model.project.commit;
+package valeriy.knyazhev.architector.domain.model.commit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import valeriy.knyazhev.architector.domain.model.project.commit.projection.ProjectDataProjection;
-import valeriy.knyazhev.architector.domain.model.project.commit.projection.ProjectDataProjection.FileDataProjection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection.FileDataProjection;
 import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.ADDITION;
-import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.DELETION;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.ADDITION;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.DELETION;
 
 /**
  * @author Valeriy Knyazhev

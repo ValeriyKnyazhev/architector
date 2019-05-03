@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project.commit;
+package valeriy.knyazhev.architector.domain.model.commit;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;

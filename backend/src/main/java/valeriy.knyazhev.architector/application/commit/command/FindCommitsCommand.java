@@ -7,7 +7,7 @@ import valeriy.knyazhev.architector.application.commit.data.FileHistoryData;
 import valeriy.knyazhev.architector.application.commit.data.ProjectHistoryData;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
-import valeriy.knyazhev.architector.domain.model.project.commit.Commit;
+import valeriy.knyazhev.architector.domain.model.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;

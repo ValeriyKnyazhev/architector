@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project.commit;
+package valeriy.knyazhev.architector.domain.model.commit;
 
 import difflib.Chunk;
 import difflib.Delta;
@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static valeriy.knyazhev.architector.domain.model.project.commit.CommitItem.addItem;
-import static valeriy.knyazhev.architector.domain.model.project.commit.CommitItem.deleteItem;
+import static valeriy.knyazhev.architector.domain.model.commit.CommitItem.addItem;
+import static valeriy.knyazhev.architector.domain.model.commit.CommitItem.deleteItem;
 
 /**
  * @author Valeriy Knyazhev

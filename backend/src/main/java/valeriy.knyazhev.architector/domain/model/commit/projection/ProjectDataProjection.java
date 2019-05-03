@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project.commit.projection;
+package valeriy.knyazhev.architector.domain.model.commit.projection;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model.project.commit;
+package valeriy.knyazhev.architector.domain.model.commit;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>

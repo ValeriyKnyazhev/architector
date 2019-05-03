@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import valeriy.knyazhev.architector.domain.model.project.commit.CommitItem;
-import valeriy.knyazhev.architector.domain.model.project.commit.FileDiffCalculator;
+import valeriy.knyazhev.architector.domain.model.commit.CommitItem;
+import valeriy.knyazhev.architector.domain.model.commit.FileDiffCalculator;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
 
 import java.util.Collections;
@@ -16,8 +16,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.ADDITION;
-import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeType.DELETION;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.ADDITION;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.DELETION;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>

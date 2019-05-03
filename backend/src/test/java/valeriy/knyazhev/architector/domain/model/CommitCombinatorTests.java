@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
-import valeriy.knyazhev.architector.domain.model.project.commit.*;
-import valeriy.knyazhev.architector.domain.model.project.commit.projection.ProjectDataProjection;
-import valeriy.knyazhev.architector.domain.model.project.commit.projection.ProjectDataProjection.FileDataProjection;
+import valeriy.knyazhev.architector.domain.model.commit.*;
+import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.ProjectDataProjection.FileDataProjection;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import java.util.List;
@@ -18,8 +18,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static valeriy.knyazhev.architector.domain.model.project.commit.CommitItem.addItem;
-import static valeriy.knyazhev.architector.domain.model.project.commit.CommitItem.deleteItem;
+import static valeriy.knyazhev.architector.domain.model.commit.CommitItem.addItem;
+import static valeriy.knyazhev.architector.domain.model.commit.CommitItem.deleteItem;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
