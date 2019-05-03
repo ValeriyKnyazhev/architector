@@ -25,20 +25,23 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RestController
-public class FileCommitsResource {
+public class FileCommitsResource
+{
 
     private final CommitRepository commitRepository;
 
     private final ProjectRepository projectRepository;
 
     public FileCommitsResource(@Nonnull CommitRepository commitRepository,
-                               @Nonnull ProjectRepository projectRepository) {
+                               @Nonnull ProjectRepository projectRepository)
+    {
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
     }
 
     @Nonnull
-    private static FileCommitBriefModel constructBriefDescription(@Nonnull Commit commit) {
+    private static FileCommitBriefModel constructBriefDescription(@Nonnull Commit commit)
+    {
         return new FileCommitBriefModel(
             commit.id(),
             commit.parentId(),
@@ -48,7 +51,8 @@ public class FileCommitsResource {
         );
     }
 
-    private static boolean commitRelatedToFile(@Nonnull Commit commit, @Nonnull FileId fileId) {
+    private static boolean commitRelatedToFile(@Nonnull Commit commit, @Nonnull FileId fileId)
+    {
         return commit.data()
             .changedFiles()
             .stream()
@@ -58,7 +62,8 @@ public class FileCommitsResource {
     @GetMapping(value = "api/projects/{qProjectId}/files/{qFileId}/commits",
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchFileChanges(@PathVariable String qProjectId,
-                                                   @PathVariable String qFileId) {
+                                                   @PathVariable String qFileId)
+    {
         ProjectId projectId = ProjectId.of(qProjectId);
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));

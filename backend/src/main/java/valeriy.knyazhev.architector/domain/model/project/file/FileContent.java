@@ -13,26 +13,31 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  */
 @EqualsAndHashCode
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileContent {
+public class FileContent
+{
 
     @Nonnull
     private List<String> items;
 
-    private FileContent(@Nonnull List<String> items) {
+    private FileContent(@Nonnull List<String> items)
+    {
         this.items = items;
     }
 
-    protected FileContent() {
+    protected FileContent()
+    {
         // empty
     }
 
     @Nonnull
-    public static FileContent of(@Nonnull List<String> items) {
+    public static FileContent of(@Nonnull List<String> items)
+    {
         return new FileContent(items);
     }
 
     @Nonnull
-    public List<String> items() {
+    public List<String> items()
+    {
         return this.items;
     }
 

@@ -27,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(ProjectResource.class)
-public class ProjectResourceTests {
+public class ProjectResourceTests
+{
 
     @MockBean
     private IFCFileReader projectReader;
@@ -38,36 +39,41 @@ public class ProjectResourceTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private static Project sampleProject(ProjectId projectId) {
+    private static Project sampleProject(ProjectId projectId)
+    {
         return Project.constructor()
-                .projectId(projectId)
-                .construct();
+            .projectId(projectId)
+            .construct();
     }
 
     @Test
     public void shouldCreateProject()
-            throws Exception {
+        throws
+        Exception
+    {
         // expect
         this.mockMvc.perform(post("/projects")
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.info").exists());
+            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.info").exists());
         verify(this.projectRepository, times(1)).save(any(Project.class));
     }
 
     @Test
     public void shouldReturnProject()
-            throws Exception {
+        throws
+        Exception
+    {
         // given
         ProjectId projectId = ProjectId.nextId();
         when(this.projectRepository.findByProjectId(eq(projectId))).thenReturn(Optional.of(sampleProject(projectId)));
 
         // expect
         this.mockMvc.perform(get("/projects/{projectId}", projectId.id())
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.projectId").value(projectId.id()))
-                .andExpect(jsonPath("$.files").exists());
+            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.projectId").value(projectId.id()))
+            .andExpect(jsonPath("$.files").exists());
     }
 
 }

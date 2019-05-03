@@ -12,7 +12,8 @@ import java.util.List;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class UpdateFileMetadataCommand {
+public class UpdateFileMetadataCommand
+{
 
     @Nonnull
     private String projectId;
@@ -49,7 +50,8 @@ public class UpdateFileMetadataCommand {
                                       @Nonnull String author, @Nonnull String name,
                                       @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
                                       @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
-                                      @Nonnull String originatingSystem, @Nonnull String authorization) {
+                                      @Nonnull String originatingSystem, @Nonnull String authorization)
+    {
         this.projectId = projectId;
         this.fileId = fileId;
         this.author = author;
@@ -63,22 +65,26 @@ public class UpdateFileMetadataCommand {
     }
 
     @Nonnull
-    public ProjectId projectId() {
+    public ProjectId projectId()
+    {
         return ProjectId.of(this.projectId);
     }
 
     @Nonnull
-    public FileId fileId() {
+    public FileId fileId()
+    {
         return FileId.of(this.fileId);
     }
 
     @Nonnull
-    public String author() {
+    public String author()
+    {
         return this.author;
     }
 
     @Nonnull
-    public FileMetadata constructMetadata() {
+    public FileMetadata constructMetadata()
+    {
         return FileMetadata.builder()
             .name(this.name)
             .timestamp(this.timestamp)

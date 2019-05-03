@@ -14,12 +14,14 @@ public class UpdateProjectDescriptionRequest
     @NotNull(message = "Project description is required.")
     private String description;
 
-    public UpdateProjectDescriptionRequest(@Nonnull String description) {
+    public UpdateProjectDescriptionRequest(@Nonnull String description)
+    {
         this.description = Args.notNull(description, "Project description is required.");
     }
 
     @Nonnull
-    public String description() {
+    public String description()
+    {
         return this.description;
     }
 

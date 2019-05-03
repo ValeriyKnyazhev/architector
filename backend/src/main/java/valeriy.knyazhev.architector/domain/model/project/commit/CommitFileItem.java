@@ -16,7 +16,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  */
 @JsonAutoDetect(fieldVisibility = ANY)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommitFileItem {
+public class CommitFileItem
+{
 
     @Nonnull
     private FileId fileId;
@@ -33,40 +34,46 @@ public class CommitFileItem {
     private CommitFileItem(@Nonnull FileId fileId,
                            @Nonnull FileMetadataChanges metadata,
                            @Nonnull FileDescriptionChanges description,
-                           @Nonnull List<CommitItem> items) {
+                           @Nonnull List<CommitItem> items)
+    {
         this.fileId = fileId;
         this.metadata = metadata;
         this.description = description;
         this.items = items.stream()
-                .sorted(CommitItem::compareTo)
-                .collect(Collectors.toList());
+            .sorted(CommitItem::compareTo)
+            .collect(Collectors.toList());
     }
 
     @Nonnull
     public static CommitFileItem of(@Nonnull FileId fileId,
                                     @Nonnull FileMetadataChanges metadata,
                                     @Nonnull FileDescriptionChanges description,
-                                    @Nonnull List<CommitItem> items) {
+                                    @Nonnull List<CommitItem> items)
+    {
         return new CommitFileItem(fileId, metadata, description, items);
     }
 
     @Nonnull
-    public FileId fileId() {
+    public FileId fileId()
+    {
         return this.fileId;
     }
 
     @Nonnull
-    public FileMetadataChanges metadata() {
+    public FileMetadataChanges metadata()
+    {
         return this.metadata;
     }
 
     @Nonnull
-    public FileDescriptionChanges description() {
+    public FileDescriptionChanges description()
+    {
         return this.description;
     }
 
     @Nonnull
-    public List<CommitItem> items() {
+    public List<CommitItem> items()
+    {
         return this.items;
     }
 

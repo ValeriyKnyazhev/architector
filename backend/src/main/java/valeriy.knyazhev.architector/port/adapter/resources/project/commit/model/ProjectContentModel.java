@@ -12,7 +12,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class ProjectContentModel {
+public class ProjectContentModel
+{
 
 
     @Nonnull
@@ -26,7 +27,8 @@ public class ProjectContentModel {
 
     public ProjectContentModel(@Nonnull String projectId,
                                @Nonnull String name,
-                               @Nonnull List<FileContentModel> files) {
+                               @Nonnull List<FileContentModel> files)
+    {
         this.projectId = projectId;
         this.name = name;
         this.files = files;

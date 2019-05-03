@@ -8,7 +8,8 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class DeleteFileCommand {
+public class DeleteFileCommand
+{
 
     @Nonnull
     private String projectId;
@@ -21,24 +22,28 @@ public class DeleteFileCommand {
 
     public DeleteFileCommand(@Nonnull String projectId,
                              @Nonnull String fileId,
-                             @Nonnull String author) {
+                             @Nonnull String author)
+    {
         this.projectId = projectId;
         this.fileId = fileId;
         this.author = author;
     }
 
     @Nonnull
-    public ProjectId projectId() {
+    public ProjectId projectId()
+    {
         return ProjectId.of(this.projectId);
     }
 
     @Nonnull
-    public FileId fileId() {
+    public FileId fileId()
+    {
         return FileId.of(this.fileId);
     }
 
     @Nonnull
-    public String author() {
+    public String author()
+    {
         return this.author;
     }
 

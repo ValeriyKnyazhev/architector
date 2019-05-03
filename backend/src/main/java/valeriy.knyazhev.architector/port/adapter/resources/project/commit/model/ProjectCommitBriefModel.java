@@ -12,7 +12,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class ProjectCommitBriefModel {
+public class ProjectCommitBriefModel
+{
 
 
     private long id;
@@ -30,7 +31,8 @@ public class ProjectCommitBriefModel {
     private LocalDateTime timestamp;
 
     public ProjectCommitBriefModel(long id, @Nullable Long parentId, @Nonnull String author,
-                                   @Nonnull String message, @Nonnull LocalDateTime timestamp) {
+                                   @Nonnull String message, @Nonnull LocalDateTime timestamp)
+    {
         this.id = id;
         this.parentId = parentId;
         this.author = author;

@@ -15,26 +15,29 @@ import java.time.ZoneId;
  */
 @Service
 @RequiredArgsConstructor
-public final class FileInfoExtractor {
+public final class FileInfoExtractor
+{
 
     @Nonnull
-    public static FileDescription extractDescription(@Nonnull IfcHeader header) {
+    public static FileDescription extractDescription(@Nonnull IfcHeader header)
+    {
         return FileDescription.of(header.getDescription(), header.getImplementationLevel());
     }
 
     @Nonnull
-    public static FileMetadata extractMetadata(@Nonnull IfcHeader header) {
+    public static FileMetadata extractMetadata(@Nonnull IfcHeader header)
+    {
 
         LocalDate date = header.getTimeStamp().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return FileMetadata.builder()
-                .name(header.getFilename())
-                .timestamp(date)
-                .authors(header.getAuthor())
-                .organizations(header.getOrganization())
-                .preprocessorVersion(header.getPreProcessorVersion())
-                .originatingSystem(header.getOriginatingSystem())
+            .name(header.getFilename())
+            .timestamp(date)
+            .authors(header.getAuthor())
+            .organizations(header.getOrganization())
+            .preprocessorVersion(header.getPreProcessorVersion())
+            .originatingSystem(header.getOriginatingSystem())
             .authorization(header.getAuthorization())
-                .build();
+            .build();
     }
 
 }

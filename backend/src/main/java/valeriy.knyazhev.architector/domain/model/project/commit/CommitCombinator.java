@@ -26,10 +26,12 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeTyp
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public final class CommitCombinator {
+public final class CommitCombinator
+{
 
     @Nonnull
-    public static ProjectDataProjection combineCommits(@Nonnull List<Commit> commits) {
+    public static ProjectDataProjection combineCommits(@Nonnull List<Commit> commits)
+    {
         ProjectDataProjection projection = ProjectDataProjection.empty();
         commits.stream()
             .sorted(Comparator.comparing(Commit::timestamp))
@@ -39,17 +41,21 @@ public final class CommitCombinator {
     }
 
     private static void addNextProjectChangesToProjection(@Nonnull ProjectDataProjection projection,
-                                                          @Nonnull CommitDescription nextCommit) {
+                                                          @Nonnull CommitDescription nextCommit)
+    {
         nextCommit.changedFiles().forEach(file -> addNextFileChangesToProjection(projection, file));
     }
 
     private static void addNextFileChangesToProjection(@Nonnull ProjectDataProjection projection,
-                                                       @Nonnull CommitFileItem fileChanges) {
+                                                       @Nonnull CommitFileItem fileChanges)
+    {
         FileDataProjection foundFile = projection.files().stream()
             .filter(file -> fileChanges.fileId().equals(file.fileId()))
             .findFirst().orElse(null);
-        if (foundFile == null) {
-            if (fileChanges.items().stream().anyMatch(item -> DELETION == item.type())) {
+        if (foundFile == null)
+        {
+            if (fileChanges.items().stream().anyMatch(item -> DELETION == item.type()))
+            {
                 log.warn("Commit with new file " + fileChanges.fileId() + " has a few deletion items.");
                 throw new IllegalStateException("Commit with new file " + fileChanges.fileId() +
                     " has a few deletion items.");
@@ -65,7 +71,8 @@ public final class CommitCombinator {
                     items
                 )
             );
-        } else {
+        } else
+        {
             AtomicInteger index = new AtomicInteger();
             List<String> newItems = fileChanges.items().stream()
                 .filter(item -> item.position() == 0)
@@ -92,19 +99,24 @@ public final class CommitCombinator {
 
     @Nonnull
     private static List<String> defineValuesInPosition(@Nonnull String curValue,
-                                                       @Nonnull List<CommitItem> itemsInPosition) {
+                                                       @Nonnull List<CommitItem> itemsInPosition)
+    {
         List<String> newItems = new ArrayList<>();
-        if (itemsInPosition.stream().filter(item -> DELETION == item.type()).count() > 1) {
+        if (itemsInPosition.stream().filter(item -> DELETION == item.type()).count() > 1)
+        {
             throw new IllegalStateException("Commit must not have a few deletion items in one position.");
         }
         CommitItem deletedItem = itemsInPosition.stream()
             .filter(item -> DELETION == item.type())
             .findFirst().orElse(null);
-        if (deletedItem != null) {
-            if (!curValue.equals(deletedItem.value())) {
+        if (deletedItem != null)
+        {
+            if (!curValue.equals(deletedItem.value()))
+            {
                 throw new IllegalStateException("Current item does not match with deleted item.");
             }
-        } else {
+        } else
+        {
             newItems.add(curValue);
         }
         newItems.addAll(itemsInPosition.stream()
@@ -116,9 +128,12 @@ public final class CommitCombinator {
 
     @Nonnull
     private static FileMetadata combineMetadataChanges(@Nullable FileMetadata metadata,
-                                                       @Nonnull FileMetadataChanges changes) {
-        if (metadata == null) {
-            if (changes.isEmpty()) {
+                                                       @Nonnull FileMetadataChanges changes)
+    {
+        if (metadata == null)
+        {
+            if (changes.isEmpty())
+            {
                 throw new IllegalStateException("All metadata fields should have been filled.");
             }
             return FileMetadata.builder()
@@ -144,9 +159,12 @@ public final class CommitCombinator {
 
     @Nonnull
     private static FileDescription combineDescriptionChanges(@Nullable FileDescription description,
-                                                             @Nonnull FileDescriptionChanges changes) {
-        if (description == null) {
-            if (changes.isEmpty()) {
+                                                             @Nonnull FileDescriptionChanges changes)
+    {
+        if (description == null)
+        {
+            if (changes.isEmpty())
+            {
                 throw new IllegalStateException("All description fields should have been filled.");
             }
             return FileDescription.of(changes.descriptions(), changes.implementationLevel());

@@ -12,21 +12,26 @@ import javax.annotation.Nullable;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(Include.NON_NULL)
-public class ResponseMessage {
+public class ResponseMessage
+{
 
     private String error;
 
     private String info;
 
-    public ResponseMessage error(@Nullable String error) {
-        if (StringUtils.hasText(error)) {
+    public ResponseMessage error(@Nullable String error)
+    {
+        if (StringUtils.hasText(error))
+        {
             this.error = error;
         }
         return this;
     }
 
-    public ResponseMessage info(@Nullable String info) {
-        if (StringUtils.hasText(info)) {
+    public ResponseMessage info(@Nullable String info)
+    {
+        if (StringUtils.hasText(info))
+        {
             this.info = info;
         }
         return this;

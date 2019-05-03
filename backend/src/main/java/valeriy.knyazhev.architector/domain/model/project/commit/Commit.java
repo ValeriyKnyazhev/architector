@@ -19,7 +19,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "commits")
-public class Commit {
+public class Commit
+{
 
 
     @Id
@@ -51,7 +52,8 @@ public class Commit {
     @Builder
     private Commit(@Nullable Long parentId, @Nonnull ProjectId projectId,
                    @Nonnull String author, @Nonnull String message,
-                   @Nonnull CommitDescription data) {
+                   @Nonnull CommitDescription data)
+    {
         this.parentId = parentId;
         this.projectId = projectId;
         this.author = author;
@@ -60,37 +62,44 @@ public class Commit {
         this.data = data;
     }
 
-    public long id() {
+    public long id()
+    {
         return this.id;
     }
 
     @Nullable
-    public Long parentId() {
+    public Long parentId()
+    {
         return this.parentId;
     }
 
     @Nonnull
-    public ProjectId projectId() {
+    public ProjectId projectId()
+    {
         return this.projectId;
     }
 
     @Nonnull
-    public String author() {
+    public String author()
+    {
         return this.author;
     }
 
     @Nonnull
-    public String message() {
+    public String message()
+    {
         return this.message;
     }
 
     @Nonnull
-    public LocalDateTime timestamp() {
+    public LocalDateTime timestamp()
+    {
         return this.timestamp;
     }
 
     @Nonnull
-    public CommitDescription data() {
+    public CommitDescription data()
+    {
         return this.data;
     }
 

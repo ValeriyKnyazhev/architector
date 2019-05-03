@@ -28,7 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(FileResource.class)
-public class FileResourceTests {
+public class FileResourceTests
+{
 
     @MockBean
     private IFCFileReader fileReader;
@@ -39,15 +40,18 @@ public class FileResourceTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private static Project sampleProject(ProjectId projectId) {
+    private static Project sampleProject(ProjectId projectId)
+    {
         return Project.constructor()
-                .projectId(projectId)
-                .construct();
+            .projectId(projectId)
+            .construct();
     }
 
     @Test
     public void shouldAddFile()
-            throws Exception {
+        throws
+        Exception
+    {
         // given
         String fileUrl = "https://test.projects.ru/example.ifc";
         String createCommand = "{\"fileUrl\": \"" + fileUrl + "\"}";
@@ -60,10 +64,10 @@ public class FileResourceTests {
 
         // expect
         this.mockMvc.perform(post("/projects/{projectId}/files", projectId.id())
-                .content(createCommand)
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.info").exists());
+            .content(createCommand)
+            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.info").exists());
         verify(this.projectRepository, times(1)).save(project);
     }
 

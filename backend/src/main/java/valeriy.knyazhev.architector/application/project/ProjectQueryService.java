@@ -16,20 +16,23 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class ProjectQueryService {
+public class ProjectQueryService
+{
 
     private final ProjectRepository repository;
 
     @Nullable
-    public Project findById(@Nonnull String qProjectId) {
+    public Project findById(@Nonnull String qProjectId)
+    {
         Args.notNull(qProjectId, "Project identifier is required.");
         ProjectId projectId = ProjectId.of(qProjectId);
         return this.repository.findByProjectId(projectId)
-                .orElse(null);
+            .orElse(null);
     }
 
     @Nonnull
-    public List<Project> findAllProjects() {
+    public List<Project> findAllProjects()
+    {
         return this.repository.findAll();
     }
 

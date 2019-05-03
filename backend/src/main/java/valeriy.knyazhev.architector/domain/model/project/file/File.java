@@ -19,7 +19,8 @@ import static org.bimserver.emf.Schema.IFC2X3TC1;
 @EntityListeners(FileEntityListener.class)
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "files")
-public class File {
+public class File
+{
 
 
     @Id
@@ -63,7 +64,8 @@ public class File {
     private File(@Nonnull FileId fileId,
                  @Nonnull FileDescription description,
                  @Nonnull FileMetadata metadata,
-                 @Nonnull FileContent content) {
+                 @Nonnull FileContent content)
+    {
         this.fileId = fileId;
         this.description = description;
         this.metadata = metadata;
@@ -71,66 +73,80 @@ public class File {
     }
 
     @Nonnull
-    public static FileConstructor constructor() {
+    public static FileConstructor constructor()
+    {
         return new FileConstructor();
     }
 
     @Nonnull
-    public FileId fileId() {
+    public FileId fileId()
+    {
         return this.fileId;
     }
 
     @Nonnull
-    public Schema schema() {
+    public Schema schema()
+    {
         return this.schema;
     }
 
     @Nonnull
-    public FileDescription description() {
+    public FileDescription description()
+    {
         return this.description;
     }
 
     @Nonnull
-    public FileMetadata metadata() {
+    public FileMetadata metadata()
+    {
         return this.metadata;
     }
 
     @Nonnull
-    public FileContent content() {
+    public FileContent content()
+    {
         return this.content;
     }
 
     @Nonnull
-    public LocalDateTime createdDate() {
+    public LocalDateTime createdDate()
+    {
         return this.createdDate;
     }
 
     @Nonnull
-    public LocalDateTime updatedDate() {
+    public LocalDateTime updatedDate()
+    {
         return this.updatedDate;
     }
 
-    public void updateDescription(@Nonnull FileDescription description) {
+    public void updateDescription(@Nonnull FileDescription description)
+    {
         this.description = description;
     }
 
-    public void updateMetadata(@Nonnull FileMetadata metadata) {
+    public void updateMetadata(@Nonnull FileMetadata metadata)
+    {
         this.metadata = metadata;
     }
 
-    public void updateContent(@Nonnull FileContent content) {
+    public void updateContent(@Nonnull FileContent content)
+    {
         this.content = content;
     }
 
-    void setCreatedDate(@Nonnull LocalDateTime date) {
+    void setCreatedDate(@Nonnull LocalDateTime date)
+    {
         this.createdDate = date;
     }
 
-    void setUpdatedDate(@Nonnull LocalDateTime date) {
+    void setUpdatedDate(@Nonnull LocalDateTime date)
+    {
         this.updatedDate = date;
     }
 
-    public static class FileConstructor {
+    public static class FileConstructor
+    {
 
         private FileId fileId;
 
@@ -140,35 +156,41 @@ public class File {
 
         private FileContent content;
 
-        FileConstructor() {
+        FileConstructor()
+        {
         }
 
         @Nonnull
-        public FileConstructor withFileId(@Nonnull FileId fileId) {
+        public FileConstructor withFileId(@Nonnull FileId fileId)
+        {
             this.fileId = fileId;
             return this;
         }
 
         @Nonnull
-        public FileConstructor withDescription(@Nonnull FileDescription description) {
+        public FileConstructor withDescription(@Nonnull FileDescription description)
+        {
             this.description = description;
             return this;
         }
 
         @Nonnull
-        public FileConstructor withMetadata(@Nonnull FileMetadata metadata) {
+        public FileConstructor withMetadata(@Nonnull FileMetadata metadata)
+        {
             this.metadata = metadata;
             return this;
         }
 
         @Nonnull
-        public FileConstructor withContent(@Nonnull FileContent content) {
+        public FileConstructor withContent(@Nonnull FileContent content)
+        {
             this.content = content;
             return this;
         }
 
         @Nonnull
-        public File construct() {
+        public File construct()
+        {
             return new File(
                 this.fileId, this.description, this.metadata, this.content
             );

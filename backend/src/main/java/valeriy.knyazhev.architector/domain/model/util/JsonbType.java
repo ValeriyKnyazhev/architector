@@ -21,105 +21,133 @@ import java.util.Properties;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RequiredArgsConstructor
-public class JsonbType implements UserType, DynamicParameterizedType {
+public class JsonbType implements UserType, DynamicParameterizedType
+{
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private Class targetClass;
 
-    private static String asString(Object value) {
-        try {
+    private static String asString(Object value)
+    {
+        try
+        {
             return OBJECT_MAPPER.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e)
+        {
             throw new HibernateException("Unable to write JSON-formatted value.", e);
         }
     }
 
     @Override
-    public int[] sqlTypes() {
+    public int[] sqlTypes()
+    {
         return new int[]{Types.JAVA_OBJECT};
     }
 
     @Override
-    public Class returnedClass() {
+    public Class returnedClass()
+    {
         return this.targetClass;
     }
 
     @Override
-    public boolean equals(Object x, Object y) {
+    public boolean equals(Object x, Object y)
+    {
         return Objects.equals(x, y);
     }
 
     @Override
-    public int hashCode(Object x) {
+    public int hashCode(Object x)
+    {
         return Objects.hash(x);
     }
 
     @Override
     public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
-        throws SQLException {
+        throws
+        SQLException
+    {
         String json = rs.getString(names[0]);
-        if (json == null) {
+        if (json == null)
+        {
             return null;
-        } else {
+        } else
+        {
             return returnedClass().cast(asObject(json));
         }
     }
 
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
-        throws SQLException {
-        if (value == null) {
+        throws
+        SQLException
+    {
+        if (value == null)
+        {
             st.setNull(index, Types.OTHER);
-        } else {
+        } else
+        {
             st.setObject(index, asString(value), Types.OTHER);
         }
     }
 
     @Override
-    public Object deepCopy(Object value) {
+    public Object deepCopy(Object value)
+    {
         return returnedClass().cast(nullSafeDeepCopy(value));
     }
 
     @Override
-    public boolean isMutable() {
+    public boolean isMutable()
+    {
         return true;
     }
 
     @Override
-    public Serializable disassemble(Object value) {
+    public Serializable disassemble(Object value)
+    {
         return asString(value);
     }
 
     @Override
-    public Object assemble(Serializable cached, Object owner) {
+    public Object assemble(Serializable cached, Object owner)
+    {
         return asObject((String) cached);
     }
 
     @Override
-    public Object replace(Object original, Object target, Object owner) {
+    public Object replace(Object original, Object target, Object owner)
+    {
         return nullSafeDeepCopy(original);
     }
 
     @Override
-    public void setParameterValues(Properties parameters) {
+    public void setParameterValues(Properties parameters)
+    {
         ParameterType parameterType = (ParameterType) parameters.get(DynamicParameterizedType.PARAMETER_TYPE);
         this.targetClass = parameterType.getReturnedClass();
     }
 
-    private Object nullSafeDeepCopy(Object value) {
-        if (value == null) {
+    private Object nullSafeDeepCopy(Object value)
+    {
+        if (value == null)
+        {
             return null;
-        } else {
+        } else
+        {
             return asObject(asString(value));
         }
     }
 
     @SuppressWarnings("unchecked")
-    private Object asObject(String json) {
-        try {
+    private Object asObject(String json)
+    {
+        try
+        {
             return OBJECT_MAPPER.readValue(json, returnedClass());
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             throw new HibernateException("Unable to read JSON-formatted value", e);
         }
     }

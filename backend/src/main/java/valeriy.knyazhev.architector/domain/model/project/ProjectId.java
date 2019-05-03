@@ -13,27 +13,32 @@ import java.util.UUID;
 
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public final class ProjectId {
+public final class ProjectId
+{
 
     @Nonnull
     private String id;
 
-    private ProjectId(@Nonnull String id) {
+    private ProjectId(@Nonnull String id)
+    {
         this.id = id;
     }
 
     @Nonnull
-    public static ProjectId of(@Nonnull String id) {
+    public static ProjectId of(@Nonnull String id)
+    {
         return new ProjectId(id);
     }
 
     @Nonnull
-    public static ProjectId nextId() {
+    public static ProjectId nextId()
+    {
         return new ProjectId(UUID.randomUUID().toString());
     }
 
     @Nonnull
-    public String id() {
+    public String id()
+    {
         return this.id;
     }
 

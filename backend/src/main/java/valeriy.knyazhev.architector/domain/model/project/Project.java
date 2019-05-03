@@ -23,7 +23,8 @@ import static lombok.AccessLevel.PROTECTED;
 @EntityListeners(ProjectEntityListener.class)
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "projects")
-public class Project {
+public class Project
+{
 
 
     @Id
@@ -64,7 +65,8 @@ public class Project {
                     @Nonnull String name,
                     @Nonnull String author,
                     @Nonnull String description,
-                    @Nonnull List<File> files) {
+                    @Nonnull List<File> files)
+    {
         this.projectId = projectId;
         this.name = name;
         this.author = author;
@@ -73,50 +75,60 @@ public class Project {
     }
 
     @Nonnull
-    public static ProjectConstructor constructor() {
+    public static ProjectConstructor constructor()
+    {
         return new ProjectConstructor();
     }
 
     @Nonnull
-    public ProjectId projectId() {
+    public ProjectId projectId()
+    {
         return this.projectId;
     }
 
     @Nonnull
-    public String name() {
+    public String name()
+    {
         return this.name;
     }
 
     @Nonnull
-    public String author() {
+    public String author()
+    {
         return this.author;
     }
 
     @Nonnull
-    public String description() {
+    public String description()
+    {
         return this.description;
     }
 
     @Nonnull
-    public LocalDateTime createdDate() {
+    public LocalDateTime createdDate()
+    {
         return this.createdDate;
     }
 
     @Nonnull
-    public LocalDateTime updatedDate() {
+    public LocalDateTime updatedDate()
+    {
         return this.updatedDate;
     }
 
     @Nonnull
-    public List<File> files() {
+    public List<File> files()
+    {
         return this.files;
     }
 
-    public void addFile(@Nonnull File file) {
+    public void addFile(@Nonnull File file)
+    {
         this.files.add(file);
     }
 
-    public void updateFile(@Nonnull FileId fileId, @Nonnull FileContent content) {
+    public void updateFile(@Nonnull FileId fileId, @Nonnull FileContent content)
+    {
         this.files.stream()
             .filter(f -> fileId.equals(f.fileId()))
             .findFirst()
@@ -125,7 +137,8 @@ public class Project {
     }
 
     @Nonnull
-    public File deleteFile(@Nonnull FileId fileId) {
+    public File deleteFile(@Nonnull FileId fileId)
+    {
         File deleted = this.files.stream()
             .filter(f -> fileId.equals(f.fileId()))
             .findFirst()
@@ -144,15 +157,18 @@ public class Project {
         this.description = description;
     }
 
-    void setCreatedDate(@Nonnull LocalDateTime date) {
+    void setCreatedDate(@Nonnull LocalDateTime date)
+    {
         this.createdDate = date;
     }
 
-    void setUpdatedDate(@Nonnull LocalDateTime date) {
+    void setUpdatedDate(@Nonnull LocalDateTime date)
+    {
         this.updatedDate = date;
     }
 
-    public static class ProjectConstructor {
+    public static class ProjectConstructor
+    {
 
         private ProjectId projectId;
 
@@ -164,41 +180,48 @@ public class Project {
 
         private File file;
 
-        ProjectConstructor() {
+        ProjectConstructor()
+        {
         }
 
         @Nonnull
-        public ProjectConstructor projectId(@Nonnull ProjectId projectId) {
+        public ProjectConstructor projectId(@Nonnull ProjectId projectId)
+        {
             this.projectId = projectId;
             return this;
         }
 
         @Nonnull
-        public ProjectConstructor withName(@Nonnull String projectName) {
+        public ProjectConstructor withName(@Nonnull String projectName)
+        {
             this.projectName = projectName;
             return this;
         }
 
         @Nonnull
-        public ProjectConstructor withAuthor(@Nonnull String author) {
+        public ProjectConstructor withAuthor(@Nonnull String author)
+        {
             this.author = author;
             return this;
         }
 
         @Nonnull
-        public ProjectConstructor withDescription(@Nonnull String description) {
+        public ProjectConstructor withDescription(@Nonnull String description)
+        {
             this.description = description;
             return this;
         }
 
         @Nonnull
-        public ProjectConstructor withFile(@Nonnull File file) {
+        public ProjectConstructor withFile(@Nonnull File file)
+        {
             this.file = file;
             return this;
         }
 
         @Nonnull
-        public Project construct() {
+        public Project construct()
+        {
             return new Project(
                 this.projectId, this.projectName, this.author, this.description, singletonList(this.file)
             );

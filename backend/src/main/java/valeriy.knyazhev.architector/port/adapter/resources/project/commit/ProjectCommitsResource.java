@@ -30,20 +30,23 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RestController
-public class ProjectCommitsResource {
+public class ProjectCommitsResource
+{
 
     private final CommitRepository commitRepository;
 
     private final ProjectRepository projectRepository;
 
     public ProjectCommitsResource(@Nonnull CommitRepository commitRepository,
-                                  @Nonnull ProjectRepository projectRepository) {
+                                  @Nonnull ProjectRepository projectRepository)
+    {
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
     }
 
     @Nonnull
-    private static ProjectCommitBriefModel constructBriefDescription(@Nonnull Commit commit) {
+    private static ProjectCommitBriefModel constructBriefDescription(@Nonnull Commit commit)
+    {
         return new ProjectCommitBriefModel(
             commit.id(),
             commit.parentId(),
@@ -55,7 +58,8 @@ public class ProjectCommitsResource {
 
     @Nonnull
     private static Commit findCommitById(@Nonnull List<Commit> commits,
-                                         long commitId) {
+                                         long commitId)
+    {
         return commits.stream()
             .filter(commit -> commitId == commit.id())
             .findFirst()
@@ -67,7 +71,8 @@ public class ProjectCommitsResource {
 
     @GetMapping(value = "api/projects/{qProjectId}/commits",
         produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId) {
+    public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId)
+    {
         ProjectId projectId = ProjectId.of(qProjectId);
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
@@ -88,7 +93,8 @@ public class ProjectCommitsResource {
     @GetMapping(value = "api/projects/{qProjectId}/commits/{commitId}/content",
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId,
-                                                      @PathVariable long commitId) {
+                                                      @PathVariable long commitId)
+    {
         ProjectId projectId = ProjectId.of(qProjectId);
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
@@ -97,7 +103,8 @@ public class ProjectCommitsResource {
         List<Long> identifiers = new LinkedList<>();
         Long lastParentCommitId = findCommitById(commits, commitId).parentId();
         identifiers.add(commitId);
-        while (lastParentCommitId != null) {
+        while (lastParentCommitId != null)
+        {
             identifiers.add(lastParentCommitId);
             lastParentCommitId = findCommitById(commits, lastParentCommitId).parentId();
         }
@@ -114,7 +121,7 @@ public class ProjectCommitsResource {
                     .filter(file -> !file.items().isEmpty())
                     .map(file -> new FileContentModel(
                             file.fileId().id(),
-                        file.metadata().name(),
+                            file.metadata().name(),
                             file.items()
                         )
                     )

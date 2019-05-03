@@ -8,7 +8,8 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class UpdateFileFromUrlCommand {
+public class UpdateFileFromUrlCommand
+{
 
     @Nonnull
     private String projectId;
@@ -25,7 +26,8 @@ public class UpdateFileFromUrlCommand {
     public UpdateFileFromUrlCommand(@Nonnull String projectId,
                                     @Nonnull String fileId,
                                     @Nonnull String author,
-                                    @Nonnull String sourceUrl) {
+                                    @Nonnull String sourceUrl)
+    {
         this.projectId = projectId;
         this.fileId = fileId;
         this.author = author;
@@ -33,22 +35,26 @@ public class UpdateFileFromUrlCommand {
     }
 
     @Nonnull
-    public ProjectId projectId() {
+    public ProjectId projectId()
+    {
         return ProjectId.of(this.projectId);
     }
 
     @Nonnull
-    public FileId fileId() {
+    public FileId fileId()
+    {
         return FileId.of(this.fileId);
     }
 
     @Nonnull
-    public String author() {
+    public String author()
+    {
         return this.author;
     }
 
     @Nonnull
-    public String sourceUrl() {
+    public String sourceUrl()
+    {
         return this.sourceUrl;
     }
 }

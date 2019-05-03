@@ -7,16 +7,19 @@ import java.time.LocalDateTime;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class ProjectEntityListener {
+public class ProjectEntityListener
+{
 
     @PrePersist
-    public void setCreatedAndUpdatedDate(Project project) {
+    public void setCreatedAndUpdatedDate(Project project)
+    {
         project.setCreatedDate(LocalDateTime.now());
         project.setUpdatedDate(LocalDateTime.now());
     }
 
     @PreUpdate
-    public void setUpdatedDate(Project project) {
+    public void setUpdatedDate(Project project)
+    {
         project.setUpdatedDate(LocalDateTime.now());
     }
 

@@ -16,7 +16,8 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeTyp
  */
 @JsonAutoDetect(fieldVisibility = ANY)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommitItem implements Comparable<CommitItem> {
+public class CommitItem implements Comparable<CommitItem>
+{
 
     @Nonnull
     private String value;
@@ -26,41 +27,48 @@ public class CommitItem implements Comparable<CommitItem> {
 
     private int position;
 
-    private CommitItem(@Nonnull String value, @Nonnull ChangeType type, int position) {
+    private CommitItem(@Nonnull String value, @Nonnull ChangeType type, int position)
+    {
         this.value = value;
         this.type = type;
         this.position = position;
     }
 
     @Nonnull
-    public static CommitItem addItem(@Nonnull String value, int position) {
+    public static CommitItem addItem(@Nonnull String value, int position)
+    {
         return new CommitItem(value, ADDITION, position);
     }
 
     @Nonnull
-    public static CommitItem deleteItem(@Nonnull String value, int position) {
+    public static CommitItem deleteItem(@Nonnull String value, int position)
+    {
         return new CommitItem(value, DELETION, position);
     }
 
     @Nonnull
-    public String value() {
+    public String value()
+    {
         return this.value;
     }
 
     @Nonnull
-    public ChangeType type() {
+    public ChangeType type()
+    {
         return this.type;
     }
 
-    public int position() {
+    public int position()
+    {
         return this.position;
     }
 
     @Override
-    public int compareTo(@Nonnull CommitItem item) {
+    public int compareTo(@Nonnull CommitItem item)
+    {
         return Comparator.comparing(CommitItem::position)
-                .thenComparing(CommitItem::type)
-                .compare(this, item);
+            .thenComparing(CommitItem::type)
+            .compare(this, item);
     }
 
 }

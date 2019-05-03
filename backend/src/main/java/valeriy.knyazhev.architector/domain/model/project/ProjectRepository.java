@@ -10,12 +10,13 @@ import java.util.Optional;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+public interface ProjectRepository extends JpaRepository<Project, Long>
+{
 
     @Nonnull
-    public Optional<Project> findByProjectId(@Nonnull ProjectId projectId);
+    Optional<Project> findByProjectId(@Nonnull ProjectId projectId);
 
     @NonNull
-    public List<Project> findAll();
+    List<Project> findAll();
 
 }

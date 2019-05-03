@@ -9,9 +9,11 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev
  */
-public class FileNotFoundException extends IllegalStateException {
+public class FileNotFoundException extends IllegalStateException
+{
 
-    public FileNotFoundException(@Nonnull ProjectId projectId, @Nonnull FileId fileId) {
+    public FileNotFoundException(@Nonnull ProjectId projectId, @Nonnull FileId fileId)
+    {
         super("Unable to find file with id " +
             Args.notNull(fileId, "File identifier is required.").id() + " in project with id " +
             Args.notNull(projectId, "Project identifier is required.").id() + ".");

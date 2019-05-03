@@ -9,18 +9,21 @@ import javax.validation.constraints.Size;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class UpdateProjectNameRequest {
+public class UpdateProjectNameRequest
+{
 
     @NotNull(message = "Project name is required.")
     @Size(min = 1, max = 50, message = "Project name must have minimum 1 and maximum 50 symbols.")
     private String name;
 
-    public UpdateProjectNameRequest(@Nonnull String name) {
+    public UpdateProjectNameRequest(@Nonnull String name)
+    {
         this.name = Args.notBlank(name, "Project name is required.");
     }
 
     @Nonnull
-    public String name() {
+    public String name()
+    {
         return this.name;
     }
 

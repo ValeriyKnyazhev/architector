@@ -14,17 +14,20 @@ import static java.util.Collections.emptyList;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public final class FileMapper {
+public final class FileMapper
+{
 
     @Nonnull
-    public static FileContentModel buildContent(@Nonnull File file) {
+    public static FileContentModel buildContent(@Nonnull File file)
+    {
         return new FileContentModel(
             file.fileId().id(), extractFileName(file), file.content().items()
         );
     }
 
     @Nonnull
-    public static FileModel buildFile(@Nonnull File file) {
+    public static FileModel buildFile(@Nonnull File file)
+    {
         DescriptionModel description = constructDescription(file.description());
         MetadataModel metadata = constructMetadata(file.metadata());
         return new FileModel(
@@ -34,14 +37,16 @@ public final class FileMapper {
     }
 
     @Nonnull
-    private static DescriptionModel constructDescription(@Nonnull FileDescription description) {
+    private static DescriptionModel constructDescription(@Nonnull FileDescription description)
+    {
         return new DescriptionModel(
             description.descriptions(), description.implementationLevel()
         );
     }
 
     @Nonnull
-    private static MetadataModel constructMetadata(@Nonnull FileMetadata metadata) {
+    private static MetadataModel constructMetadata(@Nonnull FileMetadata metadata)
+    {
         return MetadataModel.builder()
             .name(metadata.name())
             .timestamp(metadata.timestamp())
@@ -54,14 +59,16 @@ public final class FileMapper {
     }
 
     @Nonnull
-    private static List<String> checkAndMapList(@Nonnull List<String> items) {
+    private static List<String> checkAndMapList(@Nonnull List<String> items)
+    {
         return items.stream().anyMatch(item -> !item.isEmpty())
             ? items
             : emptyList();
     }
 
     @Nonnull
-    private static String extractFileName(@Nonnull File file) {
+    private static String extractFileName(@Nonnull File file)
+    {
         return file.metadata().name();
     }
 

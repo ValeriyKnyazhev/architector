@@ -31,7 +31,8 @@ import static java.util.Collections.singletonList;
 @RequiredArgsConstructor
 @Service
 @Transactional
-public class FileManagementService {
+public class FileManagementService
+{
 
     private final ProjectRepository projectRepository;
 
@@ -41,7 +42,8 @@ public class FileManagementService {
 
     @Nonnull
     private static File constructFile(@Nonnull FileId fileId,
-                                      @Nonnull FileData fileData) {
+                                      @Nonnull FileData fileData)
+    {
         return File.constructor()
             .withFileId(fileId)
             .withDescription(fileData.description())
@@ -51,13 +53,16 @@ public class FileManagementService {
     }
 
     @Nullable
-    public File addFile(@Nonnull AddFileFromUrlCommand command) {
+    public File addFile(@Nonnull AddFileFromUrlCommand command)
+    {
         Args.notNull(command, "Add file from url command is required.");
         FileData newFile = null;
-        try {
+        try
+        {
             URL sourceUrl = new URL(command.sourceUrl());
             newFile = this.fileReader.readFromUrl(sourceUrl);
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException e)
+        {
             return null;
         }
         return addNewFile(
@@ -68,13 +73,16 @@ public class FileManagementService {
     }
 
     @Nullable
-    public File addFile(@Nonnull AddFileFromUploadCommand command) {
+    public File addFile(@Nonnull AddFileFromUploadCommand command)
+    {
         Args.notNull(command, "Add file from upload file command is required.");
         FileData newFile = null;
-        try {
+        try
+        {
             MultipartFile multipartFile = command.content();
             newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
-        } catch (IOException ex) {
+        } catch (IOException ex)
+        {
             return null;
         }
         return addNewFile(
@@ -84,13 +92,16 @@ public class FileManagementService {
             newFile);
     }
 
-    public boolean updateFile(@Nonnull UpdateFileFromUrlCommand command) {
+    public boolean updateFile(@Nonnull UpdateFileFromUrlCommand command)
+    {
         Args.notNull(command, "Update file from url command is required.");
         FileData newFile = null;
-        try {
+        try
+        {
             URL sourceUrl = new URL(command.sourceUrl());
             newFile = this.fileReader.readFromUrl(sourceUrl);
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException e)
+        {
             return false;
         }
         return updateFile(
@@ -101,13 +112,16 @@ public class FileManagementService {
             newFile);
     }
 
-    public boolean updateFile(@Nonnull UpdateFileFromUploadCommand command) {
+    public boolean updateFile(@Nonnull UpdateFileFromUploadCommand command)
+    {
         Args.notNull(command, "Update file from upload file command is required.");
         FileData newFile = null;
-        try {
+        try
+        {
             MultipartFile multipartFile = command.content();
             newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
-        } catch (IOException ex) {
+        } catch (IOException ex)
+        {
             return false;
         }
         return updateFile(
@@ -118,7 +132,8 @@ public class FileManagementService {
             newFile);
     }
 
-    public boolean updateFileMetadata(@Nonnull UpdateFileMetadataCommand command) {
+    public boolean updateFileMetadata(@Nonnull UpdateFileMetadataCommand command)
+    {
         Args.notNull(command, "Update file metadata command is required.");
         ProjectId projectId = command.projectId();
         Project project = findProject(projectId);
@@ -136,7 +151,8 @@ public class FileManagementService {
         return true;
     }
 
-    public boolean updateFileDescription(@Nonnull UpdateFileDescriptionCommand command) {
+    public boolean updateFileDescription(@Nonnull UpdateFileDescriptionCommand command)
+    {
         Args.notNull(command, "Update file description command is required.");
         ProjectId projectId = command.projectId();
         Project project = findProject(projectId);
@@ -154,7 +170,8 @@ public class FileManagementService {
         return true;
     }
 
-    public boolean deleteFile(@Nonnull DeleteFileCommand command) {
+    public boolean deleteFile(@Nonnull DeleteFileCommand command)
+    {
         Args.notNull(command, "Update file from upload file command is required.");
         return deleteFile(command.projectId(), command.fileId(), command.author());
     }
@@ -163,7 +180,8 @@ public class FileManagementService {
     private File addNewFile(@Nonnull ProjectId projectId,
                             @Nonnull String author,
                             @Nonnull String commitMessage,
-                            @Nonnull FileData newFileData) {
+                            @Nonnull FileData newFileData)
+    {
         Project project = findProject(projectId);
         File newFile = constructFile(FileId.nextId(), newFileData);
         project.addFile(newFile);
@@ -192,7 +210,8 @@ public class FileManagementService {
                                @Nonnull FileId fileId,
                                @Nonnull String author,
                                @Nonnull String commitMessage,
-                               @Nonnull FileData newFileData) {
+                               @Nonnull FileData newFileData)
+    {
         Project project = findProject(projectId);
         File oldFile = project.files().stream()
             .filter(file -> fileId.equals(file.fileId()))
@@ -208,7 +227,8 @@ public class FileManagementService {
         FileDescriptionChanges fileDescriptionChanges = FileDiffCalculator.defineDescriptionChanges(
             oldFile.description(), newFile.description()
         );
-        if (commitItems.isEmpty() && fileMetadataChanges.isEmpty() && fileDescriptionChanges.isEmpty()) {
+        if (commitItems.isEmpty() && fileMetadataChanges.isEmpty() && fileDescriptionChanges.isEmpty())
+        {
             // FIXME add specific exception
             throw new IllegalStateException("Nothing to commit.");
         }
@@ -228,7 +248,8 @@ public class FileManagementService {
 
     private boolean deleteFile(@Nonnull ProjectId projectId,
                                @Nonnull FileId fileId,
-                               @Nonnull String author) {
+                               @Nonnull String author)
+    {
         Project project = findProject(projectId);
         File deleted = project.deleteFile(fileId);
         this.projectRepository.save(project);
@@ -254,13 +275,15 @@ public class FileManagementService {
 
     private void updateFileContent(@Nonnull Project project,
                                    @Nonnull FileId fileId,
-                                   @Nonnull File newFile) {
+                                   @Nonnull File newFile)
+    {
         project.updateFile(fileId, newFile.content());
         this.projectRepository.save(project);
     }
 
     @Nonnull
-    private Project findProject(@Nonnull ProjectId projectId) {
+    private Project findProject(@Nonnull ProjectId projectId)
+    {
         return this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
     }
@@ -268,7 +291,8 @@ public class FileManagementService {
     private boolean commitChanges(@Nonnull ProjectId projectId,
                                   @Nonnull String author,
                                   @Nonnull String commitMessage,
-                                  @Nonnull CommitDescription commitData) {
+                                  @Nonnull CommitDescription commitData)
+    {
         Long parentId = this.commitRepository.findByProjectIdOrderById(projectId)
             .stream()
             .map(Commit::id)

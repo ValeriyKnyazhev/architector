@@ -12,10 +12,12 @@ import static java.util.stream.Collectors.toList;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public final class ProjectMapper {
+public final class ProjectMapper
+{
 
     @Nonnull
-    public static ProjectModel buildProject(@Nonnull Project project) {
+    public static ProjectModel buildProject(@Nonnull Project project)
+    {
         List<FileBriefModel> files = project.files().stream()
             .map(ProjectMapper::constructFile)
             .collect(toList());
@@ -32,7 +34,8 @@ public final class ProjectMapper {
 
 
     @Nonnull
-    private static FileBriefModel constructFile(@Nonnull File file) {
+    private static FileBriefModel constructFile(@Nonnull File file)
+    {
 
         return new FileBriefModel(
             file.fileId().id(),

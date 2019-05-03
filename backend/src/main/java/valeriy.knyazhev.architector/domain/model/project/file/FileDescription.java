@@ -9,7 +9,8 @@ import java.util.List;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class FileDescription {
+public class FileDescription
+{
 
     @Nonnull
     private List<String> descriptions;
@@ -17,27 +18,32 @@ public class FileDescription {
     @Nonnull
     private String implementationLevel;
 
-    private FileDescription(@Nonnull List<String> descriptions, @Nonnull String implementationLevel) {
+    private FileDescription(@Nonnull List<String> descriptions, @Nonnull String implementationLevel)
+    {
         this.descriptions = descriptions;
         this.implementationLevel = implementationLevel;
     }
 
-    protected FileDescription() {
+    protected FileDescription()
+    {
         // empty
     }
 
     @Nonnull
-    public static FileDescription of(@Nonnull List<String> descriptions, @Nonnull String implementationLevel) {
+    public static FileDescription of(@Nonnull List<String> descriptions, @Nonnull String implementationLevel)
+    {
         return new FileDescription(descriptions, implementationLevel);
     }
 
     @Nonnull
-    public List<String> descriptions() {
+    public List<String> descriptions()
+    {
         return this.descriptions;
     }
 
     @Nonnull
-    public String implementationLevel() {
+    public String implementationLevel()
+    {
         return this.implementationLevel;
     }
 

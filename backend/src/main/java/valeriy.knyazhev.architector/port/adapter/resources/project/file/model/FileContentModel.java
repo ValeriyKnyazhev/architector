@@ -12,7 +12,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileContentModel {
+public class FileContentModel
+{
 
 
     @Nonnull
@@ -24,13 +25,15 @@ public class FileContentModel {
     @Nonnull
     private String content;
 
-    public FileContentModel(@Nonnull String fileId, @Nonnull String name, @Nonnull String content) {
+    public FileContentModel(@Nonnull String fileId, @Nonnull String name, @Nonnull String content)
+    {
         this.fileId = fileId;
         this.name = name;
         this.content = content;
     }
 
-    public FileContentModel(@Nonnull String fileId, @Nonnull String name, @Nonnull List<String> items) {
+    public FileContentModel(@Nonnull String fileId, @Nonnull String name, @Nonnull List<String> items)
+    {
         this.fileId = fileId;
         this.name = name;
         this.content = items.stream()
@@ -39,7 +42,8 @@ public class FileContentModel {
     }
 
     @Nonnull
-    private static String wrap(@Nonnull String item) {
+    private static String wrap(@Nonnull String item)
+    {
         return "<div className=\"content-item__data\">" + item + "</div>";
     }
 

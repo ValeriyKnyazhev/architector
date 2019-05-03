@@ -10,15 +10,16 @@ import java.util.Optional;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public interface CommitRepository extends JpaRepository<Commit, Long> {
+public interface CommitRepository extends JpaRepository<Commit, Long>
+{
 
     @Nonnull
-    public List<Commit> findByProjectIdOrderById(@Nonnull ProjectId projectId);
+    List<Commit> findByProjectIdOrderById(@Nonnull ProjectId projectId);
 
     @Nonnull
-    public List<Commit> findByProjectIdOrderByIdDesc(@Nonnull ProjectId projectId);
+    List<Commit> findByProjectIdOrderByIdDesc(@Nonnull ProjectId projectId);
 
     @Nonnull
-    public Optional<Commit> findById(long id);
+    Optional<Commit> findById(long id);
 
 }

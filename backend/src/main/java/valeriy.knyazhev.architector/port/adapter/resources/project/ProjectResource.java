@@ -31,14 +31,16 @@ import static valeriy.knyazhev.architector.port.adapter.resources.project.model.
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RestController
-public class ProjectResource {
+public class ProjectResource
+{
 
     private ProjectManagementService managementService;
 
     private ProjectQueryService queryService;
 
     public ProjectResource(@Nonnull ProjectManagementService managementService,
-                           @Nonnull ProjectQueryService queryService) {
+                           @Nonnull ProjectQueryService queryService)
+    {
         this.managementService = Args.notNull(managementService, "Management service is required.");
         this.queryService = Args.notNull(queryService, "Query service is required.");
     }
@@ -46,7 +48,8 @@ public class ProjectResource {
     @PostMapping(value = "/api/projects/",
         consumes = APPLICATION_JSON_UTF8_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request) {
+    public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request)
+    {
         ProjectId projectId = this.managementService.createProject(
             //  TODO author constant should be replaced by user email
             new CreateProjectCommand(request.name(), "author", request.description()));
@@ -56,7 +59,8 @@ public class ProjectResource {
     }
 
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> findAllProjects() {
+    public ResponseEntity<Object> findAllProjects()
+    {
         List<ProjectModel> projects = this.queryService.findAllProjects().stream()
             .map(ProjectMapper::buildProject)
             .collect(toList());
@@ -64,9 +68,11 @@ public class ProjectResource {
     }
 
     @GetMapping(value = "/api/projects/{qProjectId}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> findProject(@PathVariable String qProjectId) {
+    public ResponseEntity<Object> findProject(@PathVariable String qProjectId)
+    {
         Project project = this.queryService.findById(qProjectId);
-        if (project == null) {
+        if (project == null)
+        {
             return ResponseEntity.status(NOT_FOUND).body(new ResponseMessage()
                 .error("Project with identifier " + qProjectId + " not found."));
         }
@@ -78,7 +84,8 @@ public class ProjectResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateProjectName(
         @PathVariable String qProjectId,
-        @RequestBody @Valid UpdateProjectNameRequest request) {
+        @RequestBody @Valid UpdateProjectNameRequest request)
+    {
         this.managementService.updateProjectName(
             new UpdateProjectNameCommand(
                 //  TODO author constant should be replaced by user email
@@ -95,7 +102,8 @@ public class ProjectResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateProjectDescription(
         @PathVariable String qProjectId,
-        @RequestBody @Valid UpdateProjectDescriptionRequest request) {
+        @RequestBody @Valid UpdateProjectDescriptionRequest request)
+    {
         this.managementService.updateProjectDescription(
             new UpdateProjectDescriptionCommand(
                 //  TODO author constant should be replaced by user email

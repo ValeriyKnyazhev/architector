@@ -28,18 +28,23 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.CommitIte
  */
 @Service
 @RequiredArgsConstructor
-public final class FileDiffCalculator {
+public final class FileDiffCalculator
+{
 
     @Nonnull
     public static List<CommitItem> calculateDiff(@Nullable FileContent oldFile,
-                                                 @Nullable FileContent newFile) {
-        if (oldFile == null && newFile == null) {
+                                                 @Nullable FileContent newFile)
+    {
+        if (oldFile == null && newFile == null)
+        {
             throw new IllegalStateException("Old and new files must not be null");
         }
-        if (oldFile == null) {
+        if (oldFile == null)
+        {
             return constructAdditionItems(newFile.items(), 0);
         }
-        if (newFile == null) {
+        if (newFile == null)
+        {
             return constructDeletionItems(oldFile.items(), 1);
         }
         List<String> oldItems = oldFile.items();
@@ -53,12 +58,15 @@ public final class FileDiffCalculator {
 
     @Nonnull
     public static FileMetadataChanges defineMetadataChanges(@Nullable FileMetadata oldMetadata,
-                                                            @Nullable FileMetadata newMetadata) {
+                                                            @Nullable FileMetadata newMetadata)
+    {
 
-        if (oldMetadata == null && newMetadata == null) {
+        if (oldMetadata == null && newMetadata == null)
+        {
             throw new IllegalStateException("Old and new file metadata must not be null");
         }
-        if (oldMetadata == null) {
+        if (oldMetadata == null)
+        {
             return FileMetadataChanges.builder()
                 .name(newMetadata.name())
                 .timestamp(newMetadata.timestamp())
@@ -69,7 +77,8 @@ public final class FileDiffCalculator {
                 .authorization(newMetadata.authorization())
                 .build();
         }
-        if (newMetadata == null) {
+        if (newMetadata == null)
+        {
             return FileMetadataChanges.builder().build();
         }
         return FileMetadataChanges.builder()
@@ -99,18 +108,22 @@ public final class FileDiffCalculator {
 
     @Nonnull
     public static FileDescriptionChanges defineDescriptionChanges(@Nullable FileDescription oldDescription,
-                                                                  @Nullable FileDescription newDescription) {
+                                                                  @Nullable FileDescription newDescription)
+    {
 
-        if (oldDescription == null && newDescription == null) {
+        if (oldDescription == null && newDescription == null)
+        {
             throw new IllegalStateException("Old and new file description must not be null");
         }
-        if (oldDescription == null) {
+        if (oldDescription == null)
+        {
             return FileDescriptionChanges.builder()
                 .descriptions(newDescription.descriptions())
                 .implementationLevel(newDescription.implementationLevel())
                 .build();
         }
-        if (newDescription == null) {
+        if (newDescription == null)
+        {
             return FileDescriptionChanges.builder().build();
         }
         return FileDescriptionChanges.builder()
@@ -124,17 +137,21 @@ public final class FileDiffCalculator {
     }
 
     @Nonnull
-    private static List<CommitItem> defineChangedItems(Delta<String> delta) {
+    private static List<CommitItem> defineChangedItems(Delta<String> delta)
+    {
         Chunk<String> originalChunk = delta.getOriginal();
         Chunk<String> revisedChunk = delta.getRevised();
         int originPosition = originalChunk.getPosition();
-        if (delta.getType() == Delta.TYPE.INSERT) {
+        if (delta.getType() == Delta.TYPE.INSERT)
+        {
             return constructAdditionItems(delta.getRevised().getLines(), originPosition);
         }
-        if (delta.getType() == Delta.TYPE.DELETE) {
+        if (delta.getType() == Delta.TYPE.DELETE)
+        {
             return constructDeletionItems(originalChunk.getLines(), originPosition + 1);
         }
-        if (delta.getType() == Delta.TYPE.CHANGE) {
+        if (delta.getType() == Delta.TYPE.CHANGE)
+        {
             List<CommitItem> originalChanges = constructDeletionItems(originalChunk.getLines(), originPosition + 1);
             List<CommitItem> revisedChanges = constructAdditionItems(revisedChunk.getLines(), originPosition);
             return Stream.concat(originalChanges.stream(), revisedChanges.stream()).collect(toList());
@@ -143,14 +160,16 @@ public final class FileDiffCalculator {
     }
 
     @Nonnull
-    private static List<CommitItem> constructAdditionItems(@Nonnull List<String> items, int startPosition) {
+    private static List<CommitItem> constructAdditionItems(@Nonnull List<String> items, int startPosition)
+    {
         return items.stream()
             .map(item -> addItem(item, startPosition))
             .collect(toList());
     }
 
     @Nonnull
-    private static List<CommitItem> constructDeletionItems(@Nonnull List<String> items, int startPosition) {
+    private static List<CommitItem> constructDeletionItems(@Nonnull List<String> items, int startPosition)
+    {
         AtomicInteger curIndex = new AtomicInteger(startPosition);
         return items.stream()
             .map(item -> deleteItem(item, curIndex.getAndIncrement()))
@@ -159,19 +178,22 @@ public final class FileDiffCalculator {
 
     @Nullable
     private static String defineChanges(@Nonnull String oldValue,
-                                        @Nonnull String newValue) {
+                                        @Nonnull String newValue)
+    {
         return oldValue.equals(newValue) ? null : newValue;
     }
 
     @Nullable
     private static LocalDate defineChanges(@Nonnull LocalDate oldValue,
-                                           @Nonnull LocalDate newValue) {
+                                           @Nonnull LocalDate newValue)
+    {
         return oldValue.equals(newValue) ? null : newValue;
     }
 
     @Nullable
     private static List<String> defineChanges(@Nonnull List<String> oldValues,
-                                              @Nonnull List<String> newValues) {
+                                              @Nonnull List<String> newValues)
+    {
         return CollectionUtils.isEqualCollection(oldValues, newValues) ? null : newValues;
     }
 

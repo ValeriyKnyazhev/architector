@@ -26,7 +26,8 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.CommitIte
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CommitCombinator.class)
-public class CommitCombinatorTests {
+public class CommitCombinatorTests
+{
 
     private static ProjectId PROJECT_ID = ProjectId.nextId();
 
@@ -38,7 +39,8 @@ public class CommitCombinatorTests {
         .implementationLevel("")
         .build();
 
-    private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items) {
+    private static Commit sampleCommit(Long parentId, FileId fileId, List<CommitItem> items)
+    {
         CommitDescription data = CommitDescription.of(
             singletonList(
                 CommitFileItem.of(fileId, FILE_METADATA, FILE_DESCRIPTION, items)
@@ -53,7 +55,8 @@ public class CommitCombinatorTests {
     }
 
     @Test
-    public void shouldCombineCommitItemsToProjection() {
+    public void shouldCombineCommitItemsToProjection()
+    {
         // given
         FileId fileId = FileId.nextId();
         List<Commit> commits = singletonList(
@@ -74,7 +77,8 @@ public class CommitCombinatorTests {
     }
 
     @Test
-    public void shouldCombineFewAdditionCommitsToProjection() {
+    public void shouldCombineFewAdditionCommitsToProjection()
+    {
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
@@ -94,7 +98,8 @@ public class CommitCombinatorTests {
     }
 
     @Test
-    public void shouldCombineAdditionAndDeletionCommitsToProjection() {
+    public void shouldCombineAdditionAndDeletionCommitsToProjection()
+    {
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
@@ -114,7 +119,8 @@ public class CommitCombinatorTests {
     }
 
     @Test
-    public void shouldNotCombineCommitsToProjectionIfValuesNotMatched() {
+    public void shouldNotCombineCommitsToProjectionIfValuesNotMatched()
+    {
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
@@ -128,7 +134,8 @@ public class CommitCombinatorTests {
     }
 
     @Test
-    public void shouldNotCombineCommitsToProjectionIfFoundFewDeletionItemsInOnePosition() {
+    public void shouldNotCombineCommitsToProjectionIfFoundFewDeletionItemsInOnePosition()
+    {
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, asList(
@@ -144,7 +151,8 @@ public class CommitCombinatorTests {
     }
 
     @Test
-    public void shouldCombineComplexCommitsToProjection() {
+    public void shouldCombineComplexCommitsToProjection()
+    {
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, asList(

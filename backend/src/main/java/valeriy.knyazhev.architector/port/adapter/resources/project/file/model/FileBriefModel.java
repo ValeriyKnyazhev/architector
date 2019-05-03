@@ -12,7 +12,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileBriefModel {
+public class FileBriefModel
+{
 
 
     @Nonnull
@@ -31,7 +32,8 @@ public class FileBriefModel {
     private Schema schema;
 
     public FileBriefModel(@Nonnull String fileId, @Nonnull String name, @Nonnull LocalDateTime createdDate,
-                          @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema) {
+                          @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema)
+    {
         this.fileId = fileId;
         this.name = name;
         this.createdDate = createdDate;

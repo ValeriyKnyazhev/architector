@@ -7,13 +7,16 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev
  */
-public class ContentReadingException extends IllegalStateException {
+public class ContentReadingException extends IllegalStateException
+{
 
-    public ContentReadingException(@Nonnull String sourcePath) {
+    public ContentReadingException(@Nonnull String sourcePath)
+    {
         super("Unable to read source " + Args.notNull(sourcePath, "Source path is required.") + ".");
     }
 
-    public ContentReadingException() {
+    public ContentReadingException()
+    {
         super("Unable to read source data.");
     }
 

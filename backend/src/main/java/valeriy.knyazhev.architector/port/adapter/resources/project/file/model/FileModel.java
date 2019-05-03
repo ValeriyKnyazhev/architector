@@ -15,7 +15,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileModel {
+public class FileModel
+{
 
 
     @Nonnull
@@ -41,7 +42,8 @@ public class FileModel {
 
     public FileModel(@Nonnull String fileId, @Nonnull String name, @Nonnull LocalDateTime createdDate,
                      @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema,
-                     @Nonnull DescriptionModel description, @Nonnull MetadataModel metadata) {
+                     @Nonnull DescriptionModel description, @Nonnull MetadataModel metadata)
+    {
         this.fileId = fileId;
         this.name = name;
         this.createdDate = createdDate;
@@ -52,7 +54,8 @@ public class FileModel {
     }
 
     @JsonAutoDetect(fieldVisibility = ANY)
-    public static class DescriptionModel {
+    public static class DescriptionModel
+    {
 
         @Nonnull
         private List<String> descriptions;
@@ -60,14 +63,16 @@ public class FileModel {
         @Nonnull
         private String implementationLevel;
 
-        public DescriptionModel(@Nonnull List<String> descriptions, @Nonnull String implementationLevel) {
+        public DescriptionModel(@Nonnull List<String> descriptions, @Nonnull String implementationLevel)
+        {
             this.descriptions = descriptions;
             this.implementationLevel = implementationLevel;
         }
     }
 
     @JsonAutoDetect(fieldVisibility = ANY)
-    public static class MetadataModel {
+    public static class MetadataModel
+    {
 
         @Nonnull
         private String name;
@@ -93,7 +98,8 @@ public class FileModel {
         @Builder
         private MetadataModel(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
                               @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
-                              @Nonnull String originatingSystem, @Nonnull String authorization) {
+                              @Nonnull String originatingSystem, @Nonnull String authorization)
+        {
             this.name = name;
             this.timestamp = timestamp;
             this.authors = authors;

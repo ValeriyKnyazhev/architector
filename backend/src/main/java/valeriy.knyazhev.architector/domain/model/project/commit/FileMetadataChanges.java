@@ -16,7 +16,8 @@ import java.util.List;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class FileMetadataChanges {
+public class FileMetadataChanges
+{
 
     private String name;
 
@@ -37,7 +38,8 @@ public class FileMetadataChanges {
     @Builder
     private FileMetadataChanges(String name, LocalDate timestamp, List<String> authors,
                                 List<String> organizations, String preprocessorVersion,
-                                String originatingSystem, String authorization) {
+                                String originatingSystem, String authorization)
+    {
         this.name = name;
         this.timestamp = timestamp;
         this.authors = authors;
@@ -47,77 +49,93 @@ public class FileMetadataChanges {
         this.authorization = authorization;
     }
 
-    protected FileMetadataChanges() {
+    protected FileMetadataChanges()
+    {
         // empty
     }
 
     @JsonIgnore
-    public boolean isEmpty() {
+    public boolean isEmpty()
+    {
         return this.name == null && this.timestamp == null && this.authors == null &&
             this.organizations == null && this.preprocessorVersion == null &&
             this.originatingSystem == null && this.authorization == null;
     }
 
-    public String name() {
+    public String name()
+    {
         return this.name;
     }
 
     @Nonnull
-    public String newName(@Nonnull String oldValue) {
+    public String newName(@Nonnull String oldValue)
+    {
         return this.name != null ? this.name : oldValue;
     }
 
-    public LocalDate timestamp() {
+    public LocalDate timestamp()
+    {
         return this.timestamp;
     }
 
     @Nonnull
-    public LocalDate newTimestamp(@Nonnull LocalDate oldValue) {
+    public LocalDate newTimestamp(@Nonnull LocalDate oldValue)
+    {
         return this.timestamp != null ? this.timestamp : oldValue;
     }
 
-    public List<String> authors() {
+    public List<String> authors()
+    {
         return this.authors;
     }
 
     @Nonnull
-    public List<String> newAuthors(@Nonnull List<String> oldValue) {
+    public List<String> newAuthors(@Nonnull List<String> oldValue)
+    {
         return this.authors != null ? this.authors : oldValue;
     }
 
-    public List<String> organizations() {
+    public List<String> organizations()
+    {
         return this.organizations;
     }
 
     @Nonnull
-    public List<String> newOrganizations(@Nonnull List<String> oldValue) {
+    public List<String> newOrganizations(@Nonnull List<String> oldValue)
+    {
         return this.organizations != null ? this.organizations : oldValue;
     }
 
-    public String preprocessorVersion() {
+    public String preprocessorVersion()
+    {
         return this.preprocessorVersion;
     }
 
     @Nonnull
-    public String newPreprocessorVersion(@Nonnull String oldValue) {
+    public String newPreprocessorVersion(@Nonnull String oldValue)
+    {
         return this.preprocessorVersion != null ? this.preprocessorVersion : oldValue;
     }
 
-    public String originatingSystem() {
+    public String originatingSystem()
+    {
         return this.originatingSystem;
     }
 
     @Nonnull
-    public String newOriginatingSystem(@Nonnull String oldValue) {
+    public String newOriginatingSystem(@Nonnull String oldValue)
+    {
         return this.originatingSystem != null ? this.originatingSystem : oldValue;
     }
 
-    public String authorization() {
+    public String authorization()
+    {
         return this.authorization;
     }
 
     @Nonnull
-    public String newAuthorization(@Nonnull String oldValue) {
+    public String newAuthorization(@Nonnull String oldValue)
+    {
         return this.authorization != null ? this.authorization : oldValue;
     }
 

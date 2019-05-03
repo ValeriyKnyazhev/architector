@@ -18,28 +18,34 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class IFCFileReader extends IFCReader<FileData> {
+public class IFCFileReader extends IFCReader<FileData>
+{
 
     @Nonnull
-    public FileData readFromUrl(@Nonnull URL fileUrl) {
-        try {
+    public FileData readFromUrl(@Nonnull URL fileUrl)
+    {
+        try
+        {
             InputStream fileStream = fileUrl.openStream();
             return read(fileStream);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             throw new ContentReadingException(fileUrl.getRef());
         }
 
     }
 
     @Nonnull
-    public FileData readFromFile(@Nonnull InputStream fileContent) {
+    public FileData readFromFile(@Nonnull InputStream fileContent)
+    {
         return read(fileContent);
     }
 
 
     @Override
     @Nonnull
-    protected FileData constructResult(@Nonnull String isoId, IfcHeader header, List<String> contentItems) {
+    protected FileData constructResult(@Nonnull String isoId, IfcHeader header, List<String> contentItems)
+    {
         return new FileData(
             isoId,
             FileInfoExtractor.extractMetadata(header),

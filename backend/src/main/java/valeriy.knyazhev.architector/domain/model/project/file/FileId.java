@@ -16,28 +16,33 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 @EqualsAndHashCode
 @JsonAutoDetect(fieldVisibility = ANY)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public final class FileId {
+public final class FileId
+{
 
 
     @Nonnull
     private String id;
 
-    private FileId(@Nonnull String id) {
+    private FileId(@Nonnull String id)
+    {
         this.id = id;
     }
 
     @Nonnull
-    public static FileId of(@Nonnull String id) {
+    public static FileId of(@Nonnull String id)
+    {
         return new FileId(id);
     }
 
     @Nonnull
-    public static FileId nextId() {
+    public static FileId nextId()
+    {
         return new FileId(UUID.randomUUID().toString());
     }
 
     @Nonnull
-    public String id() {
+    public String id()
+    {
         return this.id;
     }
 

@@ -14,17 +14,20 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @ControllerAdvice(annotations = RestController.class)
-public class ErrorHandlingResource {
+public class ErrorHandlingResource
+{
 
     @ExceptionHandler(ProjectNotFoundException.class)
-    public ResponseEntity<ResponseMessage> catchProjectNotFoundException(ProjectNotFoundException ex) {
+    public ResponseEntity<ResponseMessage> catchProjectNotFoundException(ProjectNotFoundException ex)
+    {
         ResponseMessage responseMessage = new ResponseMessage()
             .error(ex.getMessage());
         return ResponseEntity.status(NOT_FOUND).body(responseMessage);
     }
 
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<ResponseMessage> catchFileNotFoundException(FileNotFoundException ex) {
+    public ResponseEntity<ResponseMessage> catchFileNotFoundException(FileNotFoundException ex)
+    {
         ResponseMessage responseMessage = new ResponseMessage()
             .error(ex.getMessage());
         return ResponseEntity.status(NOT_FOUND).body(responseMessage);

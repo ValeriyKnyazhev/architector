@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class UpdateFileDescriptionCommand {
+public class UpdateFileDescriptionCommand
+{
 
     @Nonnull
     private String projectId;
@@ -33,7 +34,8 @@ public class UpdateFileDescriptionCommand {
                                          @Nonnull String fileId,
                                          @Nonnull String author,
                                          @Nonnull List<String> descriptions,
-                                         @Nonnull String implementationLevel) {
+                                         @Nonnull String implementationLevel)
+    {
         this.projectId = projectId;
         this.fileId = fileId;
         this.author = author;
@@ -42,22 +44,26 @@ public class UpdateFileDescriptionCommand {
     }
 
     @Nonnull
-    public ProjectId projectId() {
+    public ProjectId projectId()
+    {
         return ProjectId.of(this.projectId);
     }
 
     @Nonnull
-    public FileId fileId() {
+    public FileId fileId()
+    {
         return FileId.of(this.fileId);
     }
 
     @Nonnull
-    public String author() {
+    public String author()
+    {
         return this.author;
     }
 
     @Nonnull
-    public FileDescription constructDescription() {
+    public FileDescription constructDescription()
+    {
         return FileDescription.of(
             this.descriptions, this.implementationLevel
         );

@@ -30,14 +30,16 @@ import static valeriy.knyazhev.architector.port.adapter.resources.project.file.m
  * @author Valeriy Knyazhev
  */
 @RestController
-public class FileResource {
+public class FileResource
+{
 
     private final ProjectRepository projectRepository;
 
     private final FileManagementService managementService;
 
     public FileResource(@Nonnull ProjectRepository projectRepository,
-                        @Nonnull FileManagementService managementService) {
+                        @Nonnull FileManagementService managementService)
+    {
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
         this.managementService = Args.notNull(managementService, "File management service is required.");
     }
@@ -45,7 +47,8 @@ public class FileResource {
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findFile(@PathVariable String qProjectId,
-                                           @PathVariable String qFileId) {
+                                           @PathVariable String qFileId)
+    {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(qFileId, "File identifier is required.");
         ProjectId projectId = ProjectId.of(qProjectId);
@@ -57,7 +60,8 @@ public class FileResource {
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/content",
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchFileContent(@PathVariable String qProjectId,
-                                                   @PathVariable String qFileId) {
+                                                   @PathVariable String qFileId)
+    {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(qFileId, "File identifier is required.");
         ProjectId projectId = ProjectId.of(qProjectId);
@@ -70,7 +74,8 @@ public class FileResource {
         consumes = APPLICATION_JSON_UTF8_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
-                                                 @RequestBody CreateFileFromUrlRequest request) {
+                                                 @RequestBody CreateFileFromUrlRequest request)
+    {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(request, "Add file from url request is required.");
         File newFile = this.managementService.addFile(
@@ -90,7 +95,8 @@ public class FileResource {
         consumes = MULTIPART_FORM_DATA_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,
-                                                           @RequestParam("file") MultipartFile multipartFile) {
+                                                           @RequestParam("file") MultipartFile multipartFile)
+    {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(multipartFile, "Upload file is required.");
         File newFile = this.managementService.addFile(
@@ -112,7 +118,8 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
-                                                @RequestBody UpdateFileFromUrlRequest request) {
+                                                @RequestBody UpdateFileFromUrlRequest request)
+    {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email
             new UpdateFileFromUrlCommand(
@@ -131,7 +138,8 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
-                                                          @RequestParam("file") MultipartFile multipartFile) {
+                                                          @RequestParam("file") MultipartFile multipartFile)
+    {
         boolean updated = this.managementService.updateFile(
             // TODO author constant should be replaced by user email
             new UpdateFileFromUploadCommand(
@@ -150,7 +158,8 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
-                                                              @RequestBody UpdateFileDescriptionRequest request) {
+                                                              @RequestBody UpdateFileDescriptionRequest request)
+    {
         boolean updated = this.managementService.updateFileDescription(
             // TODO author constant should be replaced by user email
             UpdateFileDescriptionCommand.builder()
@@ -173,7 +182,8 @@ public class FileResource {
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
-                                                              @RequestBody UpdateFileMetadataRequest request) {
+                                                              @RequestBody UpdateFileMetadataRequest request)
+    {
         boolean updated = this.managementService.updateFileMetadata(
             // TODO author constant should be replaced by user email
             UpdateFileMetadataCommand.builder()
@@ -199,7 +209,8 @@ public class FileResource {
     @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
         produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
-                                                          @PathVariable String qFileId) {
+                                                          @PathVariable String qFileId)
+    {
         boolean deleted = this.managementService.deleteFile(
             new DeleteFileCommand(qProjectId, qFileId, "author")
         );
@@ -211,7 +222,8 @@ public class FileResource {
     }
 
     @Nonnull
-    private File fetchFile(@Nonnull ProjectId projectId, @Nonnull FileId fileId) {
+    private File fetchFile(@Nonnull ProjectId projectId, @Nonnull FileId fileId)
+    {
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
         return project.files().stream()

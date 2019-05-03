@@ -7,17 +7,20 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class CreateFileFromUrlRequest {
+public class CreateFileFromUrlRequest
+{
 
     @Nonnull
     private String sourceUrl;
 
-    public void setSourceUrl(@Nonnull String sourceUrl) {
+    public void setSourceUrl(@Nonnull String sourceUrl)
+    {
         this.sourceUrl = Args.notBlank(sourceUrl, "Source url is required.");
     }
 
     @Nonnull
-    public String sourceUrl() {
+    public String sourceUrl()
+    {
         return this.sourceUrl;
     }
 

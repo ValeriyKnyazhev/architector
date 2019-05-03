@@ -7,7 +7,8 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class UpdateProjectNameCommand {
+public class UpdateProjectNameCommand
+{
 
     @Nonnull
     private String projectId;
@@ -20,7 +21,8 @@ public class UpdateProjectNameCommand {
 
     public UpdateProjectNameCommand(@Nonnull String projectId,
                                     @Nonnull String name,
-                                    @Nonnull String author) {
+                                    @Nonnull String author)
+    {
         this.projectId = projectId;
         this.name = name;
         this.author = author;
@@ -33,12 +35,14 @@ public class UpdateProjectNameCommand {
     }
 
     @Nonnull
-    public String name() {
+    public String name()
+    {
         return this.name;
     }
 
     @Nonnull
-    public String author() {
+    public String author()
+    {
         return this.author;
     }
 

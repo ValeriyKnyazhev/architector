@@ -12,7 +12,8 @@ import static org.bimserver.emf.Schema.IFC2X3TC1;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class FileData {
+public class FileData
+{
 
     @Nonnull
     private Schema schema = IFC2X3TC1;
@@ -32,7 +33,8 @@ public class FileData {
     public FileData(@Nonnull String isoId,
                     @Nonnull FileMetadata metadata,
                     @Nonnull FileDescription description,
-                    @Nonnull FileContent content) {
+                    @Nonnull FileContent content)
+    {
         this.isoId = isoId;
         this.metadata = metadata;
         this.description = description;
@@ -40,27 +42,32 @@ public class FileData {
     }
 
     @Nonnull
-    public Schema schema() {
+    public Schema schema()
+    {
         return this.schema;
     }
 
     @Nonnull
-    public String isoId() {
+    public String isoId()
+    {
         return this.isoId;
     }
 
     @Nonnull
-    public FileMetadata metadata() {
+    public FileMetadata metadata()
+    {
         return this.metadata;
     }
 
     @Nonnull
-    public FileDescription description() {
+    public FileDescription description()
+    {
         return this.description;
     }
 
     @Nonnull
-    public FileContent content() {
+    public FileContent content()
+    {
         return this.content;
     }
 

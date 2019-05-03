@@ -9,13 +9,16 @@ import java.util.List;
 /**
  * @author Valeriy Knyazhev
  */
-public class FileMetadataObjectFactory {
+public class FileMetadataObjectFactory
+{
 
-    public static FileMetadataBuilder metadataBuilder() {
+    public static FileMetadataBuilder metadataBuilder()
+    {
         return new FileMetadataBuilder();
     }
 
-    public static final class FileMetadataBuilder {
+    public static final class FileMetadataBuilder
+    {
         private String name = "Big Ben";
 
         private LocalDate timestamp = LocalDate.of(1859, 5, 31);
@@ -30,42 +33,50 @@ public class FileMetadataObjectFactory {
 
         private String authorization = "None";
 
-        public FileMetadataBuilder withName(String name) {
+        public FileMetadataBuilder withName(String name)
+        {
             this.name = name;
             return this;
         }
 
-        public FileMetadataBuilder withTimestamp(LocalDate timestamp) {
+        public FileMetadataBuilder withTimestamp(LocalDate timestamp)
+        {
             this.timestamp = timestamp;
             return this;
         }
 
-        public FileMetadataBuilder withAuthors(List<String> authors) {
+        public FileMetadataBuilder withAuthors(List<String> authors)
+        {
             this.authors = authors;
             return this;
         }
 
-        public FileMetadataBuilder withOrganizations(List<String> organizations) {
+        public FileMetadataBuilder withOrganizations(List<String> organizations)
+        {
             this.organizations = organizations;
             return this;
         }
 
-        public FileMetadataBuilder withPreprocessorVersion(String preprocessorVersion) {
+        public FileMetadataBuilder withPreprocessorVersion(String preprocessorVersion)
+        {
             this.preprocessorVersion = preprocessorVersion;
             return this;
         }
 
-        public FileMetadataBuilder withOriginatingSystem(String originatingSystem) {
+        public FileMetadataBuilder withOriginatingSystem(String originatingSystem)
+        {
             this.originatingSystem = originatingSystem;
             return this;
         }
 
-        public FileMetadataBuilder withAuthorization(String authorization) {
+        public FileMetadataBuilder withAuthorization(String authorization)
+        {
             this.authorization = authorization;
             return this;
         }
 
-        public FileMetadata build() {
+        public FileMetadata build()
+        {
             return FileMetadata.builder()
                 .name(this.name)
                 .timestamp(this.timestamp)

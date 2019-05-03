@@ -24,35 +24,40 @@ import static valeriy.knyazhev.architector.domain.model.project.commit.ChangeTyp
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = FileDiffCalculator.class)
-public class FileDiffCalculatorTests {
+public class FileDiffCalculatorTests
+{
 
     @Autowired
     private FileDiffCalculator diffCalculator;
 
-    private static FileContent sampleFile(List<String> content) {
+    private static FileContent sampleFile(List<String> content)
+    {
         return FileContent.of(content);
     }
 
-    private static List<String> generateContent(List<String> values) {
+    private static List<String> generateContent(List<String> values)
+    {
         return values;
     }
 
     @Test
-    public void shouldFilesAreEquals() {
+    public void shouldFilesAreEquals()
+    {
         // given
         List<String> content = generateContent(asList("1", "2"));
         FileContent oldFile = sampleFile(content);
         FileContent newFile = sampleFile(content);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(0);
     }
 
     @Test
-    public void shouldAddLineToEndOfFile() {
+    public void shouldAddLineToEndOfFile()
+    {
         // given
         List<String> oldContent = generateContent(singletonList("1"));
         List<String> newContent = generateContent(asList("1", "2"));
@@ -60,7 +65,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(1);
@@ -73,7 +78,8 @@ public class FileDiffCalculatorTests {
     }
 
     @Test
-    public void shouldRemoveLineFromEndOfFile() {
+    public void shouldRemoveLineFromEndOfFile()
+    {
         // given
         List<String> oldContent = generateContent(asList("1", "2"));
         List<String> newContent = generateContent(Collections.singletonList("1"));
@@ -81,7 +87,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(1);
@@ -94,7 +100,8 @@ public class FileDiffCalculatorTests {
     }
 
     @Test
-    public void shouldAddLineToTopOfFile() {
+    public void shouldAddLineToTopOfFile()
+    {
         // given
         List<String> oldContent = generateContent(singletonList("2"));
         List<String> newContent = generateContent(asList("1", "2"));
@@ -102,7 +109,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(1);
@@ -115,7 +122,8 @@ public class FileDiffCalculatorTests {
     }
 
     @Test
-    public void shouldRemoveLineFromTopOfFile() {
+    public void shouldRemoveLineFromTopOfFile()
+    {
         // given
         List<String> oldContent = generateContent(asList("1", "2"));
         List<String> newContent = generateContent(Collections.singletonList("2"));
@@ -123,7 +131,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(1);
@@ -136,7 +144,8 @@ public class FileDiffCalculatorTests {
     }
 
     @Test
-    public void shouldAddLineToMiddleOfFile() {
+    public void shouldAddLineToMiddleOfFile()
+    {
         // given
         List<String> oldContent = generateContent(asList("1", "4"));
         List<String> newContent = generateContent(asList("1", "2", "3", "4"));
@@ -144,7 +153,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(2);
@@ -161,7 +170,8 @@ public class FileDiffCalculatorTests {
     }
 
     @Test
-    public void shouldRemoveLineFromMiddleOfFile() {
+    public void shouldRemoveLineFromMiddleOfFile()
+    {
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3", "4"));
         List<String> newContent = generateContent(asList("1", "4"));
@@ -169,7 +179,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(2);
@@ -186,7 +196,8 @@ public class FileDiffCalculatorTests {
     }
 
     @Test
-    public void shouldChangeLinesInFile() {
+    public void shouldChangeLinesInFile()
+    {
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3", "4", "5", "8", "9"));
         List<String> newContent = generateContent(asList("0", "1", "2", "5", "6", "7", "8"));
@@ -194,7 +205,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(6);
@@ -245,7 +256,8 @@ public class FileDiffCalculatorTests {
     }
 
     @Test
-    public void shouldChangedLineReplaceByDeletionAndAddition() {
+    public void shouldChangedLineReplaceByDeletionAndAddition()
+    {
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3"));
         List<String> newContent = generateContent(asList("1", "2 new", "3"));
@@ -253,7 +265,7 @@ public class FileDiffCalculatorTests {
         FileContent newFile = sampleFile(newContent);
 
         // when
-        List<CommitItem> diff = this.diffCalculator.calculateDiff(oldFile, newFile);
+        List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
 
         // then
         assertThat(diff).size().isEqualTo(2);

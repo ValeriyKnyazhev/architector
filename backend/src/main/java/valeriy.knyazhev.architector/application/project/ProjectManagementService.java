@@ -12,7 +12,6 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -20,12 +19,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Transactional
-public class ProjectManagementService {
+public class ProjectManagementService
+{
 
     private final ProjectRepository projectRepository;
 
     @Nonnull
-    public ProjectId createProject(@Nonnull CreateProjectCommand command) {
+    public ProjectId createProject(@Nonnull CreateProjectCommand command)
+    {
         Args.notNull(command, "Create project command is required.");
         Project project = Project.constructor()
             .projectId(ProjectId.nextId())

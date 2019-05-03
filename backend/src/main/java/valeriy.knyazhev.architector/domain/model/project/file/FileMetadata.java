@@ -15,7 +15,8 @@ import java.util.List;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class FileMetadata {
+public class FileMetadata
+{
 
     @Nonnull
     private String name;
@@ -43,7 +44,8 @@ public class FileMetadata {
     @Builder
     private FileMetadata(@Nonnull String name, @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
                          @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
-                         @Nonnull String originatingSystem, @Nonnull String authorization) {
+                         @Nonnull String originatingSystem, @Nonnull String authorization)
+    {
         this.name = name;
         this.timestamp = timestamp;
         this.authors = authors;
@@ -53,42 +55,50 @@ public class FileMetadata {
         this.authorization = authorization;
     }
 
-    protected FileMetadata() {
+    protected FileMetadata()
+    {
         // empty
     }
 
     @Nonnull
-    public String name() {
+    public String name()
+    {
         return this.name;
     }
 
     @Nonnull
-    public LocalDate timestamp() {
+    public LocalDate timestamp()
+    {
         return this.timestamp;
     }
 
     @Nonnull
-    public List<String> authors() {
+    public List<String> authors()
+    {
         return this.authors;
     }
 
     @Nonnull
-    public List<String> organizations() {
+    public List<String> organizations()
+    {
         return this.organizations;
     }
 
     @Nonnull
-    public String preprocessorVersion() {
+    public String preprocessorVersion()
+    {
         return this.preprocessorVersion;
     }
 
     @Nonnull
-    public String originatingSystem() {
+    public String originatingSystem()
+    {
         return this.originatingSystem;
     }
 
     @Nonnull
-    public String authorization() {
+    public String authorization()
+    {
         return this.authorization;
     }
 

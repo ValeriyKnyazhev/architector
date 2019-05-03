@@ -18,40 +18,49 @@ import java.util.stream.Stream;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProjectDataProjection {
+public class ProjectDataProjection
+{
 
     @Nonnull
     private List<FileDataProjection> files;
 
-    private ProjectDataProjection(@Nonnull List<FileDataProjection> files) {
+    private ProjectDataProjection(@Nonnull List<FileDataProjection> files)
+    {
         this.files = Args.notNull(files, "Project files are required.");
     }
 
-    public static ProjectDataProjection empty() {
+    public static ProjectDataProjection empty()
+    {
         return new ProjectDataProjection(ImmutableList.of());
     }
 
     @Nonnull
-    public static ProjectDataProjection of(@Nonnull List<FileDataProjection> files) {
+    public static ProjectDataProjection of(@Nonnull List<FileDataProjection> files)
+    {
         return new ProjectDataProjection(files);
     }
 
-    public boolean addNewFile(@Nonnull FileDataProjection fileProjection) {
+    public boolean addNewFile(@Nonnull FileDataProjection fileProjection)
+    {
         Args.notNull(fileProjection, "File projection is required.");
-        if (this.files.stream().anyMatch(file -> fileProjection.fileId.equals(file.fileId))) {
+        if (this.files.stream().anyMatch(file -> fileProjection.fileId.equals(file.fileId)))
+        {
             return false;
-        } else {
+        } else
+        {
             this.files = Stream.concat(this.files.stream(), Stream.of(fileProjection)).collect(Collectors.toList());
             return true;
         }
     }
 
     @Nonnull
-    public List<FileDataProjection> files() {
+    public List<FileDataProjection> files()
+    {
         return this.files;
     }
 
-    public static class FileDataProjection {
+    public static class FileDataProjection
+    {
 
         @Nonnull
         private FileId fileId;
@@ -68,7 +77,8 @@ public class ProjectDataProjection {
         private FileDataProjection(@Nonnull FileId fileId,
                                    @Nonnull FileMetadata metadata,
                                    @Nonnull FileDescription description,
-                                   @Nonnull List<String> items) {
+                                   @Nonnull List<String> items)
+        {
             this.fileId = Args.notNull(fileId, "File identifier is required.");
             this.metadata = Args.notNull(metadata, "File metadata is required.");
             this.description = Args.notNull(description, "File description is required.");
@@ -79,33 +89,39 @@ public class ProjectDataProjection {
         public static FileDataProjection of(@Nonnull FileId fileId,
                                             @Nonnull FileMetadata metadata,
                                             @Nonnull FileDescription description,
-                                            @Nonnull List<String> items) {
+                                            @Nonnull List<String> items)
+        {
             return new FileDataProjection(fileId, metadata, description, items);
         }
 
         @Nonnull
-        public FileId fileId() {
+        public FileId fileId()
+        {
             return this.fileId;
         }
 
         @Nonnull
-        public FileMetadata metadata() {
+        public FileMetadata metadata()
+        {
             return this.metadata;
         }
 
         @Nonnull
-        public FileDescription description() {
+        public FileDescription description()
+        {
             return this.description;
         }
 
         @Nonnull
-        public List<String> items() {
+        public List<String> items()
+        {
             return Collections.unmodifiableList(this.items);
         }
 
         public void update(@Nonnull FileMetadata metadata,
                            @Nonnull FileDescription description,
-                           @Nonnull List<String> items) {
+                           @Nonnull List<String> items)
+        {
             this.metadata = Args.notNull(metadata, "File metadata is required.");
             this.description = Args.notNull(description, "File description is required.");
             this.items = Args.notNull(items, "File projection items are required.");
