@@ -29,7 +29,9 @@ public class SectionChangesData
     public static class SectionItem
     {
 
-        private int position;
+        private int oldPosition;
+
+        private int newPosition;
 
         @Nonnull
         private String value;
@@ -37,11 +39,13 @@ public class SectionChangesData
         @Nullable
         private ChangeType type;
 
-        public SectionItem(int position,
+        public SectionItem(int oldPosition,
+                           int newPosition,
                            @Nonnull String value,
                            @Nullable ChangeType type)
         {
-            this.position = position;
+            this.oldPosition = oldPosition;
+            this.newPosition = newPosition;
             this.value = Args.notNull(value, "Section item value is required.");
             this.type = type;
         }

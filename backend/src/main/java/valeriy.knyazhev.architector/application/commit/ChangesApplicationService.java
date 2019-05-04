@@ -65,14 +65,14 @@ public class ChangesApplicationService
             newName != null ? changeValue(projection.name(), newName) : null,
             newDescription != null ? changeValue(projection.description(), newDescription) : null,
             commit.changedFiles().stream()
-                .map(file -> constructFileChanges(file, projection))
+                .map(file -> constructFileChanges(projection, file))
                 .collect(Collectors.toList())
         );
     }
 
     @Nonnull
-    private FileChangesData constructFileChanges(@Nonnull CommitFileItem changes,
-                                                 @Nonnull Projection projection)
+    private FileChangesData constructFileChanges(@Nonnull Projection projection,
+                                                 @Nonnull CommitFileItem changes)
     {
         FileProjection fileProjection = projection.files().stream()
             .filter(file -> changes.fileId().equals(file.fileId()))

@@ -2,11 +2,14 @@ package valeriy.knyazhev.architector.application.commit;
 
 import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.application.commit.data.changes.SectionChangesData;
+import valeriy.knyazhev.architector.application.commit.data.changes.SectionChangesData.SectionItem;
 import valeriy.knyazhev.architector.domain.model.commit.CommitItem;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -19,16 +22,19 @@ public class SectionChangesExtractor
     @Nonnull
     private List<String> items;
 
+    private final int itemsSize;
+
     @Nonnull
     private List<CommitItem> changes;
 
-    private int linesOffsetSize;
+    private final int linesOffsetSize;
 
     private SectionChangesExtractor(@Nonnull List<String> items,
                                     @Nonnull List<CommitItem> changes,
                                     int linesOffsetSize)
     {
         this.items = Args.notNull(items, "Items are required.");
+        this.itemsSize = items.size();
         this.changes = Args.notNull(changes, "Changes are required.");
         this.linesOffsetSize = linesOffsetSize;
     }
@@ -36,8 +42,41 @@ public class SectionChangesExtractor
     @Nonnull
     private List<SectionChangesData> extract()
     {
-        // TODO add section extracting
-        return Collections.emptyList();
+        if (changes.isEmpty())
+        {
+            return emptyList();
+        }
+        List<SectionChangesData> sections = new LinkedList<>();
+        int curOffset = 0;
+        boolean isNewAddition = true;
+        int lastPosition = this.changes.get(0).position();
+        List<SectionItem> newSectionItems = new LinkedList<>();
+        // FIXME calculate result with lines offset
+        for (CommitItem change : changes)
+        {
+            //TODO add adding items
+
+            if (change.position() - this.linesOffsetSize > lastPosition + this.linesOffsetSize + 1)
+            {
+                // TODO add last offset of items
+
+                sections.add(new SectionChangesData(newSectionItems));
+                newSectionItems = new LinkedList<>();
+            }
+        }
+        return emptyList();
+    }
+
+    @Nonnull
+    private List<String> fetchLines(int fromIndex, int toIndex)
+    {
+        Args.check(fromIndex <= toIndex, "FromIndex must not be greater toIndex.");
+        Args.check(toIndex >= 0 && fromIndex < this.itemsSize,
+            "Something went wrong: check SectionChangesExtractor.");
+        return this.items.subList(
+            fromIndex < 0 ? 0 : fromIndex,
+            toIndex > this.itemsSize ? this.itemsSize : toIndex + 1
+        );
     }
 
     public static ExtractorContentBuilder sectionsOf(@Nonnull List<String> items)
