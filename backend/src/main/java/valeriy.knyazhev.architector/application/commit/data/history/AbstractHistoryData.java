@@ -1,6 +1,7 @@
-package valeriy.knyazhev.architector.application.commit.data;
+package valeriy.knyazhev.architector.application.commit.data.history;
 
 import org.apache.http.util.Args;
+import valeriy.knyazhev.architector.application.commit.data.CommitDescriptorData;
 import valeriy.knyazhev.architector.domain.model.commit.Commit;
 
 import javax.annotation.Nonnull;

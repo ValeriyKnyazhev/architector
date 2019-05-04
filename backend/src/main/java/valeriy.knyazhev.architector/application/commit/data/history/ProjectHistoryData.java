@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application.commit.data;
+package valeriy.knyazhev.architector.application.commit.data.history;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.apache.http.util.Args;

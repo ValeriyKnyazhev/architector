@@ -9,8 +9,8 @@ import valeriy.knyazhev.architector.application.commit.CommitQueryService;
 import valeriy.knyazhev.architector.application.commit.command.FindCommitsCommand;
 import valeriy.knyazhev.architector.application.commit.command.MakeFileProjectionCommand;
 import valeriy.knyazhev.architector.application.commit.command.MakeProjectProjectionCommand;
-import valeriy.knyazhev.architector.application.commit.data.FileHistoryData;
-import valeriy.knyazhev.architector.application.commit.data.ProjectHistoryData;
+import valeriy.knyazhev.architector.application.commit.data.history.FileHistoryData;
+import valeriy.knyazhev.architector.application.commit.data.history.ProjectHistoryData;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.DescriptionModel;
@@ -73,7 +73,7 @@ public class CommitsResource
         @PathVariable String qProjectId,
         @PathVariable long commitId)
     {
-        Projection projection = this.commitQueryService.makeProjection(
+        Projection projection = this.commitQueryService.fetchProjection(
             new MakeProjectProjectionCommand(qProjectId, commitId)
         );
         return ResponseEntity.ok(
@@ -82,7 +82,6 @@ public class CommitsResource
                 projection.name(),
                 projection.description(),
                 projection.files().stream()
-                    .filter(file -> !file.items().isEmpty())
                     .map(CommitsResource::constructFileContent)
                     .collect(toList())
             )
@@ -96,7 +95,7 @@ public class CommitsResource
         @PathVariable String qFileId,
         @PathVariable long commitId)
     {
-        Projection.FileProjection projection = this.commitQueryService.makeProjection(
+        Projection.FileProjection projection = this.commitQueryService.fetchProjection(
             new MakeFileProjectionCommand(qProjectId, qFileId, commitId)
         );
         return ResponseEntity.ok(
