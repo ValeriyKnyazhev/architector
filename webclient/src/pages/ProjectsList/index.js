@@ -1,20 +1,23 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import _isEmpty from "lodash/isEmpty";
-import { Button, Icon, Input, message, Modal, Popconfirm } from "antd";
-import "./ProjectsList.sass";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import _isEmpty from 'lodash/isEmpty';
+import { Button, Icon, Input, message, Modal, Popconfirm, Pagination } from 'antd';
+import dayjs from 'dayjs';
+import './ProjectsList.sass';
 
 export default class Projects extends Component {
   state = {
     projects: [],
     newProjectData: {
-      name: "",
-      description: ""
+      name: '',
+      description: ''
     },
     confirmLoading: false,
     visibleCreateProject: false,
-    visiblePopup: false
+    visiblePopup: false,
+    currentPage: 1,
+    pageSize: 6
   };
 
   async componentDidMount() {
@@ -22,7 +25,7 @@ export default class Projects extends Component {
   }
 
   async fetchProjects() {
-    const { data: projects } = await axios.get("/api/projects");
+    const { data: projects } = await axios.get('/api/projects');
     this.setState(projects);
   }
 
@@ -56,7 +59,7 @@ export default class Projects extends Component {
       confirmLoading: true
     });
     axios
-      .post("/api/projects/", {
+      .post('/api/projects/', {
         name: newProjectData.name,
         description: newProjectData.description
       })
@@ -68,7 +71,7 @@ export default class Projects extends Component {
           },
           () => {
             this.fetchProjects.call(this);
-            message.success("Project was created");
+            message.success('Project was created');
           }
         );
       });
@@ -90,6 +93,12 @@ export default class Projects extends Component {
     });
   };
 
+  onChangePage = page => {
+    this.setState({
+      currentPage: page
+    });
+  };
+
   render() {
     const { projects, confirmLoading, visibleCreateProject } = this.state;
     return (
@@ -98,16 +107,16 @@ export default class Projects extends Component {
           <h1>Projects</h1>
         </div>
         <div className="projects__create-project">
-          <Button onClick={() => this.showModal("visibleCreateProject")}>
-            Create project <Icon type="plus-circle"/>
+          <Button onClick={() => this.showModal('visibleCreateProject')}>
+            Create project <Icon type="plus-circle" />
           </Button>
           {visibleCreateProject && (
             <Modal
               title="Create new project"
               visible={visibleCreateProject}
-              onOk={() => this.handleCreateProject("visibleCreateProject")}
+              onOk={() => this.handleCreateProject('visibleCreateProject')}
               confirmLoading={confirmLoading}
-              onCancel={() => this.handleCancel("visibleCreateProject")}
+              onCancel={() => this.handleCancel('visibleCreateProject')}
               okButtonProps={{
                 disabled: _isEmpty(this.state.newProjectData.name)
               }}
@@ -117,6 +126,7 @@ export default class Projects extends Component {
                   placeholder="Enter your project name"
                   value={this.state.newProjectData.name}
                   onChange={this.onChangeProjectName}
+                  label="Name"
                 />
               </div>
               <div style={{ marginBottom: 16 }}>
@@ -131,24 +141,21 @@ export default class Projects extends Component {
           <Popconfirm
             title="Do you want to create new project?"
             visible={this.state.visiblePopup}
-            onConfirm={() => this.handleCarded("visibleProjects")}
+            onConfirm={() => this.handleCarded('visibleProjects')}
             onCancel={this.handleClosePopup}
             okText="Yes"
             cancelText="No"
           />
-          <br/>
+          <br />
         </div>
         {!_isEmpty(projects) && (
           <div className="row projects__list">
-            {projects.map(
-              ({
-                 projectId,
-                 createdDate,
-                 updatedDate,
-                 projectName,
-                 author,
-                 files
-               }) => (
+            {projects
+              .slice(
+                this.state.pageSize * (this.state.currentPage - 1),
+                this.state.pageSize * this.state.currentPage
+              )
+              .map(({ projectId, createdDate, updatedDate, projectName, author, files }) => (
                 <div className="col-xs-12 col-sm-6" key={projectId}>
                   <Link
                     to={{
@@ -157,27 +164,20 @@ export default class Projects extends Component {
                     }}
                   >
                     <div className="projects__project" key={projectId}>
-                      <div className="row projects__project-id">
-                        <div className="col-xs-3">Project №</div>
-                        <div className="col-xs-9">{projectId}</div>
-                      </div>
                       <div className="row projects__project-name">
-                        <div className="col-xs-3">Name</div>
-                        <div className="col-xs-9">{projectName}
-                        </div>
+                        <div className="col-xs-9">{projectName}</div>
                       </div>
                       <div className="row projects__project-date">
-                        <div className="col-xs-3">Created</div>
-                        <div className="col-xs-9">{createdDate}</div>
+                        <div className="col-xs-3">Created:</div>
+                        <div className="col-xs-9">{dayjs(createdDate).format('YYYY-MM-DD')}</div>
                       </div>
                       <div className="row projects__project-date">
-                        <div className="col-xs-3">Updated</div>
-                        <div className="col-xs-9">{updatedDate}</div>
+                        <div className="col-xs-3">Updated:</div>
+                        <div className="col-xs-9">{dayjs(updatedDate).format('YYYY-MM-DD')}</div>
                       </div>
                       <div className="row projects__project-author">
-                        <div className="col-xs-3">Author</div>
-                        <div className="col-xs-9">{author}
-                        </div>
+                        <div className="col-xs-3">Author:</div>
+                        <div className="col-xs-9">{author}</div>
                       </div>
                       <div className="row projects__project-files">
                         <div className="col-xs-3">Files</div>
@@ -186,10 +186,15 @@ export default class Projects extends Component {
                     </div>
                   </Link>
                 </div>
-              )
-            )}
+              ))}
           </div>
         )}
+        <Pagination
+          current={this.state.currentPage}
+          pageSize={this.state.pageSize}
+          onChange={this.onChangePage}
+          total={projects.length}
+        />
       </div>
     );
   }
