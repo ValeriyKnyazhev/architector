@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import valeriy.knyazhev.architector.application.commit.CommitQueryService;
-import valeriy.knyazhev.architector.application.commit.command.FindCommitsCommand;
+import valeriy.knyazhev.architector.application.commit.command.FetchChangesHistoryCommand;
 import valeriy.knyazhev.architector.application.commit.command.MakeFileProjectionCommand;
 import valeriy.knyazhev.architector.application.commit.command.MakeProjectProjectionCommand;
 import valeriy.knyazhev.architector.application.commit.data.history.FileHistoryData;
@@ -46,7 +46,7 @@ public class CommitsResource
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId)
     {
         ProjectHistoryData projectHistory = (ProjectHistoryData) this.commitQueryService.fetchProjectHistory(
-            FindCommitsCommand.builder()
+            FetchChangesHistoryCommand.builder()
                 .projectId(qProjectId)
                 .build()
         );
@@ -59,7 +59,7 @@ public class CommitsResource
                                                    @PathVariable String qFileId)
     {
         FileHistoryData fileHistory = (FileHistoryData) this.commitQueryService.fetchProjectHistory(
-            FindCommitsCommand.builder()
+            FetchChangesHistoryCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
                 .build()

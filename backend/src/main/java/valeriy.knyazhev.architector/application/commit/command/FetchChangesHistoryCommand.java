@@ -6,7 +6,6 @@ import valeriy.knyazhev.architector.application.commit.data.history.AbstractHist
 import valeriy.knyazhev.architector.application.commit.data.history.FileHistoryData;
 import valeriy.knyazhev.architector.application.commit.data.history.ProjectHistoryData;
 import valeriy.knyazhev.architector.domain.model.commit.Commit;
-import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
@@ -20,7 +19,7 @@ import java.util.stream.Stream;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-public class FindCommitsCommand
+public class FetchChangesHistoryCommand
 {
 
     @Nonnull
@@ -30,8 +29,8 @@ public class FindCommitsCommand
     private FileId fileId;
 
     @Builder
-    private FindCommitsCommand(@Nonnull String projectId,
-                               @Nullable String fileId)
+    private FetchChangesHistoryCommand(@Nonnull String projectId,
+                                       @Nullable String fileId)
     {
         this.projectId = ProjectId.of(Args.notBlank(projectId, "Project identifier is required."));
         this.fileId = Optional.ofNullable(fileId)
@@ -46,8 +45,7 @@ public class FindCommitsCommand
     }
 
     @Nonnull
-    public AbstractHistoryData constructHistory(@Nonnull Project project,
-                                                @Nonnull List<Commit> commits)
+    public AbstractHistoryData constructHistory(@Nonnull List<Commit> commits)
     {
         Args.notNull(commits, "Commits are required.");
         Stream<Commit> commitsStream = commits.stream();
