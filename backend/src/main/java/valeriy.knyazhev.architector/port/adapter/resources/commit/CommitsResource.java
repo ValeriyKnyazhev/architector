@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import valeriy.knyazhev.architector.application.commit.CommitApplicationService;
+import valeriy.knyazhev.architector.application.commit.CommitQueryService;
 import valeriy.knyazhev.architector.application.commit.command.FindCommitsCommand;
 import valeriy.knyazhev.architector.application.commit.command.MakeFileProjectionCommand;
 import valeriy.knyazhev.architector.application.commit.command.MakeProjectProjectionCommand;
@@ -30,14 +30,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 public class CommitsResource
 {
 
-    private final CommitApplicationService applicationService;
+    private final CommitQueryService commitQueryService;
 
     private final ProjectRepository projectRepository;
 
-    public CommitsResource(@Nonnull CommitApplicationService applicationService,
+    public CommitsResource(@Nonnull CommitQueryService commitQueryService,
                            @Nonnull ProjectRepository projectRepository)
     {
-        this.applicationService = Args.notNull(applicationService, "Commit application service is required.");
+        this.commitQueryService = Args.notNull(commitQueryService, "Commit query service is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
     }
 
@@ -45,7 +45,7 @@ public class CommitsResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId)
     {
-        ProjectHistoryData projectHistory = (ProjectHistoryData) this.applicationService.fetchProjectHistory(
+        ProjectHistoryData projectHistory = (ProjectHistoryData) this.commitQueryService.fetchProjectHistory(
             FindCommitsCommand.builder()
                 .projectId(qProjectId)
                 .build()
@@ -58,7 +58,7 @@ public class CommitsResource
     public ResponseEntity<Object> fetchFileChanges(@PathVariable String qProjectId,
                                                    @PathVariable String qFileId)
     {
-        FileHistoryData fileHistory = (FileHistoryData) this.applicationService.fetchProjectHistory(
+        FileHistoryData fileHistory = (FileHistoryData) this.commitQueryService.fetchProjectHistory(
             FindCommitsCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
@@ -73,7 +73,7 @@ public class CommitsResource
         @PathVariable String qProjectId,
         @PathVariable long commitId)
     {
-        Projection projection = this.applicationService.makeProjection(
+        Projection projection = this.commitQueryService.makeProjection(
             new MakeProjectProjectionCommand(qProjectId, commitId)
         );
         return ResponseEntity.ok(
@@ -96,7 +96,7 @@ public class CommitsResource
         @PathVariable String qFileId,
         @PathVariable long commitId)
     {
-        Projection.FileProjection projection = this.applicationService.makeProjection(
+        Projection.FileProjection projection = this.commitQueryService.makeProjection(
             new MakeFileProjectionCommand(qProjectId, qFileId, commitId)
         );
         return ResponseEntity.ok(

@@ -3,7 +3,6 @@ package valeriy.knyazhev.architector.domain.model.commit;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;
@@ -43,8 +42,10 @@ public class CommitFileItem
         this.items = items.stream()
             .sorted(CommitItem::compareTo)
             .collect(Collectors.toList());
-        Args.check(!items.isEmpty() || !metadata.isEmpty() || !description.isEmpty(),
-            "File changes must not be empty.");
+        if (items.isEmpty() && metadata.isEmpty() && description.isEmpty())
+        {
+            throw new NothingToCommitException();
+        }
     }
 
     @Nonnull

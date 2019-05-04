@@ -69,9 +69,9 @@ public class ProjectManagementService
         ProjectId projectId = command.projectId();
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        project.updateName(command.name());
+        boolean updated = project.updateName(command.name());
         CommitDescription commitData = CommitDescription.builder()
-            .name(command.name())
+            .name(updated ? command.name() : null)
             .files(emptyList())
             .build();
         this.projectRepository.save(project);
@@ -88,9 +88,9 @@ public class ProjectManagementService
         ProjectId projectId = command.projectId();
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        project.updateDescription(command.description());
+        boolean updated = project.updateDescription(command.description());
         CommitDescription commitData = CommitDescription.builder()
-            .description(command.description())
+            .description(updated ? command.description() : null)
             .files(emptyList())
             .build();
         this.projectRepository.save(project);

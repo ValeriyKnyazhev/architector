@@ -36,8 +36,10 @@ public class CommitDescription implements Serializable
         this.name = name;
         this.description = description;
         this.changedFiles = Args.notNull(files, "Files are required.");
-        Args.check(name != null || description != null || !files.isEmpty(),
-            "Project changes must not be empty.");
+        if (name == null && description == null && files.isEmpty())
+        {
+            throw new NothingToCommitException();
+        }
     }
 
     protected CommitDescription()

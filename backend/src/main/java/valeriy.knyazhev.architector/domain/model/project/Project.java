@@ -1,6 +1,7 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.NoArgsConstructor;
+import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
@@ -141,14 +142,30 @@ public class Project
         return deleted;
     }
 
-    public void updateName(@Nonnull String name)
+    public boolean updateName(@Nonnull String name)
     {
-        this.name = name;
+        Args.notBlank(name, "Project name is required.");
+        if (name.equals(this.name))
+        {
+            return false;
+        } else
+        {
+            this.name = name;
+            return true;
+        }
     }
 
-    public void updateDescription(@Nonnull String description)
+    public boolean updateDescription(@Nonnull String description)
     {
-        this.description = description;
+        Args.notNull(description, "Project description is required.");
+        if (description.equals(this.description))
+        {
+            return false;
+        } else
+        {
+            this.description = description;
+            return true;
+        }
     }
 
     void setCreatedDate(@Nonnull LocalDateTime date)

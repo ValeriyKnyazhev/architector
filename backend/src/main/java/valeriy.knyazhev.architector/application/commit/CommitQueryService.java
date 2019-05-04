@@ -31,15 +31,15 @@ import static java.util.stream.Collectors.toList;
  */
 @Service
 @Transactional
-public class CommitApplicationService
+public class CommitQueryService
 {
 
     private final CommitRepository commitRepository;
 
     private final ProjectRepository projectRepository;
 
-    public CommitApplicationService(@Nonnull CommitRepository commitRepository,
-                                    @Nonnull ProjectRepository projectRepository)
+    public CommitQueryService(@Nonnull CommitRepository commitRepository,
+                              @Nonnull ProjectRepository projectRepository)
     {
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
