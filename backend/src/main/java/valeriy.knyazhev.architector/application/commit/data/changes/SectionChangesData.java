@@ -39,15 +39,39 @@ public class SectionChangesData
         @Nullable
         private ChangeType type;
 
-        public SectionItem(int oldPosition,
-                           int newPosition,
-                           @Nonnull String value,
-                           @Nullable ChangeType type)
+        private SectionItem(int oldPosition,
+                            int newPosition,
+                            @Nonnull String value,
+                            @Nullable ChangeType type)
         {
             this.oldPosition = oldPosition;
             this.newPosition = newPosition;
             this.value = Args.notNull(value, "Section item value is required.");
             this.type = type;
+        }
+
+        @Nonnull
+        public static SectionItem addedItem(int oldPosition,
+                                            int newPosition,
+                                            @Nonnull String value)
+        {
+            return new SectionItem(oldPosition, newPosition, value, ChangeType.ADDITION);
+        }
+
+        @Nonnull
+        public static SectionItem deletedItem(int oldPosition,
+                                              int newPosition,
+                                              @Nonnull String value)
+        {
+            return new SectionItem(oldPosition, newPosition, value, ChangeType.DELETION);
+        }
+
+        @Nonnull
+        public static SectionItem item(int oldPosition,
+                                       int newPosition,
+                                       @Nonnull String value)
+        {
+            return new SectionItem(oldPosition, newPosition, value, null);
         }
 
     }
