@@ -105,7 +105,7 @@ export default class Projects extends Component {
     return (
       <div className="container">
         <div>
-          <h1>Projects</h1>
+          <h1 className="projects__title">Projects</h1>
         </div>
         <div className="projects__create-project">
           <Button onClick={() => this.showModal('visibleCreateProject')}>
@@ -151,7 +151,7 @@ export default class Projects extends Component {
           />
           <br />
         </div>
-        {!_isEmpty(projects) && (
+        {!_isEmpty(projects) ? (
           <div className="row projects__list">
             {projects
               .slice(
@@ -208,13 +208,17 @@ export default class Projects extends Component {
                 )
               )}
           </div>
+        ) : (
+          <p className="projects__not-created">Projects not created</p>
         )}
-        <Pagination
-          current={this.state.currentPage}
-          pageSize={this.state.pageSize}
-          onChange={this.onChangePage}
-          total={projects.length}
-        />
+        {projects.length > 0 && (
+          <Pagination
+            current={this.state.currentPage}
+            pageSize={this.state.pageSize}
+            onChange={this.onChangePage}
+            total={projects.length}
+          />
+        )}
       </div>
     );
   }
