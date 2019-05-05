@@ -1,35 +1,33 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import _isEmpty from "lodash/isEmpty";
-import { Button, Icon, Input, message, Modal, Popconfirm, Table } from "antd";
-import "./Project.sass";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import _isEmpty from 'lodash/isEmpty';
+import { Button, Icon, Input, message, Modal, Popconfirm, Table } from 'antd';
+import './Project.sass';
 
 function constructSourceUrl(value) {
-  return value.startsWith("https://") || value.startsWith("http://")
-    ? value
-    : "https://" + value;
+  return value.startsWith('https://') || value.startsWith('http://') ? value : 'https://' + value;
 }
 
 const mainInfoColumns = [
   {
-    title: "Created",
-    dataIndex: "created",
-    key: "created",
+    title: 'Created',
+    dataIndex: 'created',
+    key: 'created',
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: "Updated",
-    dataIndex: "updated",
-    key: "updated",
+    title: 'Updated',
+    dataIndex: 'updated',
+    key: 'updated',
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: "Author",
-    dataIndex: "author",
-    key: "author",
+    title: 'Author',
+    dataIndex: 'author',
+    key: 'author',
     width: 4
   }
 ];
@@ -37,14 +35,14 @@ const mainInfoColumns = [
 export default class Project extends Component {
   state = {
     project: {
-      createdDate: "",
-      updatedDate: "",
-      projectName: "",
-      author: "",
-      description: "",
+      createdDate: '',
+      updatedDate: '',
+      projectName: '',
+      author: '',
+      description: '',
       files: []
     },
-    newFileSourceUrl: "",
+    newFileSourceUrl: '',
     confirmLoading: false,
     visibleCreateFile: false,
     visiblePopup: false
@@ -96,7 +94,7 @@ export default class Project extends Component {
           },
           () => {
             this.fetchProject.call(this);
-            message.success("File was created");
+            message.success('File was created');
           }
         );
       });
@@ -128,7 +126,7 @@ export default class Project extends Component {
 
     const mainInfoData = [
       {
-        key: "1",
+        key: '1',
         created: project.createdDate,
         updated: project.updatedDate,
         author: project.author
@@ -137,9 +135,9 @@ export default class Project extends Component {
 
     const filesListColumns = [
       {
-        title: "Identifier",
-        dataIndex: "identifier",
-        key: "identifier",
+        title: 'Identifier',
+        dataIndex: 'identifier',
+        key: 'identifier',
         width: 4,
         render: fileId => {
           return (
@@ -160,16 +158,16 @@ export default class Project extends Component {
         }
       },
       {
-        title: "Created",
-        dataIndex: "created",
-        key: "created",
+        title: 'Created',
+        dataIndex: 'created',
+        key: 'created',
         width: 4,
         render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
       },
       {
-        title: "Updated",
-        dataIndex: "updated",
-        key: "updated",
+        title: 'Updated',
+        dataIndex: 'updated',
+        key: 'updated',
         width: 4,
         render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
       }
@@ -178,6 +176,7 @@ export default class Project extends Component {
       return {
         key: index,
         identifier: file.fileId,
+        name: file.fileName,
         created: file.createdDate,
         updated: file.updatedDate
       };
@@ -197,17 +196,15 @@ export default class Project extends Component {
           />
           <div className="project__files">
             <div className="row project__files-header">
-              <div className="project__files_header-title col-xs-3">
-                <h4>Files</h4>
-              </div>
-              <div className="col-xs-9">
+              <div className="project__files_header-title col-xs-3 start-xs">Files</div>
+              <div className="col-xs-9 end-xs">
                 <Button
-                  className="project__files-create-file"
-                  onClick={() => this.showModal("visibleCreateFile")}
+                  className="project__files-create-file "
+                  onClick={() => this.showModal('visibleCreateFile')}
                   type="primary"
-                  style={{ marginBottom: 16, alignContent: "right" }}
+                  style={{ marginBottom: 16, alignContent: 'right' }}
                 >
-                  Add file <Icon type="plus-circle"/>
+                  Add file <Icon type="plus-circle" />
                 </Button>
               </div>
             </div>
@@ -222,11 +219,9 @@ export default class Project extends Component {
                 <Modal
                   title="Add new file"
                   visible={visibleCreateFile}
-                  onOk={() =>
-                    this.handleCreateFileFromSource("visibleCreateFile")
-                  }
+                  onOk={() => this.handleCreateFileFromSource('visibleCreateFile')}
                   confirmLoading={confirmLoading}
-                  onCancel={() => this.handleCancel("visibleCreateFile")}
+                  onCancel={() => this.handleCancel('visibleCreateFile')}
                   okButtonProps={{
                     disabled: _isEmpty(this.state.newFileSourceUrl)
                   }}
@@ -244,7 +239,7 @@ export default class Project extends Component {
               <Popconfirm
                 title="Do you want to create new project?"
                 visible={this.state.visiblePopup}
-                onConfirm={() => this.handleCarded("visibleProjects")}
+                onConfirm={() => this.handleCarded('visibleProjects')}
                 onCancel={this.handleClosePopup}
                 okText="Yes"
                 cancelText="No"
