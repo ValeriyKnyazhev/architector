@@ -13,8 +13,13 @@ export default class Projects extends Component {
       name: '',
       description: ''
     },
+    editedProject: {
+      name: '',
+      description: ''
+    },
     confirmLoading: false,
     visibleCreateProject: false,
+    visibleEditProject: false,
     visiblePopup: false,
     currentPage: 1,
     pageSize: 6
@@ -35,19 +40,19 @@ export default class Projects extends Component {
     });
   };
 
-  onChangeProjectName = event => {
+  onChangeProjectName = (event, data) => {
     this.setState({
-      newProjectData: {
-        ...this.state.newProjectData,
+      [data]: {
+        ...this.state[data],
         name: event.target.value
       }
     });
   };
 
-  onChangeProjectDescription = event => {
+  onChangeProjectDescription = (event, data) => {
     this.setState({
-      newProjectData: {
-        ...this.state.newProjectData,
+      [data]: {
+        ...this.state[data],
         description: event.target.value
       }
     });
@@ -77,6 +82,56 @@ export default class Projects extends Component {
       });
   };
 
+  handleCreateProject = modalVisible => {
+    const { newProjectData } = this.state;
+    this.setState({
+      confirmLoading: true
+    });
+    axios
+      .post('/api/projects/', {
+        name: newProjectData.name,
+        description: newProjectData.description
+      })
+      .then(() => {
+        this.setState(
+          {
+            [modalVisible]: false,
+            confirmLoading: false
+          },
+          () => {
+            this.fetchProjects.call(this);
+            message.success('Project was created');
+          }
+        );
+      });
+  };
+
+  handleEditProject = modalVisible => {
+    const { editedProject } = this.state;
+    this.setState({
+      confirmLoading: true
+    });
+    Promise.all(
+      axios.put(`/api/projects/${editedProject.id}/name`, {
+        name: editedProject.name
+      }),
+      axios.put(`/api/projects/${editedProject.id}/description`, {
+        description: editedProject.description
+      })
+    ).then(() => {
+      this.setState(
+        {
+          [modalVisible]: false,
+          confirmLoading: false
+        },
+        () => {
+          this.fetchProjects.call(this);
+          message.success('Project was edited');
+        }
+      );
+    });
+  };
+
   handlePopup = () => {
     this.setState({ visiblePopup: true });
   };
@@ -99,8 +154,21 @@ export default class Projects extends Component {
     });
   };
 
+  setEditedProject = project => {
+    this.setState({
+      editedProject: project
+    });
+  };
+
   render() {
-    const { projects, confirmLoading, visibleCreateProject } = this.state;
+    const {
+      projects,
+      confirmLoading,
+      visibleCreateProject,
+      visibleEditProject,
+      editedProject
+    } = this.state;
+
     const { history } = this.props;
     return (
       <div className="container">
@@ -127,7 +195,7 @@ export default class Projects extends Component {
                 <Input
                   placeholder="Enter your project name"
                   value={this.state.newProjectData.name}
-                  onChange={this.onChangeProjectName}
+                  onChange={e => this.onChangeProjectName(e, 'newProjectData')}
                   label="Name"
                 />
               </div>
@@ -136,7 +204,7 @@ export default class Projects extends Component {
                 <TextArea
                   placeholder="Enter your project description"
                   value={this.state.newProjectData.description}
-                  onChange={this.onChangeProjectDescription}
+                  onChange={e => this.onChangeProjectDescription(e, 'newProjectData')}
                 />
               </div>
             </Modal>
@@ -151,6 +219,36 @@ export default class Projects extends Component {
           />
           <br />
         </div>
+        {visibleEditProject && (
+          <Modal
+            title={`Edit project ${editedProject.name}`}
+            visible={visibleEditProject}
+            onOk={() => this.handleEditProject('visibleEditProject')}
+            confirmLoading={confirmLoading}
+            onCancel={() => this.handleCancel('visibleEditProject')}
+            okButtonProps={{
+              disabled: _isEmpty(editedProject.name)
+            }}
+          >
+            <div style={{ marginBottom: 16 }}>
+              <div className="projects__input-label">Name</div>
+              <Input
+                placeholder="Enter your project name"
+                value={editedProject.name}
+                onChange={e => this.onChangeProjectName(e, 'editedProject')}
+                label="Name"
+              />
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <div className="projects__input-label">Description</div>
+              <TextArea
+                placeholder="Enter your project description"
+                value={editedProject.description}
+                onChange={e => this.onChangeProjectDescription(e, 'editedProject')}
+              />
+            </div>
+          </Modal>
+        )}
         {!_isEmpty(projects) ? (
           <div className="row projects__list">
             {projects
@@ -203,6 +301,16 @@ export default class Projects extends Component {
                         <div className="col-xs-3">Files</div>
                         <div className="col-xs-9">{files.length}</div>
                       </div>
+                      <Button
+                        className="projects__project-edit"
+                        onClick={e => {
+                          e.stopPropagation();
+                          this.setEditedProject({ id: projectId, name: projectName, description });
+                          this.showModal('visibleEditProject');
+                        }}
+                      >
+                        <Icon type="edit" />
+                      </Button>
                     </div>
                   </div>
                 )
