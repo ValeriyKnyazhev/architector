@@ -69,17 +69,23 @@ public class ProjectManagementService
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
         boolean updated = project.updateName(command.name()) || project.updateDescription(command.description());
-        CommitDescription commitData = CommitDescription.builder()
-            .name(updated ? command.name() : null)
-            .description(updated ? command.description() : null)
-            .files(emptyList())
-            .build();
         this.projectRepository.save(project);
-        return commitChanges(
-            project.projectId(),
-            command.author(),
-            "Project " + projectId.id() + " data was updated.",
-            commitData);
+        if (updated)
+        {
+            CommitDescription commitData = CommitDescription.builder()
+                .name(updated ? command.name() : null)
+                .description(updated ? command.description() : null)
+                .files(emptyList())
+                .build();
+            return commitChanges(
+                project.projectId(),
+                command.author(),
+                "Project " + projectId.id() + " data was updated.",
+                commitData);
+        } else
+        {
+            return false;
+        }
     }
 
     // TODO move to commit service

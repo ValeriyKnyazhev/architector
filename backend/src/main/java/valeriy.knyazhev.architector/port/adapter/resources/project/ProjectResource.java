@@ -51,9 +51,10 @@ public class ProjectResource
         ProjectId projectId = this.managementService.createProject(
             //  TODO author constant should be replaced by user email
             new CreateProjectCommand(request.name(), "author", request.description()));
-        return ResponseEntity.ok().body(
-            new ResponseMessage().info("Project " + projectId.id() + " was created.")
-        );
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("Project " + projectId.id() + " was created.")
+            );
     }
 
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -84,21 +85,16 @@ public class ProjectResource
         @PathVariable String qProjectId,
         @RequestBody @Valid UpdateProjectDataRequest request)
     {
-        boolean updated = this.managementService.updateProjectData(
+        this.managementService.updateProjectData(
             new UpdateProjectDataCommand(
                 //  TODO author constant should be replaced by user email
                 qProjectId, request.name(), request.description(), "author"
             )
         );
-        return updated
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("Project " + qProjectId + " data was updated.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update project " + qProjectId + " data.")
-                   );
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("Project " + qProjectId + " data was updated.")
+            );
     }
 
 }

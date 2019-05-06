@@ -131,12 +131,21 @@ public class FileManagementService
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         FileMetadata newMetadata = command.constructMetadata();
-        updateFile(projectId, fileId, command.author(),
-            "File " + fileId.id() + " metadata was updated.",
-            new FileData("FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content())
+        FileMetadataChanges changes = FileDiffCalculator.defineMetadataChanges(
+            foundFile.metadata(), newMetadata
         );
-        foundFile.updateMetadata(newMetadata);
-        return true;
+        if (changes.isEmpty())
+        {
+            return false;
+        } else
+        {
+            updateFile(projectId, fileId, command.author(),
+                "File " + fileId.id() + " metadata was updated.",
+                new FileData("FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content())
+            );
+            foundFile.updateMetadata(newMetadata);
+            return true;
+        }
     }
 
     public boolean updateFileDescription(@Nonnull UpdateFileDescriptionCommand command)
@@ -150,12 +159,21 @@ public class FileManagementService
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         FileDescription newDescription = command.constructDescription();
-        updateFile(projectId, fileId, command.author(),
-            "File " + fileId.id() + " description was updated.",
-            new FileData("FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content())
+        FileDescriptionChanges changes = FileDiffCalculator.defineDescriptionChanges(
+            foundFile.description(), newDescription
         );
-        foundFile.updateDescription(newDescription);
-        return true;
+        if (changes.isEmpty())
+        {
+            return false;
+        } else
+        {
+            updateFile(projectId, fileId, command.author(),
+                "File " + fileId.id() + " description was updated.",
+                new FileData("FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content())
+            );
+            foundFile.updateDescription(newDescription);
+            return true;
+        }
     }
 
     public boolean deleteFile(@Nonnull DeleteFileCommand command)

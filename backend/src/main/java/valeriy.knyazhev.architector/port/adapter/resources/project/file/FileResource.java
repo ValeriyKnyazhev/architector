@@ -178,7 +178,7 @@ public class FileResource
                                                               @PathVariable String qFileId,
                                                               @RequestBody UpdateFileDescriptionRequest request)
     {
-        boolean updated = this.managementService.updateFileDescription(
+        this.managementService.updateFileDescription(
             // TODO author constant should be replaced by user email
             UpdateFileDescriptionCommand.builder()
                 .projectId(qProjectId)
@@ -188,14 +188,10 @@ public class FileResource
                 .implementationLevel(request.implementationLevel())
                 .build()
         );
-        return updated
-               ? ResponseEntity.ok().body(
-            new ResponseMessage().info("File " + qFileId + " description was updated.")
-        )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + " description.")
-                   );
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("File " + qFileId + " description was updated.")
+            );
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata",
@@ -205,7 +201,7 @@ public class FileResource
                                                               @PathVariable String qFileId,
                                                               @RequestBody UpdateFileMetadataRequest request)
     {
-        boolean updated = this.managementService.updateFileMetadata(
+        this.managementService.updateFileMetadata(
             // TODO author constant should be replaced by user email
             UpdateFileMetadataCommand.builder()
                 .projectId(qProjectId)
@@ -220,15 +216,10 @@ public class FileResource
                 .authorization(request.authorization())
                 .build()
         );
-        return updated
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " metadata was updated.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + " metadata.")
-                   );
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("File " + qFileId + " metadata was updated.")
+            );
     }
 
     @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
