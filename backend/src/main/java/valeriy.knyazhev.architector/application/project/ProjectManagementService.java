@@ -4,8 +4,7 @@ import org.apache.http.util.Args;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import valeriy.knyazhev.architector.application.project.command.CreateProjectCommand;
-import valeriy.knyazhev.architector.application.project.command.UpdateProjectDescriptionCommand;
-import valeriy.knyazhev.architector.application.project.command.UpdateProjectNameCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectDataCommand;
 import valeriy.knyazhev.architector.domain.model.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.commit.CommitDescription;
 import valeriy.knyazhev.architector.domain.model.commit.CommitRepository;
@@ -63,33 +62,15 @@ public class ProjectManagementService
         return this.projectRepository.save(project).projectId();
     }
 
-    public boolean updateProjectName(@Nonnull UpdateProjectNameCommand command)
+    public boolean updateProjectData(@Nonnull UpdateProjectDataCommand command)
     {
-        Args.notNull(command, "Update project name command is required.");
+        Args.notNull(command, "Update project data command is required.");
         ProjectId projectId = command.projectId();
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        boolean updated = project.updateName(command.name());
+        boolean updated = project.updateName(command.name()) || project.updateDescription(command.description());
         CommitDescription commitData = CommitDescription.builder()
             .name(updated ? command.name() : null)
-            .files(emptyList())
-            .build();
-        this.projectRepository.save(project);
-        return commitChanges(
-            project.projectId(),
-            command.author(),
-            "Project " + projectId.id() + " name was updated.",
-            commitData);
-    }
-
-    public boolean updateProjectDescription(@Nonnull UpdateProjectDescriptionCommand command)
-    {
-        Args.notNull(command, "Update project description command is required.");
-        ProjectId projectId = command.projectId();
-        Project project = this.projectRepository.findByProjectId(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        boolean updated = project.updateDescription(command.description());
-        CommitDescription commitData = CommitDescription.builder()
             .description(updated ? command.description() : null)
             .files(emptyList())
             .build();
@@ -97,7 +78,7 @@ public class ProjectManagementService
         return commitChanges(
             project.projectId(),
             command.author(),
-            "Project " + projectId.id() + " description was updated.",
+            "Project " + projectId.id() + " data was updated.",
             commitData);
     }
 

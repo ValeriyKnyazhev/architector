@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Input, message, Modal, Popconfirm, Pagination } from 'antd';
-import dayjs from 'dayjs';
-import './ProjectsList.sass';
+import React, { Component } from "react";
+import axios from "axios";
+import _isEmpty from "lodash/isEmpty";
+import { Button, Icon, Input, message, Modal, Pagination, Popconfirm } from "antd";
+import dayjs from "dayjs";
+import "./ProjectsList.sass";
 
 const { TextArea } = Input;
 export default class Projects extends Component {
@@ -82,15 +82,15 @@ export default class Projects extends Component {
       });
   };
 
-  handleCreateProject = modalVisible => {
-    const { newProjectData } = this.state;
+  handleEditProject = modalVisible => {
+    const { editedProject } = this.state;
     this.setState({
       confirmLoading: true
     });
     axios
-      .post('/api/projects/', {
-        name: newProjectData.name,
-        description: newProjectData.description
+      .put(`/api/projects/${editedProject.id}`, {
+        name: editedProject.name,
+        description: editedProject.description
       })
       .then(() => {
         this.setState(
@@ -100,36 +100,10 @@ export default class Projects extends Component {
           },
           () => {
             this.fetchProjects.call(this);
-            message.success('Project was created');
+            message.success("Project was edited");
           }
         );
       });
-  };
-
-  handleEditProject = modalVisible => {
-    const { editedProject } = this.state;
-    this.setState({
-      confirmLoading: true
-    });
-    Promise.all(
-      axios.put(`/api/projects/${editedProject.id}/name`, {
-        name: editedProject.name
-      }),
-      axios.put(`/api/projects/${editedProject.id}/description`, {
-        description: editedProject.description
-      })
-    ).then(() => {
-      this.setState(
-        {
-          [modalVisible]: false,
-          confirmLoading: false
-        },
-        () => {
-          this.fetchProjects.call(this);
-          message.success('Project was edited');
-        }
-      );
-    });
   };
 
   handlePopup = () => {

@@ -6,15 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import valeriy.knyazhev.architector.application.project.ProjectManagementService;
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
 import valeriy.knyazhev.architector.application.project.command.CreateProjectCommand;
-import valeriy.knyazhev.architector.application.project.command.UpdateProjectDescriptionCommand;
-import valeriy.knyazhev.architector.application.project.command.UpdateProjectNameCommand;
+import valeriy.knyazhev.architector.application.project.command.UpdateProjectDataCommand;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectDescriptorModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectMapper;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.CreateProjectRequest;
-import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectDescriptionRequest;
-import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectNameRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectDataRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -79,51 +77,27 @@ public class ProjectResource
         return ResponseEntity.ok(buildProject(project));
     }
 
-    @PutMapping(value = "/api/projects/{qProjectId}/name",
+    @PutMapping(value = "/api/projects/{qProjectId}",
                 consumes = APPLICATION_JSON_UTF8_VALUE,
                 produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> updateProjectName(
+    public ResponseEntity<Object> updateProjectData(
         @PathVariable String qProjectId,
-        @RequestBody @Valid UpdateProjectNameRequest request)
+        @RequestBody @Valid UpdateProjectDataRequest request)
     {
-        boolean updated = this.managementService.updateProjectName(
-            new UpdateProjectNameCommand(
+        boolean updated = this.managementService.updateProjectData(
+            new UpdateProjectDataCommand(
                 //  TODO author constant should be replaced by user email
-                qProjectId, "author", request.name()
+                qProjectId, request.name(), request.description(), "author"
             )
         );
         return updated
                ? ResponseEntity.ok()
                    .body(
-                       new ResponseMessage().info("Project " + qProjectId + " name was updated.")
+                       new ResponseMessage().info("Project " + qProjectId + " data was updated.")
                    )
                : ResponseEntity.badRequest()
                    .body(
-                       new ResponseMessage().error("Unable to update project " + qProjectId + " name.")
-                   );
-    }
-
-    @PutMapping(value = "/api/projects/{qProjectId}/description",
-                consumes = APPLICATION_JSON_UTF8_VALUE,
-                produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> updateProjectDescription(
-        @PathVariable String qProjectId,
-        @RequestBody @Valid UpdateProjectDescriptionRequest request)
-    {
-        boolean updated = this.managementService.updateProjectDescription(
-            new UpdateProjectDescriptionCommand(
-                //  TODO author constant should be replaced by user email
-                qProjectId, "author", request.description()
-            )
-        );
-        return updated
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("Project " + qProjectId + " description was updated.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update project " + qProjectId + " description.")
+                       new ResponseMessage().error("Unable to update project " + qProjectId + " data.")
                    );
     }
 
