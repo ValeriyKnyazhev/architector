@@ -4,10 +4,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import valeriy.knyazhev.architector.application.commit.CommitNotFoundException;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
+import valeriy.knyazhev.architector.domain.model.commit.NothingToCommitException;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
@@ -31,6 +34,22 @@ public class ErrorHandlingResource
         ResponseMessage responseMessage = new ResponseMessage()
             .error(ex.getMessage());
         return ResponseEntity.status(NOT_FOUND).body(responseMessage);
+    }
+
+    @ExceptionHandler(CommitNotFoundException.class)
+    public ResponseEntity<ResponseMessage> catchCommitNotFoundException(CommitNotFoundException ex)
+    {
+        ResponseMessage responseMessage = new ResponseMessage()
+            .error(ex.getMessage());
+        return ResponseEntity.status(NOT_FOUND).body(responseMessage);
+    }
+
+    @ExceptionHandler(NothingToCommitException.class)
+    public ResponseEntity<ResponseMessage> catchNothingToCommitException(NothingToCommitException ex)
+    {
+        ResponseMessage responseMessage = new ResponseMessage()
+            .error(ex.getMessage());
+        return ResponseEntity.status(BAD_REQUEST).body(responseMessage);
     }
 
 }

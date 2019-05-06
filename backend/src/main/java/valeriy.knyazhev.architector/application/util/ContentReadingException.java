@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 /**
  * @author Valeriy Knyazhev
  */
-public class ContentReadingException extends IllegalStateException
+public class ContentReadingException extends RuntimeException
 {
 
     public ContentReadingException(@Nonnull String sourcePath)
