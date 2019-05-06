@@ -139,9 +139,14 @@ public class FileManagementService
             return false;
         } else
         {
-            updateFile(projectId, fileId, command.author(),
+            updateFile(
+                projectId,
+                fileId,
+                command.author(),
                 "File " + fileId.id() + " metadata was updated.",
-                new FileData("FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content())
+                new FileData(
+                    foundFile.schema(), "FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content()
+                )
             );
             foundFile.updateMetadata(newMetadata);
             return true;
@@ -167,9 +172,14 @@ public class FileManagementService
             return false;
         } else
         {
-            updateFile(projectId, fileId, command.author(),
+            updateFile(
+                projectId,
+                fileId,
+                command.author(),
                 "File " + fileId.id() + " description was updated.",
-                new FileData("FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content())
+                new FileData(
+                    foundFile.schema(), "FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content()
+                )
             );
             foundFile.updateDescription(newDescription);
             return true;
@@ -226,6 +236,10 @@ public class FileManagementService
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         File newFile = constructFile(fileId, newFileData);
+        if (oldFile.schema() != newFile.schema())
+        {
+            throw new IllegalStateException("File schema version must not be updated.");
+        }
         List<CommitItem> commitItems = FileDiffCalculator.calculateDiff(
             oldFile.content(), newFile.content()
         );
@@ -324,6 +338,7 @@ public class FileManagementService
     {
         return File.constructor()
             .withFileId(fileId)
+            .withSchema(fileData.schema())
             .withDescription(fileData.description())
             .withMetadata(fileData.metadata())
             .withContent(fileData.content())

@@ -21,6 +21,13 @@ import java.util.Optional;
 public abstract class IFCReader<T>
 {
 
+    private static final String FILE_DESCRIPTION_TITLE = "FILE_DESCRIPTION";
+    private static final String FILE_NAME_TITLE = "FILE_NAME";
+    private static final String FILE_SCHEMA_TITLE = "FILE_SCHEMA";
+    private static final String HEADER_TITLE = "HEADER";
+    private static final String DATA_TITLE = "DATA";
+    private static final String ENDSEC_TITLE = "ENDSEC";
+
     @Nonnull
     protected T read(@Nonnull InputStream contentStream)
     {
@@ -39,7 +46,7 @@ public abstract class IFCReader<T>
             isoId = readNextLine(reader);
             while ((line = reader.readLine()) != null)
             {
-                if (line.equalsIgnoreCase("ENDSEC;"))
+                if (line.startsWith(ENDSEC_TITLE))
                 {
                     isHeader = false;
                     isData = false;
@@ -49,23 +56,17 @@ public abstract class IFCReader<T>
                 {
                     String fullLine = readFullLine(line, reader);
                     // like as in IfcStepDeserializer::processHeader
-                    if (fullLine.startsWith("FILE_DESCRIPTION"))
+                    if (fullLine.startsWith(FILE_DESCRIPTION_TITLE))
                     {
-                        fileDescription = fullLine
-                            .substring("FILE_DESCRIPTION".length() + 1, fullLine.length() - 2)
-                            .trim();
+                        fileDescription = extractLineInfo(fullLine, FILE_DESCRIPTION_TITLE);
                     }
-                    if (fullLine.startsWith("FILE_NAME"))
+                    if (fullLine.startsWith(FILE_NAME_TITLE))
                     {
-                        fileName = fullLine
-                            .substring("FILE_NAME".length() + 1, fullLine.length() - 2)
-                            .trim();
+                        fileName = extractLineInfo(fullLine, FILE_NAME_TITLE);
                     }
-                    if (fullLine.startsWith("FILE_SCHEMA"))
+                    if (fullLine.startsWith(FILE_SCHEMA_TITLE))
                     {
-                        fileSchema = fullLine
-                            .substring("FILE_SCHEMA".length() + 1, fullLine.length() - 2)
-                            .trim();
+                        fileSchema = extractLineInfo(fullLine, FILE_SCHEMA_TITLE);
                     }
                 }
 
@@ -76,11 +77,11 @@ public abstract class IFCReader<T>
                     contentItems.add(itemLine.substring(startIndexItem));
                 }
 
-                if (line.equalsIgnoreCase("HEADER;"))
+                if (line.startsWith(HEADER_TITLE))
                 {
                     isHeader = true;
                 }
-                if (line.equalsIgnoreCase("DATA;"))
+                if (line.startsWith(DATA_TITLE))
                 {
                     isData = true;
                 }
@@ -111,7 +112,18 @@ public abstract class IFCReader<T>
     }
 
     @Nonnull
-    protected abstract T constructResult(@Nonnull String isoId, IfcHeader header, List<String> contentItems);
+    protected abstract T constructResult(@Nonnull String isoId,
+                                         IfcHeader header,
+                                         List<String> contentItems);
+
+    @Nonnull
+    private static String extractLineInfo(@Nonnull String line, @Nonnull String title)
+    {
+        String preprocessed = line
+            .substring(title.length(), line.length() - 1)
+            .trim();
+        return preprocessed.substring(1, preprocessed.length() - 1);
+    }
 
     @Nonnull
     private static String readFullLine(@Nonnull String line, @Nonnull BufferedReader reader)

@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
-import static org.bimserver.emf.Schema.IFC2X3TC1;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -40,7 +39,7 @@ public class File
 
     @Nonnull
     @Enumerated(EnumType.STRING)
-    private Schema schema = IFC2X3TC1;
+    private Schema schema;
 
     @Nonnull
     @Column(columnDefinition = "jsonb")
@@ -62,11 +61,13 @@ public class File
     private long concurrencyVersion;
 
     private File(@Nonnull FileId fileId,
+                 @Nonnull Schema schema,
                  @Nonnull FileDescription description,
                  @Nonnull FileMetadata metadata,
                  @Nonnull FileContent content)
     {
         this.fileId = fileId;
+        this.schema = schema;
         this.description = description;
         this.metadata = metadata;
         this.content = content;
@@ -150,6 +151,8 @@ public class File
 
         private FileId fileId;
 
+        private Schema schema;
+
         private FileDescription description;
 
         private FileMetadata metadata;
@@ -164,6 +167,13 @@ public class File
         public FileConstructor withFileId(@Nonnull FileId fileId)
         {
             this.fileId = fileId;
+            return this;
+        }
+
+        @Nonnull
+        public FileConstructor withSchema(@Nonnull Schema schema)
+        {
+            this.schema = schema;
             return this;
         }
 
@@ -192,7 +202,7 @@ public class File
         public File construct()
         {
             return new File(
-                this.fileId, this.description, this.metadata, this.content
+                this.fileId, this.schema, this.description, this.metadata, this.content
             );
         }
 

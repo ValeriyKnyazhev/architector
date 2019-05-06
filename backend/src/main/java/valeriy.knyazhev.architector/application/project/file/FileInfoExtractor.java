@@ -1,6 +1,7 @@
 package valeriy.knyazhev.architector.application.project.file;
 
 import lombok.RequiredArgsConstructor;
+import org.bimserver.emf.Schema;
 import org.bimserver.models.store.IfcHeader;
 import org.springframework.stereotype.Service;
 import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
@@ -17,6 +18,12 @@ import java.time.ZoneId;
 @RequiredArgsConstructor
 public final class FileInfoExtractor
 {
+
+    @Nonnull
+    public static Schema extractSchemaVersion(@Nonnull IfcHeader header)
+    {
+        return Schema.valueOf(header.getIfcSchemaVersion());
+    }
 
     @Nonnull
     public static FileDescription extractDescription(@Nonnull IfcHeader header)

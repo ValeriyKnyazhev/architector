@@ -44,9 +44,12 @@ public class IFCFileReader extends IFCReader<FileData>
 
     @Override
     @Nonnull
-    protected FileData constructResult(@Nonnull String isoId, IfcHeader header, List<String> contentItems)
+    protected FileData constructResult(@Nonnull String isoId,
+                                       IfcHeader header,
+                                       List<String> contentItems)
     {
         return new FileData(
+            FileInfoExtractor.extractSchemaVersion(header),
             isoId,
             FileInfoExtractor.extractMetadata(header),
             FileInfoExtractor.extractDescription(header),
