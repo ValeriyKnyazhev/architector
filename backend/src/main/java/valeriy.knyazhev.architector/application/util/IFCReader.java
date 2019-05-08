@@ -73,8 +73,7 @@ public abstract class IFCReader<T>
                 if (isData)
                 {
                     String itemLine = readFullLine(line, reader);
-                    int startIndexItem = itemLine.indexOf("=") + 1;
-                    contentItems.add(itemLine.substring(startIndexItem));
+                    contentItems.add(itemLine);
                 }
 
                 if (line.startsWith(HEADER_TITLE))

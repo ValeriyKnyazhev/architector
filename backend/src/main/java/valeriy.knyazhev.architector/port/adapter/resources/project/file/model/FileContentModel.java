@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 
@@ -46,15 +45,7 @@ public class FileContentModel
         this.fileId = fileId;
         this.metadata = metadata;
         this.description = description;
-        this.content = items.stream()
-            .map(FileContentModel::wrap)
-            .collect(Collectors.joining(""));
-    }
-
-    @Nonnull
-    private static String wrap(@Nonnull String item)
-    {
-        return "<div className=\"content-item__data\">" + item + "</div>";
+        this.content = String.join(System.lineSeparator(), items);
     }
 
 }
