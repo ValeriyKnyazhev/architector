@@ -1,14 +1,9 @@
 package valeriy.knyazhev.architector.application.commit.data.changes;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Builder;
 
 import javax.annotation.Nullable;
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -22,9 +17,7 @@ public class FileMetadataChangesData
     private final ChangedValue<String> name;
 
     @Nullable
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private final ChangedValue<LocalDate> timestamp;
+    private final ChangedValue<String> timestamp;
 
     @Nullable
     private final ChangedValue<List<String>> authors;
@@ -43,7 +36,7 @@ public class FileMetadataChangesData
 
     @Builder
     private FileMetadataChangesData(@Nullable ChangedValue<String> name,
-                                    @Nullable ChangedValue<LocalDate> timestamp,
+                                    @Nullable ChangedValue<String> timestamp,
                                     @Nullable ChangedValue<List<String>> authors,
                                     @Nullable ChangedValue<List<String>> organizations,
                                     @Nullable ChangedValue<String> preprocessorVersion,

@@ -3,6 +3,7 @@ package valeriy.knyazhev.architector.application.commit;
 import org.apache.http.util.Args;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import valeriy.knyazhev.architector.application.commit.command.FetchCommitChangesCommand;
 import valeriy.knyazhev.architector.application.commit.data.changes.*;
 import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
@@ -40,10 +41,16 @@ public class ChangesApplicationService
     }
 
     @Nonnull
-    public CommitChangesData fetchCommitChanges(long commitId)
+    public CommitChangesData fetchCommitChanges(@Nonnull FetchCommitChangesCommand command)
     {
+        Args.notNull(command, "Fetch commit changes command is required.");
+        long commitId = command.commitId();
         Commit commitEntity = this.commitRepository.findById(commitId)
             .orElseThrow(() -> new CommitNotFoundException(commitId));
+        if (!commitEntity.projectId().equals(command.projectId()))
+        {
+            throw new IllegalStateException("Commit is not in requested project.");
+        }
         CommitDescription commit = commitEntity.data();
         Long commitParentId = commitEntity.parentId();
         if (commitParentId == null)
@@ -57,7 +64,7 @@ public class ChangesApplicationService
             );
         }
         Projection projection = this.projectionConstructService.makeProjection(
-            commitEntity.projectId(), commitId
+            commitEntity.projectId(), commitParentId
         );
         String newName = commit.name();
         String newDescription = commit.description();
@@ -111,7 +118,7 @@ public class ChangesApplicationService
         {
             return FileMetadataChangesData.builder()
                 .name(newValue(changes.name()))
-                .timestamp(newValue(changes.timestamp()))
+                .timestamp(newValue(changes.timestamp().toString()))
                 .authors(newValue(changes.authors()))
                 .organizations(newValue(changes.organizations()))
                 .preprocessorVersion(newValue(changes.preprocessorVersion()))
@@ -127,8 +134,8 @@ public class ChangesApplicationService
             )
             .timestamp(
                 changes.timestamp() != null
-                    ? changeValue(metadata.timestamp(), changes.timestamp())
-                    : null
+                ? changeValue(metadata.timestamp().toString(), changes.timestamp().toString())
+                : null
             )
             .authors(
                 changes.authors() != null

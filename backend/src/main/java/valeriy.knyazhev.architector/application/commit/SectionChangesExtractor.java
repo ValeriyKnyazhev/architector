@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 
@@ -19,8 +20,11 @@ public class SectionChangesExtractor
 {
 
     private static final int DEFAULT_LINES_OFFSET_SIZE = 3;
+
     private final int itemsSize;
+
     private final int linesOffsetSize;
+
     @Nonnull
     private List<String> items;
     @Nonnull
@@ -47,36 +51,41 @@ public class SectionChangesExtractor
         int curOffset = 0;
         boolean isNewAddition = true;
         int lastPosition = this.changes.get(0).position();
-        var newSectionItems = new Object()
-        {
-            List<SectionItem> items = new LinkedList<>();
-        };
+        List<SectionItem> newSectionItems = new LinkedList<>();
         // FIXME calculate result with lines offset
         for (CommitItem change : changes)
         {
-            // TODO add offset lines from the begin of section
+            if (isNewAddition)
+            {
+                // TODO add offset lines from the begin of section
+            }
 
             //TODO add adding items
+            isNewAddition = false;
+
 
             if (change.position() - this.linesOffsetSize > lastPosition + this.linesOffsetSize + 1)
             {
                 // Get offset lines from the end of section
                 AtomicInteger lineIndex = new AtomicInteger(lastPosition + 1);
                 List<String> lines = fetchLines(lineIndex.get(), lineIndex.get() + this.linesOffsetSize);
-                lines.forEach(line ->
-                    newSectionItems.items.add(
+                newSectionItems.addAll(
+                    lines.stream()
+                        .map(line ->
                         SectionItem.item(
                             lineIndex.get(), lineIndex.getAndIncrement() + curOffset, line
                         )
                     )
+                        .collect(Collectors.toList())
                 );
 
                 // Create and add new section
-                sections.add(new SectionChangesData(newSectionItems.items));
-                newSectionItems.items = new LinkedList<>();
+                sections.add(new SectionChangesData(newSectionItems));
+                newSectionItems = new LinkedList<>();
+                isNewAddition = true;
             }
         }
-        return emptyList();
+        return sections;
     }
 
     @Nonnull

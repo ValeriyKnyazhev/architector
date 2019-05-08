@@ -43,6 +43,16 @@ public final class CommitCombinator
     private static void addNextChangesToProjection(@Nonnull Projection projection,
                                                    @Nonnull CommitDescription nextCommit)
     {
+        String name = nextCommit.name();
+        String description = nextCommit.description();
+        if (name != null)
+        {
+            projection.updateName(name);
+        }
+        if (description != null)
+        {
+            projection.updateDescription(description);
+        }
         nextCommit.changedFiles().forEach(file -> addNextFileChangesToProjection(projection, file));
     }
 

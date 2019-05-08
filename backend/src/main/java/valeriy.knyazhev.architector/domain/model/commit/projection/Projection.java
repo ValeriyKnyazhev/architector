@@ -70,6 +70,16 @@ public class Projection
         return this.files;
     }
 
+    public void updateName(@Nonnull String name)
+    {
+        this.name = name;
+    }
+
+    public void updateDescription(@Nonnull String description)
+    {
+        this.description = description;
+    }
+
     public static Projection empty()
     {
         // FIXME initial projection for combinator
