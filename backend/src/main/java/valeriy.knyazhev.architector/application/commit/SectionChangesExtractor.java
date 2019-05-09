@@ -50,49 +50,55 @@ public class SectionChangesExtractor
         }
         List<SectionChangesData> sections = new LinkedList<>();
         int curOffset = 0;
-        boolean isNewAddition = true;
+        boolean isNewChange = true;
+        boolean isLastDeletionChange = false;
         int lastPosition = this.changes.get(0).position();
         List<SectionItem> newSectionItems = new LinkedList<>();
         for (CommitItem change : changes)
         {
-            if (isNewAddition)
+            if (change.position() - this.linesOffsetSize > lastPosition + this.linesOffsetSize + 1)
+            {
+                // Add offset lines from the content to the end of section
+                int startPosition = isLastDeletionChange ? lastPosition + 1 : lastPosition;
+                newSectionItems.addAll(extractLastContentLines(lastPosition, curOffset));
+
+                // Create and add new section
+                sections.add(new SectionChangesData(newSectionItems));
+                lastPosition = change.position();// FIXME ?
+                isNewChange = true;
+                newSectionItems = new LinkedList<>();
+            }
+            if (isNewChange)
             {
                 // Add offset lines from the content to the start of section
                 newSectionItems.addAll(extractFirstContentLines(lastPosition, curOffset));
+            } else
+            {
+                if (change.position() > lastPosition + 1)
+                {
+                    // Add offset lines from the content to the section space between changes
+                    newSectionItems.addAll(
+                        extractSectionItemsFromContent(lastPosition, change.position() - 1, curOffset)
+                    );
+                }
             }
 
             // Add changed line to section
-            isNewAddition = false;
+            isNewChange = false;
             SectionItem newItem = null;
             if (change.type() == ChangeType.ADDITION)
             {
                 newItem = SectionItem.addedItem(change.position() + curOffset, change.value());
                 curOffset++;
+                isLastDeletionChange = false;
             } else
             {
                 newItem = SectionItem.deletedItem(change.position(), change.value());
                 curOffset--;
+                isLastDeletionChange = true;
             }
+            lastPosition = change.position();
             newSectionItems.add(newItem);
-
-            if (change.position() - this.linesOffsetSize > lastPosition + this.linesOffsetSize + 1)
-            {
-                // Add offset lines from the content to the end of section
-                newSectionItems.addAll(extractLastContentLines(lastPosition, curOffset));
-
-                // Create and add new section
-                sections.add(new SectionChangesData(newSectionItems));
-                newSectionItems = new LinkedList<>();
-                isNewAddition = true;
-            }
-
-            if (change.position() > lastPosition + 1)
-            {
-                // Add offset lines from the content to the section space between changes
-                newSectionItems.addAll(
-                    extractSectionItemsFromContent(lastPosition + 1, change.position() - 1, curOffset)
-                );
-            }
         }
         newSectionItems.addAll(extractLastContentLines(lastPosition, curOffset));
         sections.add(new SectionChangesData(newSectionItems));
@@ -110,8 +116,9 @@ public class SectionChangesExtractor
     @Nonnull
     private List<SectionItem> extractLastContentLines(int position, int curOffset)
     {
+        int shift = (curOffset < 0) ? Math.abs(curOffset) : 0;
         return extractSectionItemsFromContent(
-            position, position - 1 + this.linesOffsetSize, curOffset
+            position + shift, position - 1 + shift + this.linesOffsetSize, curOffset
         );
     }
 
@@ -119,7 +126,7 @@ public class SectionChangesExtractor
     private List<SectionItem> extractSectionItemsFromContent(int startIndex, int endIndex, int curOffset)
     {
         startIndex = startIndex < 0 ? 0 : startIndex;
-        endIndex = endIndex > this.itemsSize ? this.itemsSize : endIndex;
+        endIndex = endIndex >= this.itemsSize ? this.itemsSize - 1 : endIndex;
         AtomicInteger lineIndex = new AtomicInteger(startIndex);
         return fetchLines(startIndex, endIndex)
             .stream()

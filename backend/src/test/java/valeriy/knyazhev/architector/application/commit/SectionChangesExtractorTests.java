@@ -162,7 +162,7 @@ public class SectionChangesExtractorTests
     }
 
     @Test
-    public void shouldReturnSectionWithAdditionInStart()
+    public void shouldReturnSectionWithAdditionInTheBeginning()
     {
         // given
         List<String> content = sampleContent();
@@ -194,7 +194,7 @@ public class SectionChangesExtractorTests
     }
 
     @Test
-    public void shouldReturnSectionWithDeletionInStart()
+    public void shouldReturnSectionWithDeletionInTheBeginning()
     {
         // given
         List<String> content = sampleContent();
@@ -219,6 +219,70 @@ public class SectionChangesExtractorTests
                 asList(
                     SectionItem.deletedItem(position, change.value()),
                     SectionItem.item(position + 1, position, content.get(position + 1))
+                )
+            )
+        ).isTrue();
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldReturnSectionWithAdditionAtTheEnd()
+    {
+        // given
+        List<String> content = sampleContent();
+        int position = content.size();
+        CommitItem change = addItem("new", position);
+        int linesOffsetSize = 1;
+
+        // when
+        List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
+            .applyChanges(singletonList(change))
+            .withLinesOffset(linesOffsetSize)
+            .extract();
+
+        // then
+        assertThat(sections.size()).as("1 section should be extracted.").isEqualTo(1);
+        SoftAssertions softly = new SoftAssertions();
+        List<SectionItem> sectionItems = sections.get(0).items();
+        softly.assertThat(sectionItems.size()).isEqualTo(1 + linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                sectionItems,
+                asList(
+                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
+                    SectionItem.addedItem(position, change.value())
+                )
+            )
+        ).isTrue();
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldReturnSectionWithDeletionAtTheEnd()
+    {
+        // given
+        List<String> content = sampleContent();
+        int position = content.size() - 1;
+        CommitItem change = deleteItem(content.get(position), position);
+        int linesOffsetSize = 1;
+
+        // when
+        List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
+            .applyChanges(singletonList(change))
+            .withLinesOffset(linesOffsetSize)
+            .extract();
+
+        // then
+        assertThat(sections.size()).as("1 section should be extracted.").isEqualTo(1);
+        SoftAssertions softly = new SoftAssertions();
+        List<SectionItem> sectionItems = sections.get(0).items();
+        softly.assertThat(sectionItems.size()).isEqualTo(1 + linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                sectionItems,
+                asList(
+                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
+                    SectionItem.deletedItem(position, change.value())
                 )
             )
         ).isTrue();
@@ -293,6 +357,220 @@ public class SectionChangesExtractorTests
                     SectionItem.deletedItem(position, content.get(position)),
                     SectionItem.deletedItem(position + 1, content.get(position + 1)),
                     SectionItem.item(position + 2, position, content.get(position + 2))
+                )
+            )
+        ).isTrue();
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldReturnSectionWithAdditionsAtDistanceEqualsTwoLinesOffsetSize()
+    {
+        // given
+        List<String> content = sampleContent();
+        int position = 3;
+        int linesOffsetSize = 1;
+        List<CommitItem> changes = asList(
+            addItem("new 1", position),
+            addItem("new 2", position + 1 + 2 * linesOffsetSize)
+        );
+
+        // when
+        List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
+            .applyChanges(changes)
+            .withLinesOffset(linesOffsetSize)
+            .extract();
+
+        // then
+        assertThat(sections.size()).as("1 section should be extracted.").isEqualTo(1);
+        SoftAssertions softly = new SoftAssertions();
+        List<SectionItem> sectionItems = sections.get(0).items();
+        softly.assertThat(sectionItems.size()).isEqualTo(changes.size() + 4 * linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                sectionItems,
+                asList(
+                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
+                    SectionItem.addedItem(position, "new 1"),
+                    SectionItem.item(position, position + 1, content.get(position)),
+                    SectionItem.item(position + 1, position + 2, content.get(position + 1)),
+                    SectionItem.addedItem(position + 2, "new 2"),
+                    SectionItem.item(position + 2, position + 4, content.get(position + 2))
+                )
+            )
+        ).isTrue();
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldReturnSectionWithDeletionsAtDistanceEqualsTwoLinesOffsetSize()
+    {
+        // given
+        List<String> content = sampleContent();
+        int linesOffsetSize = 1;
+        int firstPosition = 3;
+        int secondPosition = firstPosition + 1 + 2 * linesOffsetSize;
+        List<CommitItem> changes = asList(
+            deleteItem(content.get(firstPosition), firstPosition),
+            deleteItem(content.get(secondPosition), secondPosition)
+        );
+
+        // when
+        List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
+            .applyChanges(changes)
+            .withLinesOffset(linesOffsetSize)
+            .extract();
+
+        // then
+        assertThat(sections.size()).as("1 section should be extracted.").isEqualTo(1);
+        SoftAssertions softly = new SoftAssertions();
+        List<SectionItem> sectionItems = sections.get(0).items();
+        softly.assertThat(sectionItems.size()).isEqualTo(changes.size() + 4 * linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                sectionItems,
+                asList(
+                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 1)),
+                    SectionItem.deletedItem(firstPosition, content.get(firstPosition)),
+                    SectionItem.item(firstPosition + 1, firstPosition, content.get(firstPosition + 1)),
+                    SectionItem.item(secondPosition - 1, secondPosition - 1, content.get(secondPosition - 1)),
+                    SectionItem.deletedItem(secondPosition, content.get(secondPosition)),
+                    SectionItem.item(secondPosition + 1, secondPosition - 2, content.get(secondPosition + 1))
+                )
+            )
+        ).isTrue();
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldReturnTwoSectionsWithAdditions()
+    {
+        // given
+        List<String> content = sampleContent();
+        int linesOffsetSize = 1;
+        int firstPosition = 2;
+        int secondPosition = 6;
+        List<CommitItem> changes = asList(
+            addItem("new 1", firstPosition),
+            addItem("new 2", secondPosition)
+        );
+
+        // when
+        List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
+            .applyChanges(changes)
+            .withLinesOffset(linesOffsetSize)
+            .extract();
+
+        // then
+        assertThat(sections.size()).as("2 sections should be extracted.").isEqualTo(2);
+        SoftAssertions softly = new SoftAssertions();
+        List<SectionItem> firstSectionItems = sections.get(0).items();
+        List<SectionItem> secondSectionItems = sections.get(1).items();
+        softly.assertThat(firstSectionItems.size()).isEqualTo(1 + 2 * linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                firstSectionItems,
+                asList(
+                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 1)),
+                    SectionItem.addedItem(firstPosition, "new 1"),
+                    SectionItem.item(firstPosition, firstPosition + 1, content.get(firstPosition))
+                )
+            )
+        ).isTrue();
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                secondSectionItems,
+                asList(
+                    SectionItem.item(secondPosition - 1, secondPosition, content.get(secondPosition - 1)),
+                    SectionItem.addedItem(secondPosition + 1, "new 2"),
+                    SectionItem.item(secondPosition, secondPosition + 2, content.get(secondPosition))
+                )
+            )
+        ).isTrue();
+        softly.assertThat(secondSectionItems.size()).isEqualTo(1 + 2 * linesOffsetSize);
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldReturnTwoSectionsWithDeletions()
+    {
+        // given
+        List<String> content = sampleContent();
+        int linesOffsetSize = 1;
+        int firstPosition = 2;
+        int secondPosition = 6;
+        List<CommitItem> changes = asList(
+            deleteItem(content.get(firstPosition), firstPosition),
+            deleteItem(content.get(secondPosition), secondPosition)
+        );
+
+        // when
+        List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
+            .applyChanges(changes)
+            .withLinesOffset(linesOffsetSize)
+            .extract();
+
+        // then
+        assertThat(sections.size()).as("2 sections should be extracted.").isEqualTo(2);
+        SoftAssertions softly = new SoftAssertions();
+        List<SectionItem> firstSectionItems = sections.get(0).items();
+        List<SectionItem> secondSectionItems = sections.get(1).items();
+        softly.assertThat(firstSectionItems.size()).isEqualTo(1 + 2 * linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                firstSectionItems,
+                asList(
+                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 1)),
+                    SectionItem.deletedItem(firstPosition, content.get(firstPosition)),
+                    SectionItem.item(firstPosition + 1, firstPosition, content.get(firstPosition + 1))
+                )
+            )
+        ).isTrue();
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                secondSectionItems,
+                asList(
+                    SectionItem.item(secondPosition - 1, secondPosition - 2, content.get(secondPosition - 1)),
+                    SectionItem.deletedItem(secondPosition, content.get(secondPosition)),
+                    SectionItem.item(secondPosition + 1, secondPosition - 1, content.get(secondPosition + 1))
+                )
+            )
+        ).isTrue();
+        softly.assertThat(secondSectionItems.size()).isEqualTo(1 + 2 * linesOffsetSize);
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldReturnSectionWithChangedLine()
+    {
+        // given
+        List<String> content = sampleContent();
+        int linesOffsetSize = 1;
+        int position = 4;
+        List<CommitItem> changes = asList(
+            deleteItem(content.get(position), position),
+            addItem("new", position)
+        );
+
+        // when
+        List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
+            .applyChanges(changes)
+            .withLinesOffset(linesOffsetSize)
+            .extract();
+
+        // then
+        assertThat(sections.size()).as("1 section should be extracted.").isEqualTo(1);
+        SoftAssertions softly = new SoftAssertions();
+        List<SectionItem> sectionItems = sections.get(0).items();
+        softly.assertThat(sectionItems.size()).isEqualTo(changes.size() + 2 * linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                sectionItems,
+                asList(
+                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
+                    SectionItem.deletedItem(position, content.get(position)),
+                    SectionItem.addedItem(position, "new"),
+                    SectionItem.item(position + 1, position + 1, content.get(position + 1))
                 )
             )
         ).isTrue();
