@@ -163,7 +163,7 @@ export default class File extends Component {
   render() {
     const {
       location: {
-        state: { projectId, fileId }
+        state: { fileId }
       }
     } = this.props;
     const { file, content, isContentLoaded, isContentShow } = this.state;
