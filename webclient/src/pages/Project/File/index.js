@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Icon, Spin, Table, Tag } from "antd";
+import Editor from "components/Editor";
 import "./File.sass";
 
 const mainInfoColumns = [
@@ -102,10 +103,6 @@ const descriptionColumns = [
     width: 3
   }
 ];
-
-function buildMarkupContent(content) {
-  return { __html: content };
-}
 
 export default class File extends Component {
   state = {
@@ -250,14 +247,7 @@ export default class File extends Component {
                 }}
               >
                 {isContentLoaded ? (
-                  <div
-                    style={{
-                      margin: "12px 8px 0",
-                      overflow: "initial",
-                      textAlign: "left"
-                    }}
-                    dangerouslySetInnerHTML={buildMarkupContent(content)}
-                  />
+                  <Editor content={content}/>
                 ) : (
                   <div className="file__file-content-loader">
                     <Spin size="large" />
