@@ -1,6 +1,7 @@
 package valeriy.knyazhev.architector.application.commit.data.changes;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import lombok.EqualsAndHashCode;
 import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.domain.model.commit.ChangeType;
 
@@ -25,13 +26,22 @@ public class SectionChangesData
         this.items = Args.notNull(items, "Section items are required.");
     }
 
+    @Nonnull
+    public List<SectionItem> items()
+    {
+        return this.items;
+    }
+
+    @EqualsAndHashCode
     @JsonAutoDetect(fieldVisibility = ANY)
     public static class SectionItem
     {
 
-        private int oldPosition;
+        @Nullable
+        private Integer oldPosition;
 
-        private int newPosition;
+        @Nullable
+        private Integer newPosition;
 
         @Nonnull
         private String value;
@@ -39,8 +49,8 @@ public class SectionChangesData
         @Nullable
         private ChangeType type;
 
-        private SectionItem(int oldPosition,
-                            int newPosition,
+        private SectionItem(@Nullable Integer oldPosition,
+                            @Nullable Integer newPosition,
                             @Nonnull String value,
                             @Nullable ChangeType type)
         {
@@ -50,20 +60,42 @@ public class SectionChangesData
             this.type = type;
         }
 
+        @Nullable
+        private Integer oldPosition()
+        {
+            return this.oldPosition;
+        }
+
+        @Nullable
+        private Integer newPosition()
+        {
+            return this.newPosition;
+        }
+
         @Nonnull
-        public static SectionItem addedItem(int oldPosition,
-                                            int newPosition,
+        public String value()
+        {
+            return this.value;
+        }
+
+        @Nullable
+        public ChangeType type()
+        {
+            return this.type;
+        }
+
+        @Nonnull
+        public static SectionItem addedItem(int newPosition,
                                             @Nonnull String value)
         {
-            return new SectionItem(oldPosition, newPosition, value, ChangeType.ADDITION);
+            return new SectionItem(null, newPosition, value, ChangeType.ADDITION);
         }
 
         @Nonnull
         public static SectionItem deletedItem(int oldPosition,
-                                              int newPosition,
                                               @Nonnull String value)
         {
-            return new SectionItem(oldPosition, newPosition, value, ChangeType.DELETION);
+            return new SectionItem(oldPosition, null, value, ChangeType.DELETION);
         }
 
         @Nonnull

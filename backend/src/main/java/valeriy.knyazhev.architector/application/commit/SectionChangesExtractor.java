@@ -3,6 +3,7 @@ package valeriy.knyazhev.architector.application.commit;
 import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.application.commit.data.changes.SectionChangesData;
 import valeriy.knyazhev.architector.application.commit.data.changes.SectionChangesData.SectionItem;
+import valeriy.knyazhev.architector.domain.model.commit.ChangeType;
 import valeriy.knyazhev.architector.domain.model.commit.CommitItem;
 
 import javax.annotation.Nonnull;
@@ -52,52 +53,94 @@ public class SectionChangesExtractor
         boolean isNewAddition = true;
         int lastPosition = this.changes.get(0).position();
         List<SectionItem> newSectionItems = new LinkedList<>();
-        // FIXME calculate result with lines offset
         for (CommitItem change : changes)
         {
             if (isNewAddition)
             {
-                // TODO add offset lines from the begin of section
+                // Add offset lines from the content to the start of section
+                newSectionItems.addAll(extractFirstContentLines(lastPosition, curOffset));
             }
 
-            //TODO add adding items
+            // Add changed line to section
             isNewAddition = false;
-
+            SectionItem newItem = null;
+            if (change.type() == ChangeType.ADDITION)
+            {
+                newItem = SectionItem.addedItem(change.position() + curOffset, change.value());
+                curOffset++;
+            } else
+            {
+                newItem = SectionItem.deletedItem(change.position(), change.value());
+                curOffset--;
+            }
+            newSectionItems.add(newItem);
 
             if (change.position() - this.linesOffsetSize > lastPosition + this.linesOffsetSize + 1)
             {
-                // Get offset lines from the end of section
-                AtomicInteger lineIndex = new AtomicInteger(lastPosition + 1);
-                List<String> lines = fetchLines(lineIndex.get(), lineIndex.get() + this.linesOffsetSize);
-                newSectionItems.addAll(
-                    lines.stream()
-                        .map(line ->
-                        SectionItem.item(
-                            lineIndex.get(), lineIndex.getAndIncrement() + curOffset, line
-                        )
-                    )
-                        .collect(Collectors.toList())
-                );
+                // Add offset lines from the content to the end of section
+                newSectionItems.addAll(extractLastContentLines(lastPosition, curOffset));
 
                 // Create and add new section
                 sections.add(new SectionChangesData(newSectionItems));
                 newSectionItems = new LinkedList<>();
                 isNewAddition = true;
             }
+
+            if (change.position() > lastPosition + 1)
+            {
+                // Add offset lines from the content to the section space between changes
+                newSectionItems.addAll(
+                    extractSectionItemsFromContent(lastPosition + 1, change.position() - 1, curOffset)
+                );
+            }
         }
+        newSectionItems.addAll(extractLastContentLines(lastPosition, curOffset));
+        sections.add(new SectionChangesData(newSectionItems));
         return sections;
+    }
+
+    @Nonnull
+    private List<SectionItem> extractFirstContentLines(int position, int curOffset)
+    {
+        return extractSectionItemsFromContent(
+            position - this.linesOffsetSize, position - 1, curOffset
+        );
+    }
+
+    @Nonnull
+    private List<SectionItem> extractLastContentLines(int position, int curOffset)
+    {
+        return extractSectionItemsFromContent(
+            position, position - 1 + this.linesOffsetSize, curOffset
+        );
+    }
+
+    @Nonnull
+    private List<SectionItem> extractSectionItemsFromContent(int startIndex, int endIndex, int curOffset)
+    {
+        startIndex = startIndex < 0 ? 0 : startIndex;
+        endIndex = endIndex > this.itemsSize ? this.itemsSize : endIndex;
+        AtomicInteger lineIndex = new AtomicInteger(startIndex);
+        return fetchLines(startIndex, endIndex)
+            .stream()
+            .map(line ->
+                SectionItem.item(
+                    lineIndex.get(), lineIndex.getAndIncrement() + curOffset, line
+                )
+            )
+            .collect(Collectors.toList());
     }
 
     @Nonnull
     private List<String> fetchLines(int fromIndex, int toIndex)
     {
-        Args.check(fromIndex <= toIndex, "FromIndex must not be greater toIndex.");
-        Args.check(toIndex >= 0 && fromIndex < this.itemsSize,
+        if (fromIndex > toIndex)
+        {
+            return emptyList();
+        }
+        Args.check(fromIndex >= 0 && toIndex < this.itemsSize,
             "Something went wrong: check SectionChangesExtractor.");
-        return this.items.subList(
-            fromIndex < 0 ? 0 : fromIndex,
-            toIndex > this.itemsSize ? this.itemsSize : toIndex + 1
-        );
+        return this.items.subList(fromIndex, toIndex + 1);
     }
 
     public static ExtractorContentBuilder sectionsOf(@Nonnull List<String> items)
