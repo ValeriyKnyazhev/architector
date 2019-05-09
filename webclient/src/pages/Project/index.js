@@ -44,7 +44,7 @@ export default class Project extends Component {
       description: '',
       files: []
     },
-    fileList: [],
+    file: null,
     uploading: false,
     uploadType: 'link',
     newFileSourceUrl: '',
@@ -128,30 +128,39 @@ export default class Project extends Component {
   };
 
   handleUploadFile = () => {
-    const { fileList } = this.state;
+    const { file } = this.state;
     const {
       match: {
         params: { projectId }
       }
     } = this.props;
     const formData = new FormData();
-    fileList.forEach(file => {
-      formData.append('files[]', file);
-    });
+    formData.append('file', file);
 
     this.setState({
       uploading: true
     });
 
-    axios.post(`/api/projects/${projectId}/files/import`, formData).then(() =>
-      this.setState(
-        {
-          fileList: [],
-          uploading: false
-        },
-        message.success('upload successfully.')
+    axios
+      .post(`/api/projects/${projectId}/files/import`, formData)
+      .then(() =>
+        this.setState(
+          {
+            file: null,
+            uploading: false
+          },
+          message.success('upload successfully.')
+        )
       )
-    );
+      .catch(() =>
+        this.setState(
+          {
+            file: null,
+            uploading: false
+          },
+          message.success('upload failed.')
+        )
+      );
   };
 
   render() {
@@ -170,25 +179,22 @@ export default class Project extends Component {
         author: project.author
       }
     ];
-    const { fileList } = this.state;
+    const { file } = this.state;
     const props = {
       onRemove: file => {
         this.setState(state => {
-          const index = state.fileList.indexOf(file);
-          const newFileList = state.fileList.slice();
-          newFileList.splice(index, 1);
           return {
-            fileList: newFileList
+            file: null
           };
         });
       },
       beforeUpload: file => {
         this.setState(state => ({
-          fileList: [...state.fileList, file]
+          file: file
         }));
         return false;
       },
-      fileList
+      file
     };
 
     const filesListColumns = [
@@ -311,7 +317,7 @@ export default class Project extends Component {
                         <Button
                           type="primary"
                           onClick={this.handleUploadFile}
-                          disabled={fileList.length === 0}
+                          disabled={file === null}
                           loading={this.state.uploading}
                           style={{ marginTop: 16 }}
                         >
