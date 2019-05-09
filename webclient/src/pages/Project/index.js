@@ -127,7 +127,7 @@ export default class Project extends Component {
     });
   };
 
-  handleUploadFile = () => {
+  handleUploadFile = modalVisible => {
     const { file } = this.state;
     const {
       match: {
@@ -138,7 +138,7 @@ export default class Project extends Component {
     formData.append('file', file);
 
     this.setState({
-      uploading: true
+      confirmLoading: true
     });
 
     axios
@@ -146,8 +146,9 @@ export default class Project extends Component {
       .then(() =>
         this.setState(
           {
+            [modalVisible]: false,
             file: null,
-            uploading: false
+            confirmLoading: false
           },
           message.success('upload successfully.')
         )
@@ -156,7 +157,8 @@ export default class Project extends Component {
         this.setState(
           {
             file: null,
-            uploading: false
+            confirmLoading: false,
+            [modalVisible]: false
           },
           message.success('upload failed.')
         )
@@ -283,11 +285,18 @@ export default class Project extends Component {
                 <Modal
                   title="Add new file"
                   visible={visibleCreateFile}
-                  onOk={() => this.handleCreateFileFromSource('visibleCreateFile')}
+                  onOk={() =>
+                    this.state.uploadType === 'link'
+                      ? this.handleCreateFileFromSource('visibleCreateFile')
+                      : this.handleUploadFile('visibleCreateFile')
+                  }
                   confirmLoading={confirmLoading}
                   onCancel={() => this.handleCancel('visibleCreateFile')}
                   okButtonProps={{
-                    disabled: _isEmpty(this.state.newFileSourceUrl)
+                    disabled:
+                      this.state.uploadType === 'link'
+                        ? _isEmpty(this.state.newFileSourceUrl)
+                        : file === null
                   }}
                 >
                   <>
@@ -314,15 +323,6 @@ export default class Project extends Component {
                             <Icon type="upload" /> Select File
                           </Button>
                         </Upload>
-                        <Button
-                          type="primary"
-                          onClick={this.handleUploadFile}
-                          disabled={file === null}
-                          loading={this.state.uploading}
-                          style={{ marginTop: 16 }}
-                        >
-                          {this.state.uploading ? 'Uploading' : 'Start Upload'}
-                        </Button>
                       </div>
                     )}
                   </>
