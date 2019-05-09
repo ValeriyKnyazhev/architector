@@ -103,7 +103,6 @@ const descriptionColumns = [
   }
 ];
 
-
 function buildMarkupContent(content) {
   return { __html: content };
 }
@@ -137,9 +136,7 @@ export default class File extends Component {
         state: { projectId, fileId }
       }
     } = this.props;
-    const { data } = await axios.get(
-      `/api/projects/${projectId}/files/${fileId}`
-    );
+    const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
     this.setState({ file: data });
   };
 
@@ -149,9 +146,7 @@ export default class File extends Component {
         state: { projectId, fileId }
       }
     } = this.props;
-    const { data } = await axios.get(
-      `/api/projects/${projectId}/files/${fileId}/content`
-    );
+    const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}/content`);
     this.setState({ content: data.content, isContentLoaded: true });
   };
 
@@ -245,11 +240,8 @@ export default class File extends Component {
               </div>
             </div>
             <div className="file__file-content">
-              <div
-                className="file__file-show-content"
-                onClick={this.onToggleShowContent}
-              >
-                <b>Content</b> <Icon type={isContentShow ? "up" : "down"} />{" "}
+              <div className="file__file-show-content" onClick={this.onToggleShowContent}>
+                <b>Content</b> <Icon type={isContentShow ? "up" : "down"}/>{" "}
               </div>
               <div
                 className="file__file-content-info"
