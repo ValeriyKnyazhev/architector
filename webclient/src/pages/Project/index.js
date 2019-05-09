@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Input, message, Modal, Popconfirm, Table } from 'antd';
+import { Button, Icon, Input, message, Modal, Popconfirm, Table, Radio, Upload } from 'antd';
 import './Project.sass';
+
+const RadioGroup = Radio.Group;
 
 function constructSourceUrl(value) {
   return value.startsWith('https://') || value.startsWith('http://') ? value : 'https://' + value;
@@ -42,6 +44,9 @@ export default class Project extends Component {
       description: '',
       files: []
     },
+    fileList: [],
+    uploading: false,
+    uploadType: 'link',
     newFileSourceUrl: '',
     confirmLoading: false,
     visibleCreateFile: false,
@@ -116,6 +121,39 @@ export default class Project extends Component {
     });
   };
 
+  onChangeUploadType = e => {
+    this.setState({
+      uploadType: e.target.value
+    });
+  };
+
+  handleUploadFile = () => {
+    const { fileList } = this.state;
+    const {
+      match: {
+        params: { projectId }
+      }
+    } = this.props;
+    const formData = new FormData();
+    fileList.forEach(file => {
+      formData.append('files[]', file);
+    });
+
+    this.setState({
+      uploading: true
+    });
+
+    axios.post(`/api/projects/${projectId}/files/import`, formData).then(() =>
+      this.setState(
+        {
+          fileList: [],
+          uploading: false
+        },
+        message.success('upload successfully.')
+      )
+    );
+  };
+
   render() {
     const {
       match: {
@@ -132,6 +170,26 @@ export default class Project extends Component {
         author: project.author
       }
     ];
+    const { fileList } = this.state;
+    const props = {
+      onRemove: file => {
+        this.setState(state => {
+          const index = state.fileList.indexOf(file);
+          const newFileList = state.fileList.slice();
+          newFileList.splice(index, 1);
+          return {
+            fileList: newFileList
+          };
+        });
+      },
+      beforeUpload: file => {
+        this.setState(state => ({
+          fileList: [...state.fileList, file]
+        }));
+        return false;
+      },
+      fileList
+    };
 
     const filesListColumns = [
       {
@@ -226,14 +284,42 @@ export default class Project extends Component {
                     disabled: _isEmpty(this.state.newFileSourceUrl)
                   }}
                 >
-                  <div style={{ marginBottom: 16 }}>
-                    <Input
-                      placeholder="Enter your source URL"
-                      value={this.state.newFileSourceUrl}
-                      onChange={this.onChangeSourceUrl}
-                      addonBefore="Https://"
-                    />
-                  </div>
+                  <>
+                    <div style={{ marginBottom: 16 }}>
+                      <RadioGroup onChange={this.onChangeUploadType} value={this.state.uploadType}>
+                        <Radio value={'link'}>Link</Radio>
+                        <Radio value={'file'}>File</Radio>
+                      </RadioGroup>
+                    </div>
+                    {this.state.uploadType === 'link' && (
+                      <div style={{ marginBottom: 16 }}>
+                        <Input
+                          placeholder="Enter your source URL"
+                          value={this.state.newFileSourceUrl}
+                          onChange={this.onChangeSourceUrl}
+                          addonBefore="Https://"
+                        />
+                      </div>
+                    )}
+                    {this.state.uploadType === 'file' && (
+                      <div>
+                        <Upload {...props}>
+                          <Button>
+                            <Icon type="upload" /> Select File
+                          </Button>
+                        </Upload>
+                        <Button
+                          type="primary"
+                          onClick={this.handleUploadFile}
+                          disabled={fileList.length === 0}
+                          loading={this.state.uploading}
+                          style={{ marginTop: 16 }}
+                        >
+                          {this.state.uploading ? 'Uploading' : 'Start Upload'}
+                        </Button>
+                      </div>
+                    )}
+                  </>
                 </Modal>
               )}
               <Popconfirm
