@@ -13,10 +13,7 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUrlRequest;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileDescriptionRequest;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileFromUrlRequest;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileMetadataRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.*;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -121,6 +118,30 @@ public class FileResource
                        new ResponseMessage().error("Unable to add file to project " + qProjectId + " from upload file.")
                    );
 
+    }
+
+    @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/content",
+                consumes = APPLICATION_JSON_UTF8_VALUE,
+                produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
+                                                @PathVariable String qFileId,
+                                                @RequestBody UpdateFileContentRequest request)
+    {
+        boolean updated = this.managementService.updateFile(
+            // TODO author constant should be replaced by user email
+            new UpdateFileContentCommand(
+                qProjectId, qFileId, "author", request.content(), request.commitMessage()
+            )
+        );
+        return updated
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage().info("File " + qFileId + " was updated from source URL.")
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to update file " + qFileId + " from source URL.")
+                   );
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/source",

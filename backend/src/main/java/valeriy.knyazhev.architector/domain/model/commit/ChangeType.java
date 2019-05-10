@@ -6,6 +6,6 @@ package valeriy.knyazhev.architector.domain.model.commit;
 public enum ChangeType
 {
 
-    ADDITION, DELETION // ADDITION order more significant, than DELETION order
+    DELETION, ADDITION  // DELETION order more significant, than ADDITION order
 
 }

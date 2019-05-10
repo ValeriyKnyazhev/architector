@@ -11,10 +11,7 @@ import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
-import valeriy.knyazhev.architector.domain.model.project.file.File;
-import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
-import valeriy.knyazhev.architector.domain.model.project.file.FileId;
-import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
+import valeriy.knyazhev.architector.domain.model.project.file.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -77,6 +74,31 @@ public class FileManagementService
             command.projectId(),
             command.author(),
             "File from uploaded file was added to project.",
+            newFile);
+    }
+
+    public boolean updateFile(@Nonnull UpdateFileContentCommand command)
+    {
+        Args.notNull(command, "Update file from url command is required.");
+        ProjectId projectId = command.projectId();
+        Project project = findProject(projectId);
+        FileId fileId = command.fileId();
+        File foundFile = project.files().stream()
+            .filter(file -> fileId.equals(file.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+        FileData newFile = new FileData(
+            foundFile.schema(),
+            "FIXME ISO_ID",
+            foundFile.metadata(),
+            foundFile.description(),
+            FileContent.of(command.content())
+        );
+        return updateFile(
+            command.projectId(),
+            command.fileId(),
+            command.author(),
+            "File " + command.fileId().id() + " content was updated: " + command.commitMessage(),
             newFile);
     }
 
