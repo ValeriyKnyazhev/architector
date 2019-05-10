@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Table } from "antd";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Table } from 'antd';
 
-import "./HistoryChanges.css";
+import './HistoryChanges.css';
 
 function renderCommitDate(date) {
   // TODO modify date if less certain value
@@ -11,35 +11,35 @@ function renderCommitDate(date) {
 
 const historyTableColumns = [
   {
-    title: "Author",
-    dataIndex: "author",
-    key: "author",
+    title: 'Author',
+    dataIndex: 'author',
+    key: 'author',
     width: 2
   },
   {
-    title: "Id",
-    dataIndex: "id",
-    key: "id",
+    title: 'Id',
+    dataIndex: 'id',
+    key: 'id',
     width: 1
   },
   {
-    title: "Parent Id",
-    dataIndex: "parentId",
-    key: "parentId",
+    title: 'Parent Id',
+    dataIndex: 'parentId',
+    key: 'parentId',
     width: 1,
-    render: parentId => <div>{parentId ? parentId : "-"}</div>
+    render: parentId => <div>{parentId ? parentId : '-'}</div>
   },
   {
-    title: "Date",
-    dataIndex: "updated",
-    key: "updated",
+    title: 'Date',
+    dataIndex: 'updated',
+    key: 'updated',
     width: 2,
     render: date => <div>{renderCommitDate(date)}</div>
   },
   {
-    title: "Message",
-    dataIndex: "message",
-    key: "message",
+    title: 'Message',
+    dataIndex: 'message',
+    key: 'message',
     width: 6
   }
 ];
@@ -53,9 +53,9 @@ export default class HistoryChanges extends Component {
   render() {
     const { pageSize, lastRecordsSize } = this.state;
     const { isBriefModel, commits } = this.props;
-    console.log("commits", commits);
+    console.log('commits', commits);
     const shownCommits = isBriefModel ? commits.slice(0, lastRecordsSize) : commits;
-    console.log("shown commits", shownCommits);
+    console.log('shown commits', shownCommits);
 
     const historyTableData = shownCommits.map((commit, index) => {
       return {
