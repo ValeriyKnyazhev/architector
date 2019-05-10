@@ -359,7 +359,15 @@ export default class Project extends Component {
           <div className="project__changes">
             <div className="row project__changes-header">
               <div className="project__changes-header-title col-xs-3 start-xs">Last changes</div>
-              <div className="col-xs-9 end-xs"/>
+              <div className="col-xs-9 end-xs">
+                <Button
+                  className="project__changes-show-more "
+                  type="primary"
+                  style={{ marginBottom: 16, alignContent: "right" }}
+                >
+                  Show more
+                </Button>
+              </div>
             </div>
             <HistoryChanges commits={historyChanges}/>
           </div>

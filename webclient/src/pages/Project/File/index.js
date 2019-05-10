@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Icon, Spin, Table, Tag } from "antd";
+import { Button, Icon, Spin, Table, Tag } from "antd";
 import Editor from "components/Editor";
+import HistoryChanges from "components/HistoryChanges";
 import "./File.sass";
 
 const mainInfoColumns = [
@@ -120,11 +121,13 @@ export default class File extends Component {
         descriptions: []
       }
     },
+    historyChanges: [],
     content: ""
   };
 
   async componentDidMount() {
     this.fetchFileInfo();
+    this.fetchFileHistoryChanges();
   }
 
   fetchFileInfo = async () => {
@@ -135,6 +138,16 @@ export default class File extends Component {
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
     this.setState({ file: data });
+  };
+
+  fetchFileHistoryChanges = async () => {
+    const {
+      location: {
+        state: { projectId, fileId }
+      }
+    } = this.props;
+    const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}/commits`);
+    this.setState({ historyChanges: data.commits });
   };
 
   fetchFileContent = async () => {
@@ -163,7 +176,7 @@ export default class File extends Component {
         state: { fileId }
       }
     } = this.props;
-    const { file, content, isContentLoaded, isContentShow } = this.state;
+    const { file, historyChanges, content, isContentLoaded, isContentShow } = this.state;
 
     const mainInfoData = [
       {
@@ -250,10 +263,25 @@ export default class File extends Component {
                   <Editor content={content}/>
                 ) : (
                   <div className="file__file-content-loader">
-                    <Spin size="large" />
+                    <Spin size="large"/>
                   </div>
                 )}
               </div>
+            </div>
+            <div className="file__changes">
+              <div className="row file__changes-header">
+                <div className="file__changes-header-title col-xs-3 start-xs">Last changes</div>
+                <div className="col-xs-9 end-xs">
+                  <Button
+                    className="file__changes-show-more "
+                    type="primary"
+                    style={{ marginBottom: 16, alignContent: "right" }}
+                  >
+                    Show more
+                  </Button>
+                </div>
+              </div>
+              <HistoryChanges commits={historyChanges}/>
             </div>
           </div>
         </div>

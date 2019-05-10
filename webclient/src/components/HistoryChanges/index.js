@@ -47,14 +47,14 @@ const historyTableColumns = [
 export default class HistoryChanges extends Component {
   state = {
     pageSize: 10,
-    vitalRecordsSize: 3
+    lastRecordsSize: 3
   };
 
   render() {
-    const { pageSize, vitalRecordsSize } = this.state;
+    const { pageSize, lastRecordsSize } = this.state;
     const { isBriefModel, commits } = this.props;
     console.log("commits", commits);
-    const shownCommits = isBriefModel ? commits.slice(0, vitalRecordsSize) : commits;
+    const shownCommits = isBriefModel ? commits.slice(0, lastRecordsSize) : commits;
     console.log("shown commits", shownCommits);
 
     const historyTableData = shownCommits.map((commit, index) => {
