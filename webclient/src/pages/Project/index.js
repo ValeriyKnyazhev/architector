@@ -3,33 +3,34 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import _isEmpty from "lodash/isEmpty";
 import { Button, Icon, Input, message, Modal, Popconfirm, Radio, Table, Upload } from "antd";
+import HistoryChanges from "components/HistoryChanges";
 import "./Project.sass";
 
 const RadioGroup = Radio.Group;
 
 function constructSourceUrl(value) {
-  return value.startsWith('https://') || value.startsWith('http://') ? value : 'https://' + value;
+  return value.startsWith("https://") || value.startsWith("http://") ? value : "https://" + value;
 }
 
 const mainInfoColumns = [
   {
-    title: 'Created',
-    dataIndex: 'created',
-    key: 'created',
+    title: "Created",
+    dataIndex: "created",
+    key: "created",
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: 'Updated',
-    dataIndex: 'updated',
-    key: 'updated',
+    title: "Updated",
+    dataIndex: "updated",
+    key: "updated",
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: 'Author',
-    dataIndex: 'author',
-    key: 'author',
+    title: "Author",
+    dataIndex: "author",
+    key: "author",
     width: 4
   }
 ];
@@ -37,17 +38,18 @@ const mainInfoColumns = [
 export default class Project extends Component {
   state = {
     project: {
-      createdDate: '',
-      updatedDate: '',
-      projectName: '',
-      author: '',
-      description: '',
+      createdDate: "",
+      updatedDate: "",
+      projectName: "",
+      author: "",
+      description: "",
       files: []
     },
+    historyChanges: [],
     file: null,
     uploading: false,
-    uploadType: 'link',
-    newFileSourceUrl: '',
+    uploadType: "link",
+    newFileSourceUrl: "",
     confirmLoading: false,
     visibleCreateFile: false,
     visiblePopup: false
@@ -55,6 +57,7 @@ export default class Project extends Component {
 
   async componentDidMount() {
     this.fetchProject.call(this);
+    this.fetchProjectHistoryChanges.call(this);
   }
 
   async fetchProject() {
@@ -65,6 +68,16 @@ export default class Project extends Component {
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}`);
     this.setState({ project: data });
+  }
+
+  async fetchProjectHistoryChanges() {
+    const {
+      match: {
+        params: { projectId }
+      }
+    } = this.props;
+    const { data } = await axios.get(`/api/projects/${projectId}/commits`);
+    this.setState({ historyChanges: data.commits });
   }
 
   showModal = state => {
@@ -99,7 +112,7 @@ export default class Project extends Component {
           },
           () => {
             this.fetchProject.call(this);
-            message.success('File was created');
+            message.success("File was created");
           }
         );
       });
@@ -135,7 +148,7 @@ export default class Project extends Component {
       }
     } = this.props;
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     this.setState({
       confirmLoading: true
@@ -150,7 +163,7 @@ export default class Project extends Component {
             file: null,
             confirmLoading: false
           },
-          message.success('upload successfully.')
+          message.success("upload successfully.")
         )
       )
       .catch(() =>
@@ -160,7 +173,7 @@ export default class Project extends Component {
             confirmLoading: false,
             [modalVisible]: false
           },
-          message.success('upload failed.')
+          message.success("upload failed.")
         )
       );
   };
@@ -171,11 +184,11 @@ export default class Project extends Component {
         params: { projectId }
       }
     } = this.props;
-    const { project, confirmLoading, visibleCreateFile } = this.state;
+    const { project, historyChanges, confirmLoading, visibleCreateFile } = this.state;
 
     const mainInfoData = [
       {
-        key: '1',
+        key: "1",
         created: project.createdDate,
         updated: project.updatedDate,
         author: project.author
@@ -201,9 +214,9 @@ export default class Project extends Component {
 
     const filesListColumns = [
       {
-        title: 'Identifier',
-        dataIndex: 'identifier',
-        key: 'identifier',
+        title: "Identifier",
+        dataIndex: "identifier",
+        key: "identifier",
         width: 4,
         render: fileId => {
           return (
@@ -224,16 +237,16 @@ export default class Project extends Component {
         }
       },
       {
-        title: 'Created',
-        dataIndex: 'created',
-        key: 'created',
+        title: "Created",
+        dataIndex: "created",
+        key: "created",
         width: 4,
         render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
       },
       {
-        title: 'Updated',
-        dataIndex: 'updated',
-        key: 'updated',
+        title: "Updated",
+        dataIndex: "updated",
+        key: "updated",
         width: 4,
         render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
       }
@@ -251,9 +264,13 @@ export default class Project extends Component {
     return (
       <div className="container">
         <div>
-          <h2>Project № {projectId}</h2>
+          <h2>Project {project.projectName}</h2>
         </div>
         <div>
+          <div className="row project__description">
+            <div className="project__description-header col-xs-3 start-xs">Description</div>
+            <div className="project__description-info col-xs-9 start-xs">{project.description}</div>
+          </div>
           <Table
             className="project__info"
             columns={mainInfoColumns}
@@ -266,11 +283,11 @@ export default class Project extends Component {
               <div className="col-xs-9 end-xs">
                 <Button
                   className="project__files-create-file "
-                  onClick={() => this.showModal('visibleCreateFile')}
+                  onClick={() => this.showModal("visibleCreateFile")}
                   type="primary"
-                  style={{ marginBottom: 16, alignContent: 'right' }}
+                  style={{ marginBottom: 16, alignContent: "right" }}
                 >
-                  Add file <Icon type="plus-circle" />
+                  Add file <Icon type="plus-circle"/>
                 </Button>
               </div>
             </div>
@@ -280,6 +297,7 @@ export default class Project extends Component {
               columns={filesListColumns}
               dataSource={filesListData}
             />
+
             <div className="project__files-create-file-modal">
               {visibleCreateFile && (
                 <Modal
@@ -291,7 +309,7 @@ export default class Project extends Component {
                       : this.handleUploadFile("visibleCreateFile")
                   }
                   confirmLoading={confirmLoading}
-                  onCancel={() => this.handleCancel('visibleCreateFile')}
+                  onCancel={() => this.handleCancel("visibleCreateFile")}
                   okButtonProps={{
                     disabled:
                       this.state.uploadType === "link"
@@ -302,11 +320,11 @@ export default class Project extends Component {
                   <>
                     <div style={{ marginBottom: 16 }}>
                       <RadioGroup onChange={this.onChangeUploadType} value={this.state.uploadType}>
-                        <Radio value={'link'}>Link</Radio>
-                        <Radio value={'file'}>File</Radio>
+                        <Radio value={"link"}>Link</Radio>
+                        <Radio value={"file"}>File</Radio>
                       </RadioGroup>
                     </div>
-                    {this.state.uploadType === 'link' && (
+                    {this.state.uploadType === "link" && (
                       <div style={{ marginBottom: 16 }}>
                         <Input
                           placeholder="Enter your source URL"
@@ -316,11 +334,11 @@ export default class Project extends Component {
                         />
                       </div>
                     )}
-                    {this.state.uploadType === 'file' && (
+                    {this.state.uploadType === "file" && (
                       <div>
                         <Upload {...props}>
                           <Button>
-                            <Icon type="upload" /> Select File
+                            <Icon type="upload"/> Select File
                           </Button>
                         </Upload>
                       </div>
@@ -331,12 +349,19 @@ export default class Project extends Component {
               <Popconfirm
                 title="Do you want to create new project?"
                 visible={this.state.visiblePopup}
-                onConfirm={() => this.handleCarded('visibleProjects')}
+                onConfirm={() => this.handleCarded("visibleProjects")}
                 onCancel={this.handleClosePopup}
                 okText="Yes"
                 cancelText="No"
               />
             </div>
+          </div>
+          <div className="project__changes">
+            <div className="row project__changes-header">
+              <div className="project__changes-header-title col-xs-3 start-xs">Last changes</div>
+              <div className="col-xs-9 end-xs"/>
+            </div>
+            <HistoryChanges commits={historyChanges}/>
           </div>
         </div>
       </div>
