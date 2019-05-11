@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Table } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Table } from "antd";
 
-import './HistoryChanges.css';
+import "./HistoryChanges.css";
 
 function renderCommitDate(date) {
   // TODO modify date if less certain value
@@ -53,9 +53,7 @@ export default class HistoryChanges extends Component {
   render() {
     const { pageSize, lastRecordsSize } = this.state;
     const { isBriefModel, commits } = this.props;
-    console.log('commits', commits);
     const shownCommits = isBriefModel ? commits.slice(0, lastRecordsSize) : commits;
-    console.log('shown commits', shownCommits);
 
     const historyTableData = shownCommits.map((commit, index) => {
       return {
@@ -86,8 +84,8 @@ HistoryChanges.propTypes = {
   isBriefModel: PropTypes.bool,
   commits: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      parentId: PropTypes.string,
+      id: PropTypes.number.isRequired,
+      parentId: PropTypes.number,
       author: PropTypes.string.isRequired,
       message: PropTypes.string.isRequired,
       timestamp: PropTypes.string.isRequired

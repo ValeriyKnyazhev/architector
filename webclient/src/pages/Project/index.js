@@ -269,8 +269,8 @@ export default class Project extends Component {
         </div>
         <div>
           <div className="row project__description">
-            <div className="project__description-header col-xs-3 start-xs">Description</div>
-            <div className="project__description-info col-xs-9 start-xs">{project.description}</div>
+            <div className="project__description-header col-xs-2 start-xs">Description</div>
+            <div className="project__description-info col-xs-10 start-xs">{project.description}</div>
           </div>
           <Table
             className="project__info"
