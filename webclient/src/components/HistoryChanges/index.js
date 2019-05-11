@@ -4,9 +4,33 @@ import { Button, Table } from "antd";
 
 import "./HistoryChanges.css";
 
+const ONE_SECOND = 1000;
+const ONE_MINUTE = ONE_SECOND * 60;
+const ONE_HOUR = ONE_MINUTE * 60;
+const ONE_DAY = ONE_HOUR * 24;
+
 function renderCommitDate(date) {
   // TODO modify date if less certain value
-  return new Date(date).toLocaleDateString();
+  const diff = Date.now() - new Date(date).getTime();
+  const days = Math.floor(diff / ONE_DAY);
+  if (days >= 28) {
+    return date.toDateString();
+  } else if (days >= 7) {
+    return days / 7 + ' weeks ago';
+  } else if (days >= 1) {
+    return days + ' days ago';
+  } else {
+    const hours = Math.floor(diff / ONE_HOUR);
+    if (hours >= 1) {
+      return hours + ' hours ago';
+    }
+    const minutes = Math.floor(diff / ONE_MINUTE);
+    if (minutes >= 1) {
+      return minutes + ' minutes ago';
+    } else {
+      return Math.floor(diff / ONE_SECOND) + ' seconds ago';
+    }
+  }
 }
 
 const historyTableColumns = [
@@ -14,33 +38,38 @@ const historyTableColumns = [
     title: 'Author',
     dataIndex: 'author',
     key: 'author',
-    width: 2
+    width: 2,
+    align: 'left'
   },
   {
     title: 'Id',
     dataIndex: 'id',
     key: 'id',
-    width: 1
+    width: 1,
+    align: 'center'
   },
   {
     title: 'Parent Id',
     dataIndex: 'parentId',
     key: 'parentId',
     width: 1,
+    align: 'center',
     render: parentId => <div>{parentId ? parentId : '-'}</div>
-  },
-  {
-    title: 'Date',
-    dataIndex: 'updated',
-    key: 'updated',
-    width: 2,
-    render: date => <div>{renderCommitDate(date)}</div>
   },
   {
     title: 'Message',
     dataIndex: 'message',
     key: 'message',
-    width: 6
+    width: 6,
+    align: 'left'
+  },
+  {
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
+    width: 2,
+    align: 'center',
+    render: date => <div>{renderCommitDate(date)}</div>
   }
 ];
 
@@ -105,7 +134,7 @@ export default class HistoryChanges extends Component {
               className="history-changes__show-more-records "
               onClick={() => this.showMoreRecords()}
               type="primary"
-              style={{ margin: 10, alignContent: "center" }}
+              style={{ margin: 10, alignContent: 'center' }}
             >
               Show more
             </Button>
