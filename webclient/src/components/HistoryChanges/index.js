@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 
 import "./HistoryChanges.css";
 
@@ -46,16 +46,39 @@ const historyTableColumns = [
 
 export default class HistoryChanges extends Component {
   state = {
-    pageSize: 10,
-    lastRecordsSize: 3
+    lastRecordsSize: 3,
+    numberOfPages: 1
+  };
+
+  showMoreRecords = () => {
+    this.setState({
+      numberOfPages: this.state.numberOfPages + 1
+    });
+  };
+
+  existMoreRecords = () => {
+    const { numberOfPages } = this.state;
+    const { isBriefModel, pageSize } = this.props;
+    if (isBriefModel) return false;
+    return numberOfPages * pageSize < this.props.commits.length;
+  };
+
+  calculateRecordsSize = () => {
+    const { numberOfPages, lastRecordsSize } = this.state;
+    const { pageSize, isBriefModel } = this.props;
+    if (isBriefModel) {
+      return lastRecordsSize;
+    }
+    const numberOfCommits = this.props.commits.length;
+    return pageSize * numberOfPages < numberOfCommits ? pageSize * numberOfPages : numberOfCommits;
   };
 
   render() {
-    const { pageSize, lastRecordsSize } = this.state;
     const { isBriefModel, commits } = this.props;
-    const shownCommits = isBriefModel ? commits.slice(0, lastRecordsSize) : commits;
 
-    const historyTableData = shownCommits.map((commit, index) => {
+    const recordsSize = this.calculateRecordsSize();
+
+    const historyTableData = commits.slice(0, recordsSize).map((commit, index) => {
       return {
         key: index,
         author: commit.author,
@@ -63,18 +86,31 @@ export default class HistoryChanges extends Component {
         parentId: commit.parentId,
         message: commit.message,
         date: commit.timestamp
+        // showDiff: commit.id
       };
     });
 
     return (
       commits && (
-        <Table
-          className="history-changes__commits-table"
-          bordered
-          columns={historyTableColumns}
-          dataSource={historyTableData}
-          pagination={false}
-        />
+        <div>
+          <Table
+            className="history-changes__commits-table"
+            bordered
+            columns={historyTableColumns}
+            dataSource={historyTableData}
+            pagination={false}
+          />
+          {this.existMoreRecords() && (
+            <Button
+              className="history-changes__show-more-records "
+              onClick={() => this.showMoreRecords()}
+              type="primary"
+              style={{ margin: 10, alignContent: "center" }}
+            >
+              Show more
+            </Button>
+          )}
+        </div>
       )
     );
   }
@@ -82,6 +118,7 @@ export default class HistoryChanges extends Component {
 
 HistoryChanges.propTypes = {
   isBriefModel: PropTypes.bool,
+  pageSize: PropTypes.number,
   commits: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
@@ -95,5 +132,6 @@ HistoryChanges.propTypes = {
 
 HistoryChanges.defaultProps = {
   isBriefModel: true,
+  pageSize: 10,
   commits: []
 };
