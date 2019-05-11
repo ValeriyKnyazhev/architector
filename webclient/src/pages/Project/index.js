@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Input, message, Modal, Popconfirm, Radio, Table, Upload } from 'antd';
-import HistoryChanges from 'components/HistoryChanges';
-import './Project.sass';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import _isEmpty from "lodash/isEmpty";
+import { Button, Icon, Input, message, Modal, Popconfirm, Radio, Table, Upload } from "antd";
+import HistoryChanges from "components/HistoryChanges";
+import "./Project.sass";
 
 const RadioGroup = Radio.Group;
 
@@ -223,7 +223,7 @@ export default class Project extends Component {
             record.identifier && (
               <Link
                 to={{
-                  pathname: `/files/${record.identifier}`,
+                  pathname: `/projects/${projectId}/files/${record.identifier}`,
                   state: {
                     projectId: projectId,
                     fileId: record.identifier
@@ -365,7 +365,13 @@ export default class Project extends Component {
                   type="primary"
                   style={{ marginBottom: 16, alignContent: 'right' }}
                 >
-                  Show more
+                  <Link
+                    to={{
+                      pathname: `/projects/${projectId}/changes`
+                    }}
+                  >
+                    Show more
+                  </Link>
                 </Button>
               </div>
             </div>

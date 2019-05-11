@@ -1,44 +1,45 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import { Button, Icon, Spin, Table, Tag } from 'antd';
-import Editor from 'components/Editor';
-import HistoryChanges from 'components/HistoryChanges';
-import './File.sass';
+import React, { Component } from "react";
+import axios from "axios";
+import { Button, Icon, Spin, Table, Tag } from "antd";
+import Editor from "components/Editor";
+import HistoryChanges from "components/HistoryChanges";
+import "./File.sass";
+import { Link } from "react-router-dom";
 
 const mainInfoColumns = [
   {
-    title: 'Created',
-    dataIndex: 'created',
-    key: 'created',
+    title: "Created",
+    dataIndex: "created",
+    key: "created",
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: 'Updated',
-    dataIndex: 'updated',
-    key: 'updated',
+    title: "Updated",
+    dataIndex: "updated",
+    key: "updated",
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: 'Schema',
-    dataIndex: 'schema',
-    key: 'schema',
+    title: "Schema",
+    dataIndex: "schema",
+    key: "schema",
     width: 4
   }
 ];
 
 const metadataColumns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
     width: 3
   },
   {
-    title: 'Authors',
-    key: 'authors',
-    dataIndex: 'authors',
+    title: "Authors",
+    key: "authors",
+    dataIndex: "authors",
     width: 3,
     render: authors => (
       <span>
@@ -53,9 +54,9 @@ const metadataColumns = [
     )
   },
   {
-    title: 'Organizations',
-    key: 'organizations',
-    dataIndex: 'organizations',
+    title: "Organizations",
+    key: "organizations",
+    dataIndex: "organizations",
     width: 2,
     render: organizations => (
       <span>
@@ -70,24 +71,24 @@ const metadataColumns = [
     )
   },
   {
-    title: 'Originating system',
-    dataIndex: 'originatingSystem',
-    key: 'originatingSystem',
+    title: "Originating system",
+    dataIndex: "originatingSystem",
+    key: "originatingSystem",
     width: 2
   },
   {
-    title: 'Preprocessor version',
-    dataIndex: 'preprocessorVersion',
-    key: 'preprocessorVersion',
+    title: "Preprocessor version",
+    dataIndex: "preprocessorVersion",
+    key: "preprocessorVersion",
     width: 2
   }
 ];
 
 const descriptionColumns = [
   {
-    title: 'Descriptions',
-    key: 'descriptions',
-    dataIndex: 'descriptions',
+    title: "Descriptions",
+    key: "descriptions",
+    dataIndex: "descriptions",
     width: 9,
     render: descriptions => (
       <span>
@@ -98,9 +99,9 @@ const descriptionColumns = [
     )
   },
   {
-    title: 'Implementation level',
-    dataIndex: 'implementationLevel',
-    key: 'implementationLevel',
+    title: "Implementation level",
+    dataIndex: "implementationLevel",
+    key: "implementationLevel",
     width: 3
   }
 ];
@@ -110,9 +111,9 @@ export default class File extends Component {
     isContentLoaded: false,
     isContentShow: false,
     file: {
-      createdDate: '',
-      updatedDate: '',
-      schema: '',
+      createdDate: "",
+      updatedDate: "",
+      schema: "",
       metadata: {
         authors: [],
         organizations: []
@@ -122,7 +123,7 @@ export default class File extends Component {
       }
     },
     historyChanges: [],
-    content: ''
+    content: ""
   };
 
   async componentDidMount() {
@@ -132,8 +133,8 @@ export default class File extends Component {
 
   fetchFileInfo = async () => {
     const {
-      location: {
-        state: { projectId, fileId }
+      match: {
+        params: { projectId, fileId }
       }
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
@@ -142,8 +143,8 @@ export default class File extends Component {
 
   fetchFileHistoryChanges = async () => {
     const {
-      location: {
-        state: { projectId, fileId }
+      match: {
+        params: { projectId, fileId }
       }
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}/commits`);
@@ -152,8 +153,8 @@ export default class File extends Component {
 
   fetchFileContent = async () => {
     const {
-      location: {
-        state: { projectId, fileId }
+      match: {
+        params: { projectId, fileId }
       }
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}/content`);
@@ -172,15 +173,15 @@ export default class File extends Component {
 
   render() {
     const {
-      location: {
-        state: { fileId }
+      match: {
+        params: { projectId, fileId }
       }
     } = this.props;
     const { file, historyChanges, content, isContentLoaded, isContentShow } = this.state;
 
     const mainInfoData = [
       {
-        key: '1',
+        key: "1",
         created: file.createdDate,
         updated: file.updatedDate,
         schema: file.schema
@@ -188,7 +189,7 @@ export default class File extends Component {
     ];
     const metadataData = [
       {
-        key: '1',
+        key: "1",
         name: file.metadata.name,
         authors: file.metadata.authors,
         organizations: file.metadata.organizations,
@@ -198,7 +199,7 @@ export default class File extends Component {
     ];
     const descriptionData = [
       {
-        key: '1',
+        key: "1",
         descriptions: file.description.descriptions,
         implementationLevel: file.description.implementationLevel
       }
@@ -277,7 +278,13 @@ export default class File extends Component {
                     type="primary"
                     style={{ marginBottom: 16, alignContent: 'right' }}
                   >
-                    Show more
+                    <Link
+                      to={{
+                        pathname: `/projects/${projectId}/files/${fileId}/changes`
+                      }}
+                    >
+                      Show more
+                    </Link>
                   </Button>
                 </div>
               </div>
