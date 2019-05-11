@@ -108,7 +108,8 @@ export default class Project extends Component {
         this.setState(
           {
             [modalVisible]: false,
-            confirmLoading: false
+            confirmLoading: false,
+            newFileSourceUrl: ""
           },
           () => {
             this.fetchProject.call(this);
