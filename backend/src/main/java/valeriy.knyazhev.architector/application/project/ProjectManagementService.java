@@ -68,7 +68,7 @@ public class ProjectManagementService
         ProjectId projectId = command.projectId();
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        boolean updated = project.updateName(command.name()) || project.updateDescription(command.description());
+        boolean updated = project.updateName(command.name()) | project.updateDescription(command.description());
         this.projectRepository.save(project);
         if (updated)
         {
