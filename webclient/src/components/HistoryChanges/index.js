@@ -1,8 +1,10 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Button, Table } from "antd";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
+import { Button, Table, Icon } from 'antd';
 
-import "./HistoryChanges.css";
+import './HistoryChanges.css';
 
 const ONE_SECOND = 1000;
 const ONE_MINUTE = ONE_SECOND * 60;
@@ -33,7 +35,7 @@ function renderCommitDate(date) {
   }
 }
 
-const historyTableColumns = [
+const historyTableColumns = props => [
   {
     title: 'Author',
     dataIndex: 'author',
@@ -70,10 +72,27 @@ const historyTableColumns = [
     width: 2,
     align: 'center',
     render: date => <div>{renderCommitDate(date)}</div>
+  },
+  {
+    key: 'action',
+    width: 2,
+    render: record => (
+      <div>
+        <Link
+          to={{
+            pathname: `/projects/${props.match.params.projectId}/files/${
+              props.match.params.fileId
+            }/changes/${record.id}/content`
+          }}
+        >
+          <Icon type="diff" style={{ fontSize: '24px' }} />
+        </Link>
+      </div>
+    )
   }
 ];
 
-export default class HistoryChanges extends Component {
+class HistoryChanges extends Component {
   state = {
     lastRecordsSize: 3,
     numberOfPages: 1
@@ -125,7 +144,7 @@ export default class HistoryChanges extends Component {
           <Table
             className="history-changes__commits-table"
             bordered
-            columns={historyTableColumns}
+            columns={historyTableColumns(this.props)}
             dataSource={historyTableData}
             pagination={false}
           />
@@ -144,6 +163,8 @@ export default class HistoryChanges extends Component {
     );
   }
 }
+
+export default withRouter(HistoryChanges);
 
 HistoryChanges.propTypes = {
   isBriefModel: PropTypes.bool,

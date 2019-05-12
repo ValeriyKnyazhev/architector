@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import _isEmpty from "lodash/isEmpty";
-import { Button, Icon, Input, message, Modal, Popconfirm, Radio, Table, Upload } from "antd";
-import HistoryChanges from "components/HistoryChanges";
-import "./Project.sass";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import _isEmpty from 'lodash/isEmpty';
+import { Button, Icon, Input, message, Modal, Popconfirm, Radio, Table, Upload } from 'antd';
+import HistoryChanges from 'components/HistoryChanges';
+import './Project.sass';
 
 const RadioGroup = Radio.Group;
 
@@ -109,7 +109,7 @@ export default class Project extends Component {
           {
             [modalVisible]: false,
             confirmLoading: false,
-            newFileSourceUrl: ""
+            newFileSourceUrl: ''
           },
           () => {
             this.fetchProject.call(this);
@@ -164,7 +164,10 @@ export default class Project extends Component {
             file: null,
             confirmLoading: false
           },
-          message.success('upload successfully.')
+          () => {
+            this.fetchProject.call(this);
+            message.success('upload successfully.');
+          }
         )
       )
       .catch(() =>
@@ -270,7 +273,9 @@ export default class Project extends Component {
         <div>
           <div className="row project__description">
             <div className="project__description-header col-xs-2 start-xs">Description</div>
-            <div className="project__description-info col-xs-10 start-xs">{project.description}</div>
+            <div className="project__description-info col-xs-10 start-xs">
+              {project.description}
+            </div>
           </div>
           <Table
             className="project__info"
