@@ -8,7 +8,6 @@ TEMPLATES=${RESOURCES_DIR}/templates
 echo "Templates dir: ${TEMPLATES}"
 echo "Public dir   : ${PUBLIC}"
 echo "Backend dir  : ${BACKEND_DIR}"
-#mkdir -p ${TEMPLATES}
 
 
 echo ">>> yarn building & installing"
@@ -31,4 +30,4 @@ cp ${BACKEND_DIR}/build/libs/backend.jar ${CURRENT_DIR}/architector.jar
 
 echo ">>> removing bundle"
 rm -rf ${PUBLIC}
-rm -rf ${TEMPLATES}
+rm ${TEMPLATES}/index.html
