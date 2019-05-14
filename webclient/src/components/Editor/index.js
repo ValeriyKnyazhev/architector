@@ -9,7 +9,7 @@ export default class CodeEditor extends PureComponent {
       editorState: EditorState.createWithContent(ContentState.createFromText(this.props.content))
     };
     this.onChange = editorState => {
-      const contentState = editorState.getCurrentContent().getPlainText('\n');
+      const contentState = editorState.getCurrentContent().getPlainText();
       this.props.onUpdateContent(contentState);
       this.setState({ editorState });
     };
