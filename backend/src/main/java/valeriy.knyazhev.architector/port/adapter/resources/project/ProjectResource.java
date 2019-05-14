@@ -46,11 +46,11 @@ public class ProjectResource
     @PostMapping(value = "/api/projects/",
                  consumes = APPLICATION_JSON_UTF8_VALUE,
                  produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request)
+    public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request,
+                                                @Nonnull String author)
     {
         ProjectId projectId = this.managementService.createProject(
-            //  TODO author constant should be replaced by user email
-            new CreateProjectCommand(request.name(), "author", request.description()));
+            new CreateProjectCommand(request.name(), author, request.description()));
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("Project " + projectId.id() + " was created.")
@@ -83,12 +83,12 @@ public class ProjectResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateProjectData(
         @PathVariable String qProjectId,
-        @RequestBody @Valid UpdateProjectDataRequest request)
+        @RequestBody @Valid UpdateProjectDataRequest request,
+        @Nonnull String author)
     {
         this.managementService.updateProjectData(
             new UpdateProjectDataCommand(
-                //  TODO author constant should be replaced by user email
-                qProjectId, request.name(), request.description(), "author"
+                qProjectId, request.name(), request.description(), author
             )
         );
         return ResponseEntity.ok()

@@ -12,9 +12,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import valeriy.knyazhev.architector.port.adapter.resources.user.ArchitectorEmailResolver;
+
+import java.util.List;
 
 /**
  * @author valeriy.knyazhev@yandex.ru
@@ -42,9 +45,8 @@ public class ArchitectorSpringApplication
         }
 
         @Override
-        public void addViewControllers(ViewControllerRegistry registry)
-        {
-            registry.addViewController("/login").setViewName("login");
+        public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+            argumentResolvers.add(new ArchitectorEmailResolver());
         }
 
     }
@@ -67,17 +69,8 @@ public class ArchitectorSpringApplication
             throws
             Exception
         {
-            auth
-                .userDetailsService(this.userDetailsService)
+            auth.userDetailsService(this.userDetailsService)
                 .passwordEncoder(passwordEncoder());
-//            auth.inMemoryAuthentication()
-//                .withUser("user@architector.ru")
-//                .password(passwordEncoder().encode("pswd"))
-//                .roles("USER")
-//                .and()
-//                .withUser("admin@architector.ru")
-//                .password(passwordEncoder().encode("admin_pswd"))
-//                .roles("USER", "ADMIN");
         }
 
         @Override

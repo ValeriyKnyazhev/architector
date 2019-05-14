@@ -53,7 +53,7 @@ public class ArchitectorApplicationService
         admin.setEmail("admin@architector.ru");
         admin.setPassword(this.passwordEncoder.encode("admin_pswd"));
         admin.setRoles(Set.of(userRole, adminRole));
-        this.architectorRepository.save(user);
+        this.architectorRepository.save(admin);
     }
 
     public Architector register(Architector architector) {

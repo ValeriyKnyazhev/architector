@@ -71,14 +71,14 @@ public class FileResource
                  consumes = APPLICATION_JSON_UTF8_VALUE,
                  produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
-                                                 @RequestBody CreateFileFromUrlRequest request)
+                                                 @RequestBody CreateFileFromUrlRequest request,
+                                                 @Nonnull String author)
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(request, "Add file from url request is required.");
         File newFile = this.managementService.addFile(
-            // TODO author constant should be replaced by user email
             new AddFileFromUrlCommand(
-                qProjectId, "author", request.sourceUrl()
+                qProjectId, author, request.sourceUrl()
             )
         );
         return newFile != null
@@ -97,14 +97,14 @@ public class FileResource
                  consumes = MULTIPART_FORM_DATA_VALUE,
                  produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,
-                                                           @RequestParam("file") MultipartFile multipartFile)
+                                                           @RequestParam("file") MultipartFile multipartFile,
+                                                           @Nonnull String author)
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(multipartFile, "Upload file is required.");
         File newFile = this.managementService.addFile(
-            // TODO author constant should be replaced by user email
             new AddFileFromUploadCommand(
-                qProjectId, "author", multipartFile
+                qProjectId, author, multipartFile
             )
         );
         return newFile != null
@@ -125,12 +125,12 @@ public class FileResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
-                                                @RequestBody UpdateFileContentRequest request)
+                                                @RequestBody UpdateFileContentRequest request,
+                                                @Nonnull String author)
     {
         boolean updated = this.managementService.updateFile(
-            // TODO author constant should be replaced by user email
             new UpdateFileContentCommand(
-                qProjectId, qFileId, "author", request.content(), request.commitMessage()
+                qProjectId, qFileId, author, request.content(), request.commitMessage()
             )
         );
         return updated
@@ -149,12 +149,12 @@ public class FileResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
-                                                @RequestBody UpdateFileFromUrlRequest request)
+                                                @RequestBody UpdateFileFromUrlRequest request,
+                                                @Nonnull String author)
     {
         boolean updated = this.managementService.updateFile(
-            // TODO author constant should be replaced by user email
             new UpdateFileFromUrlCommand(
-                qProjectId, qFileId, "author", request.sourceUrl()
+                qProjectId, qFileId, author, request.sourceUrl()
             )
         );
         return updated
@@ -173,12 +173,12 @@ public class FileResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
-                                                          @RequestParam("file") MultipartFile multipartFile)
+                                                          @RequestParam("file") MultipartFile multipartFile,
+                                                          @Nonnull String author)
     {
         boolean updated = this.managementService.updateFile(
-            // TODO author constant should be replaced by user email
             new UpdateFileFromUploadCommand(
-                qProjectId, qFileId, "author", multipartFile
+                qProjectId, qFileId, author, multipartFile
             )
         );
         return updated
@@ -197,14 +197,14 @@ public class FileResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
-                                                              @RequestBody UpdateFileDescriptionRequest request)
+                                                              @RequestBody UpdateFileDescriptionRequest request,
+                                                              @Nonnull String author)
     {
         this.managementService.updateFileDescription(
-            // TODO author constant should be replaced by user email
             UpdateFileDescriptionCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
-                .author("author")
+                .author(author)
                 .descriptions(request.descriptions())
                 .implementationLevel(request.implementationLevel())
                 .build()
@@ -220,14 +220,14 @@ public class FileResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
-                                                              @RequestBody UpdateFileMetadataRequest request)
+                                                              @RequestBody UpdateFileMetadataRequest request,
+                                                              @Nonnull String author)
     {
         this.managementService.updateFileMetadata(
-            // TODO author constant should be replaced by user email
             UpdateFileMetadataCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
-                .author("author")
+                .author(author)
                 .name(request.name())
                 .timestamp(request.timestamp())
                 .authors(request.authors())
@@ -246,10 +246,11 @@ public class FileResource
     @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
                    produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
-                                                          @PathVariable String qFileId)
+                                                          @PathVariable String qFileId,
+                                                          @Nonnull String author)
     {
         boolean deleted = this.managementService.deleteFile(
-            new DeleteFileCommand(qProjectId, qFileId, "author")
+            new DeleteFileCommand(qProjectId, qFileId, author)
         );
         return deleted
                ? ResponseEntity.ok()
