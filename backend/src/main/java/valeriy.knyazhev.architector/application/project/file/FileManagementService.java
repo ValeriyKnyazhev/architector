@@ -223,7 +223,7 @@ public class FileManagementService
         Project project = findProject(projectId);
         File newFile = constructFile(FileId.nextId(), newFileData);
         project.addFile(newFile);
-        projectRepository.save(project);
+        this.projectRepository.saveAndFlush(project);
         CommitDescription commitData = CommitDescription.builder()
             .files(
                 singletonList(
@@ -293,7 +293,7 @@ public class FileManagementService
     {
         Project project = findProject(projectId);
         File deleted = project.deleteFile(fileId);
-        this.projectRepository.save(project);
+        this.projectRepository.saveAndFlush(project);
         CommitDescription commitData = CommitDescription.builder()
             .files(
                 singletonList(
@@ -321,12 +321,13 @@ public class FileManagementService
                                    @Nonnull File newFile)
     {
         project.updateFile(fileId, newFile.content());
-        this.projectRepository.save(project);
+        this.projectRepository.saveAndFlush(project);
     }
 
     @Nonnull
     private Project findProject(@Nonnull ProjectId projectId)
     {
+        this.projectRepository.flush();
         return this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
     }
@@ -350,7 +351,7 @@ public class FileManagementService
             .author(author)
             .data(commitData)
             .build();
-        this.commitRepository.save(newCommit);
+        this.commitRepository.saveAndFlush(newCommit);
         return true;
     }
 

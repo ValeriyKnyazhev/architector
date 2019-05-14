@@ -59,7 +59,7 @@ public class ProjectManagementService
         {
             throw new IllegalStateException("Something went wrong during creating project.");
         }
-        return this.projectRepository.save(project).projectId();
+        return this.projectRepository.saveAndFlush(project).projectId();
     }
 
     public boolean updateProjectData(@Nonnull UpdateProjectDataCommand command)
@@ -68,13 +68,14 @@ public class ProjectManagementService
         ProjectId projectId = command.projectId();
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        boolean updated = project.updateName(command.name()) | project.updateDescription(command.description());
-        this.projectRepository.save(project);
-        if (updated)
+        boolean nameUpdated = project.updateName(command.name());
+        boolean descriptionUpdated = project.updateDescription(command.description());
+        this.projectRepository.saveAndFlush(project);
+        if (nameUpdated || descriptionUpdated)
         {
             CommitDescription commitData = CommitDescription.builder()
-                .name(updated ? command.name() : null)
-                .description(updated ? command.description() : null)
+                .name(nameUpdated ? command.name() : null)
+                .description(descriptionUpdated ? command.description() : null)
                 .files(emptyList())
                 .build();
             return commitChanges(
@@ -107,7 +108,7 @@ public class ProjectManagementService
             .author(author)
             .data(commitData)
             .build();
-        this.commitRepository.save(newCommit);
+        this.commitRepository.saveAndFlush(newCommit);
         return true;
     }
 
