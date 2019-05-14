@@ -56,13 +56,20 @@ public class ArchitectorApplicationService
         this.architectorRepository.save(admin);
     }
 
-    public Architector register(Architector architector) {
+    public Architector register(Architector architector)
+    {
+        this.architectorRepository.findByEmail(architector.getEmail())
+            .ifPresent(user -> {
+                    throw new ArchitectorAlreadyExistException(architector.getEmail());
+                }
+            );
         architector.setPassword(this.passwordEncoder.encode(architector.getPassword()));
         architector.setRoles(new HashSet<>(this.roleRepository.findAll()));
         return this.architectorRepository.save(architector);
     }
 
-    public Architector findByEmail(String email) {
+    public Architector findByEmail(String email)
+    {
         return this.architectorRepository.findByEmail(email)
             .orElseThrow(() -> new ArchitectorNotFoundException(email));
     }

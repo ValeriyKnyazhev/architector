@@ -1,5 +1,6 @@
 package valeriy.knyazhev.architector.port.adapter.resources.user;
 
+import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,6 +9,7 @@ import valeriy.knyazhev.architector.application.user.ArchitectorApplicationServi
 import valeriy.knyazhev.architector.domain.model.user.Architector;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
+import javax.annotation.Nonnull;
 import javax.validation.Valid;
 
 /**
@@ -17,9 +19,14 @@ import javax.validation.Valid;
 public class ArchitectorResource
 {
 
-    private ArchitectorApplicationService applicationService;
+    private final ArchitectorApplicationService applicationService;
 
-    @PostMapping("/arhitectors")
+    public ArchitectorResource(@Nonnull ArchitectorApplicationService applicationService)
+    {
+        this.applicationService = Args.notNull(applicationService, "Application service is required.");
+    }
+
+    @PostMapping("/signup")
     public ResponseEntity<Object> register(@RequestBody @Valid RegisterArchitectorRequest request)
     {
         Architector newArchitector = new Architector();
