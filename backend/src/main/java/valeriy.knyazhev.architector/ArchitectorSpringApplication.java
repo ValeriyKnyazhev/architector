@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,7 +15,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -34,6 +39,7 @@ public class ArchitectorSpringApplication
     }
 
     @Configuration
+    @Controller
     @EnableWebMvc
     public class WebConfig implements WebMvcConfigurer
     {
@@ -50,6 +56,12 @@ public class ArchitectorSpringApplication
         public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers)
         {
             argumentResolvers.add(new ArchitectorEmailResolver());
+        }
+
+        @GetMapping(value = {"/", "/projects/**", "/commits/**"}, produces = MediaType.TEXT_HTML_VALUE)
+        public ModelAndView returnSpaBundle()
+        {
+            return new ModelAndView("index");
         }
 
     }
@@ -73,6 +85,12 @@ public class ArchitectorSpringApplication
         }
 
         @Override
+        @Bean
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+        @Override
         public void configure(AuthenticationManagerBuilder auth) throws
             Exception
         {
@@ -86,10 +104,11 @@ public class ArchitectorSpringApplication
         {
             http.csrf().disable();
             http.authorizeRequests().antMatchers(HttpMethod.POST, "/signup").anonymous();
+            http.authorizeRequests().antMatchers("/login", "/logout").permitAll();
             http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN");
             http.authorizeRequests().anyRequest().authenticated();
             http.formLogin()
-                .loginPage("/login")
+                .defaultSuccessUrl("/projects", true)
                 .permitAll();
             http.logout()
                 .logoutUrl("/logout")
