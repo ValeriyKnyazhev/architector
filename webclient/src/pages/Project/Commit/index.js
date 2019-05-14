@@ -23,11 +23,11 @@ function DiffRowComponent({ data }) {
   return (
     <div className={rowClass(data.type)}>
       <div className="row commit__position">
-        <div className="col-xs-12">{data.oldPosition}</div>
-        <div className="col-xs-12">{data.newPosition}</div>
+        <div className="col-xs-6">{data.oldPosition}</div>
+        <div className="col-xs-6">{data.newPosition}</div>
       </div>
       <div>
-        {typeDiff(data.type)} {data.value}
+        <span className="commit__type">{typeDiff(data.type)}</span> {data.value}
       </div>
     </div>
   );
