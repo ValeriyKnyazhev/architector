@@ -1,31 +1,50 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { ContentState, Editor, EditorState } from 'draft-js';
 import './Editor.css';
 
-export default function CodeEditor({ content }) {
-  const [editorState, setEditorState] = React.useState(
-    EditorState.createWithContent(ContentState.createFromText(content))
-  );
-
-  const editor = React.useRef(null);
-
-  function focusEditor() {
-    editor.current.focus();
+export default class CodeEditor extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      editorState: EditorState.createWithContent(ContentState.createFromText(this.props.content))
+    };
+    this.onChange = editorState => {
+      const contentState = editorState.getCurrentContent().getPlainText('\n');
+      this.props.onUpdateContent(contentState);
+      this.setState({ editorState });
+    };
+    this.setEditor = editor => {
+      this.editor = editor;
+    };
+    this.focusEditor = () => {
+      if (this.editor) {
+        this.editor.focus();
+      }
+    };
   }
 
-  React.useEffect(() => {
-    focusEditor();
-  }, []);
+  componentDidMount() {
+    this.focusEditor();
+  }
 
-  return (
-    <div onClick={focusEditor}>
-      <Editor
-        ref={editor}
-        editorState={editorState}
-        blockStyleFn={() => 'leftStyle'}
-        onChange={editorState => setEditorState(editorState)}
-        readOnly={true}
-      />
-    </div>
-  );
+  render() {
+    return (
+      <div style={styles.editor} onClick={this.focusEditor}>
+        <Editor
+          ref={this.setEditor}
+          editorState={this.state.editorState}
+          blockStyleFn={() => 'leftStyle'}
+          onChange={this.onChange}
+          readOnly={this.props.readOnly}
+        />
+      </div>
+    );
+  }
 }
+
+const styles = {
+  editor: {
+    border: '1px solid gray',
+    minHeight: '2em'
+  }
+};
