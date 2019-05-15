@@ -151,7 +151,10 @@ export default class FileProjection extends Component {
         <div>
           <div className="file__metadata">
             <div className="row file__metadata-header">
-              <div className="col-xs-3">
+              <div
+                className="col-xs-3"
+                style={{ textAlign: 'left', marginBottom: '10px', marginTop: '10px' }}
+              >
                 <b>Metadata</b>
               </div>
               <div className="col-xs-9" />
@@ -167,7 +170,10 @@ export default class FileProjection extends Component {
           </div>
           <div className="file__description">
             <div className="row file__description-header">
-              <div className="col-xs-3">
+              <div
+                className="col-xs-3"
+                style={{ textAlign: 'left', marginBottom: '10px', marginTop: '10px' }}
+              >
                 <b>Description</b>
               </div>
               <div className="col-xs-9" />
@@ -183,12 +189,19 @@ export default class FileProjection extends Component {
           </div>
           <div className="file__content">
             <div className="row file__content-header">
-              <div className="col-xs-3">
+              <div
+                className="col-xs-3"
+                style={{ textAlign: 'left', marginBottom: '10px', marginTop: '10px' }}
+              >
                 <b>Content</b>
               </div>
               <div className="col-xs-9" />
             </div>
-            {content && <CodeEditor content={content} readOnly={true} onUpdateContent={() => {}} />}
+            <div className="file__content-info">
+              {content && (
+                <CodeEditor content={content} readOnly={true} onUpdateContent={() => {}} />
+              )}
+            </div>
           </div>
         </div>
       </div>

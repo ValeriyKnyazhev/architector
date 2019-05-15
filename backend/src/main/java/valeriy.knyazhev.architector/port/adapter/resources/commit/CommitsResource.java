@@ -85,6 +85,7 @@ public class CommitsResource
                 projection.name(),
                 projection.description(),
                 projection.files().stream()
+                    .filter(file -> !file.items().isEmpty())
                     .map(CommitsResource::constructFileContent)
                     .collect(toList())
             )
