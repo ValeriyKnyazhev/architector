@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
-import { ContentState, Editor, EditorState } from 'draft-js';
-import './Editor.css';
+import React, { PureComponent } from "react";
+import { ContentState, Editor, EditorState } from "draft-js";
+import "./CodeEditor.css";
 
 export default class CodeEditor extends PureComponent {
   constructor(props) {

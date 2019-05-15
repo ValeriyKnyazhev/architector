@@ -3,9 +3,9 @@ import axios from "axios";
 import debounce from "lodash/debounce";
 import { Link } from "react-router-dom";
 import { Button, Icon, Spin, Table, Tag } from "antd";
-import CodeEditor from "components/CodeEditor";
+import Editor from "components/Editor";
 import HistoryChanges from "components/HistoryChanges";
-import "./File.sass";
+import "./FileProjection.sass";
 
 const mainInfoColumns = [
   {
@@ -324,7 +324,7 @@ export default class File extends Component {
                 }}
               >
                 {isContentLoaded ? (
-                  <CodeEditor
+                  <Editor
                     content={content}
                     readOnly={contentReadOnly}
                     onUpdateContent={this.onUpdateContent}
