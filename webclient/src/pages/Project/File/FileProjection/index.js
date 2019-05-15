@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import axios from "axios";
-import { Table, Tag } from "antd";
-import CodeEditor from "components/CodeEditor";
-import "./FileProjection.sass";
+import React, { Component } from 'react';
+import axios from 'axios';
+import { Table, Tag } from 'antd';
+import CodeEditor from 'components/CodeEditor';
+import './FileProjection.sass';
 
 const metadataColumns = [
   {
@@ -188,12 +188,7 @@ export default class FileProjection extends Component {
               </div>
               <div className="col-xs-9" />
             </div>
-            <CodeEditor
-              className="file__content-info"
-              content={content}
-              readOnly={true}
-              onUpdateContent={() => {}}
-            />
+            {content && <CodeEditor content={content} readOnly={true} onUpdateContent={() => {}} />}
           </div>
         </div>
       </div>

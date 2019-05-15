@@ -1,6 +1,6 @@
-import React, { PureComponent } from "react";
-import { ContentState, Editor, EditorState } from "draft-js";
-import "./CodeEditor.css";
+import React, { PureComponent } from 'react';
+import { ContentState, Editor, EditorState } from 'draft-js';
+import './CodeEditor.css';
 
 export default class CodeEditor extends PureComponent {
   constructor(props) {
@@ -28,6 +28,7 @@ export default class CodeEditor extends PureComponent {
   }
 
   render() {
+    console.log(this.state.editorState);
     return (
       <div style={styles.editor} onClick={this.focusEditor}>
         <Editor
