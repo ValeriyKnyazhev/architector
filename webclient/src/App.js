@@ -6,6 +6,7 @@ import File from "./pages/Project/File";
 import Commit from "./pages/Project/Commit";
 import ProjectChangesHistory from "./pages/Project/ProjectChangesHistory";
 import FileChangesHistory from "./pages/Project/File/FileChangesHistory";
+import FileProjection from "./pages/Project/File/FileProjection";
 import "./App.css";
 
 class App extends Component {
@@ -29,9 +30,10 @@ class App extends Component {
             />
             <Route
               exact
-              path="/projects/:projectId/changes/:commitId/diff"
-              component={Commit}
+              path="/projects/:projectId/files/:fileId/changes/:commitId/content"
+              component={FileProjection}
             />
+            <Route exact path="/projects/:projectId/changes/:commitId/diff" component={Commit} />
             <Redirect exact from="/" to="/projects" />
           </Switch>
         </Router>
