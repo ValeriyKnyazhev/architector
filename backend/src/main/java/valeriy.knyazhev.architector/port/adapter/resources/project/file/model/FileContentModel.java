@@ -45,7 +45,7 @@ public class FileContentModel
         this.fileId = fileId;
         this.metadata = metadata;
         this.description = description;
-        this.content = String.join(System.lineSeparator() + System.lineSeparator(), items);
+        this.content = String.join(System.lineSeparator(), items);
     }
 
 }
