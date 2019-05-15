@@ -1,6 +1,8 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.file.request;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.http.util.Args;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateDeserializer;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ public class UpdateFileMetadataRequest
     private String name;
 
     @Nonnull
+    @JsonDeserialize(using = ArchitectorLocalDateDeserializer.class)
     private LocalDate timestamp;
 
     @Nonnull

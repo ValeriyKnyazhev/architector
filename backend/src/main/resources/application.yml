@@ -7,7 +7,6 @@ spring.jpa:
     dialect: org.hibernate.dialect.PostgreSQL95Dialect
     temp.use_jdbc_metadata_defaults: false
 
-
 spring.datasource:
   url: jdbc:postgresql://localhost:5432/architector
   username: architector

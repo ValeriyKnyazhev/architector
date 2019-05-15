@@ -29,7 +29,7 @@ dependencies {
 	compile "org.springframework.boot:spring-boot-starter-thymeleaf"
 	compile "org.springframework.boot:spring-boot-starter-web"
 	compile "org.opensourcebim:ifcplugins"
-	
+
 	runtime "org.postgresql:postgresql"
 	
 	testCompile "junit:junit:4.12"

@@ -1,7 +1,9 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bimserver.emf.Schema;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
@@ -23,9 +25,11 @@ public class FileBriefModel
     private String name;
 
     @Nonnull
+    @JsonSerialize(using = ArchitectorLocalDateTimeSerializer.class)
     private LocalDateTime createdDate;
 
     @Nonnull
+    @JsonSerialize(using = ArchitectorLocalDateTimeSerializer.class)
     private LocalDateTime updatedDate;
 
     @Nonnull

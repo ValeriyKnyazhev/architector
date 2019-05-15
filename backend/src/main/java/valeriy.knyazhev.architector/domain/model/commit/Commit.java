@@ -1,9 +1,13 @@
 package valeriy.knyazhev.architector.domain.model.commit;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeDeserializer;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,6 +45,8 @@ public class Commit
     private String message;
 
     @Nonnull
+    @JsonSerialize(using = ArchitectorLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = ArchitectorLocalDateTimeDeserializer.class)
     private LocalDateTime timestamp;
 
     @Nonnull

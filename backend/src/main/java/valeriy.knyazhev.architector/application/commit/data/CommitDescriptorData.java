@@ -1,6 +1,10 @@
 package valeriy.knyazhev.architector.application.commit.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeDeserializer;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,6 +31,8 @@ public class CommitDescriptorData
     private String message;
 
     @Nonnull
+    @JsonSerialize(using = ArchitectorLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = ArchitectorLocalDateTimeDeserializer.class)
     private LocalDateTime timestamp;
 
     public CommitDescriptorData(long id, @Nullable Long parentId, @Nonnull String author,
