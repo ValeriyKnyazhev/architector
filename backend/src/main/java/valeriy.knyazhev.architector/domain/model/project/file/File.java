@@ -38,8 +38,7 @@ public class File
     private LocalDateTime updatedDate;
 
     @Nonnull
-    @Enumerated(EnumType.STRING)
-    private Schema schema;
+    private String schema;
 
     @Nonnull
     @Column(columnDefinition = "jsonb")
@@ -61,7 +60,7 @@ public class File
     private long concurrencyVersion;
 
     private File(@Nonnull FileId fileId,
-                 @Nonnull Schema schema,
+                 @Nonnull String schema,
                  @Nonnull FileDescription description,
                  @Nonnull FileMetadata metadata,
                  @Nonnull FileContent content)
@@ -80,7 +79,7 @@ public class File
     }
 
     @Nonnull
-    public Schema schema()
+    public String schema()
     {
         return this.schema;
     }
@@ -151,7 +150,7 @@ public class File
 
         private FileId fileId;
 
-        private Schema schema;
+        private String schema;
 
         private FileDescription description;
 
@@ -171,7 +170,7 @@ public class File
         }
 
         @Nonnull
-        public FileConstructor withSchema(@Nonnull Schema schema)
+        public FileConstructor withSchema(@Nonnull String schema)
         {
             this.schema = schema;
             return this;

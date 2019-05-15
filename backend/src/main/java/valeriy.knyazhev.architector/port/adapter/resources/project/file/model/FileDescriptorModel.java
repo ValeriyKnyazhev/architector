@@ -30,7 +30,7 @@ public class FileDescriptorModel
     private LocalDateTime updatedDate;
 
     @Nonnull
-    private Schema schema;
+    private String schema;
 
     @Nonnull
     private MetadataModel metadata;
@@ -39,7 +39,7 @@ public class FileDescriptorModel
     private DescriptionModel description;
 
     public FileDescriptorModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
-                               @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema,
+                               @Nonnull LocalDateTime updatedDate, @Nonnull String schema,
                                @Nonnull MetadataModel metadata, @Nonnull DescriptionModel description)
     {
         this.fileId = fileId;

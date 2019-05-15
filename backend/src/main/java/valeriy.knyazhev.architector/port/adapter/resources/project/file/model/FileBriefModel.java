@@ -33,10 +33,10 @@ public class FileBriefModel
     private LocalDateTime updatedDate;
 
     @Nonnull
-    private Schema schema;
+    private String schema;
 
     public FileBriefModel(@Nonnull String fileId, @Nonnull String name, @Nonnull LocalDateTime createdDate,
-                          @Nonnull LocalDateTime updatedDate, @Nonnull Schema schema)
+                          @Nonnull LocalDateTime updatedDate, @Nonnull String schema)
     {
         this.fileId = fileId;
         this.name = name;

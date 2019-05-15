@@ -20,9 +20,9 @@ public final class FileInfoExtractor
 {
 
     @Nonnull
-    public static Schema extractSchemaVersion(@Nonnull IfcHeader header)
+    public static String extractSchemaVersion(@Nonnull IfcHeader header)
     {
-        return Schema.valueOf(header.getIfcSchemaVersion());
+        return header.getIfcSchemaVersion();
     }
 
     @Nonnull

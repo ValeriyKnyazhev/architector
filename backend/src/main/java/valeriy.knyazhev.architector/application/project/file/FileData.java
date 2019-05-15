@@ -14,7 +14,7 @@ public class FileData
 {
 
     @Nonnull
-    private Schema schema;
+    private String schema;
 
     @Nonnull
     private String isoId;
@@ -28,7 +28,7 @@ public class FileData
     @Nonnull
     private FileContent content;
 
-    public FileData(@Nonnull Schema schema,
+    public FileData(@Nonnull String schema,
                     @Nonnull String isoId,
                     @Nonnull FileMetadata metadata,
                     @Nonnull FileDescription description,
@@ -42,7 +42,7 @@ public class FileData
     }
 
     @Nonnull
-    public Schema schema()
+    public String schema()
     {
         return this.schema;
     }
