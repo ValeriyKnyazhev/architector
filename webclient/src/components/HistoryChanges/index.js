@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
-import { Button, Table, Icon } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router";
+import { Link } from "react-router-dom";
+import { Button, Icon, Table } from "antd";
 
-import './HistoryChanges.css';
+import "./HistoryChanges.css";
 
 const ONE_SECOND = 1000;
 const ONE_MINUTE = ONE_SECOND * 60;
@@ -80,12 +80,19 @@ const historyTableColumns = props => [
       <div>
         <Link
           to={{
-            pathname: `/projects/${props.match.params.projectId}/files/${
-              props.match.params.fileId
-            }/changes/${record.id}/content`
+            pathname: `/projects/${props.match.params.projectId}/changes/${record.id}/diff`
           }}
         >
           <Icon type="diff" style={{ fontSize: '24px' }} />
+        </Link>
+        <Link
+          to={{
+            pathname: props.match.params.fileId
+              ? `/projects/${props.match.params.projectId}/files/${props.match.params.fileId}/changes/${record.id}/content`
+              : `/projects/${props.match.params.projectId}/changes/${record.id}/content`
+          }}
+        >
+          <Icon type="file" style={{ fontSize: '24px' }} />
         </Link>
       </div>
     )
