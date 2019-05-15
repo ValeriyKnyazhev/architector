@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import debounce from 'lodash/debounce';
 import { Link } from 'react-router-dom';
-import { Button, Icon, Spin, Table, Tag } from 'antd';
+import _isEmpty from 'lodash/isEmpty';
+import { Button, Icon, Spin, Table, Tag, message, Modal, Input } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import HistoryChanges from 'components/HistoryChanges';
+import MultiEdit from 'components/MultiEdit';
 import './File.sass';
-
 const mainInfoColumns = [
   {
     title: 'Created',
@@ -126,13 +127,27 @@ export default class File extends Component {
     historyChanges: [],
     content: '',
     contentReadOnly: true,
-    updatedContent: ''
+    updatedContent: '',
+    visibleEditDescr: false,
+    newDescription: ''
   };
 
   async componentDidMount() {
     this.fetchFileInfo();
     this.fetchFileHistoryChanges();
   }
+
+  showModal = state => {
+    this.setState({
+      [state]: true
+    });
+  };
+
+  handleCancel = state => {
+    this.setState({
+      [state]: false
+    });
+  };
 
   fetchFileInfo = async () => {
     const {
@@ -142,6 +157,38 @@ export default class File extends Component {
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
     this.setState({ file: data });
+  };
+
+  handleEditDescr = modalVisible => {
+    const { newDescription } = this.state;
+    const {
+      match: {
+        params: { projectId, fileId }
+      }
+    } = this.props;
+    axios
+      .put(`/api/projects/${projectId}/files/${fileId}/description`, {
+        descriptions: [newDescription],
+        implementationLevel: this.state.file.description.implementationLevel
+      })
+      .then(() => {
+        this.setState(
+          {
+            [modalVisible]: false
+          },
+          () => {
+            this.fetchFileInfo();
+            this.fetchFileHistoryChanges();
+            message.success('Descr was updated');
+          }
+        );
+      });
+  };
+
+  onChangeFileDescription = (event, data) => {
+    this.setState({
+      newDescription: event.target.value
+    });
   };
 
   fetchFileHistoryChanges = async () => {
@@ -198,6 +245,11 @@ export default class File extends Component {
       });
   };
 
+  setEditedDescr = description =>
+    this.setState({
+      newDescription: description
+    });
+
   onUpdateContent = debounce(contentState => {
     console.log(contentState);
     this.setState({
@@ -217,7 +269,8 @@ export default class File extends Component {
       content,
       isContentLoaded,
       isContentShow,
-      contentReadOnly
+      contentReadOnly,
+      visibleEditDescr
     } = this.state;
 
     const mainInfoData = [
@@ -248,7 +301,7 @@ export default class File extends Component {
     return (
       <div className="container">
         <div>
-          <h2>File № {fileId}</h2>
+          <h2>File: {file.metadata.name}</h2>
         </div>
         <div>
           <div>
@@ -260,7 +313,7 @@ export default class File extends Component {
             />
             <div className="file__metadata">
               <div className="row file__metadata-header">
-                <div className="col-xs-3">
+                <div className="col-xs-3" style={{ textAlign: 'left', marginBottom: '4px' }}>
                   <b>Metadata</b>
                 </div>
                 <div className="col-xs-9" />
@@ -276,8 +329,18 @@ export default class File extends Component {
             </div>
             <div className="file__description">
               <div className="row file__description-header">
-                <div className="col-xs-3">
+                <div className="col-xs-3" style={{ textAlign: 'left', marginBottom: '4px' }}>
                   <b>Description</b>
+                  <Button
+                    type="primary"
+                    style={{ marginLeft: 8, alignContent: 'right' }}
+                    onClick={() => {
+                      this.setEditedDescr(file.description.descriptions[0]);
+                      this.showModal('visibleEditDescr');
+                    }}
+                  >
+                    <Icon type={'edit'} />
+                  </Button>
                 </div>
                 <div className="col-xs-9" />
               </div>
@@ -364,6 +427,26 @@ export default class File extends Component {
             </div>
           </div>
         </div>
+        {visibleEditDescr && (
+          <Modal
+            title="Edit file description"
+            visible={visibleEditDescr}
+            onOk={() => this.handleEditDescr('visibleEditDescr')}
+            onCancel={() => this.handleCancel('visibleEditDescr')}
+            okButtonProps={{
+              disabled: _isEmpty(this.state.newDescription)
+            }}
+          >
+            <div>
+              <div className="projects__input-label">Description</div>
+              <Input
+                placeholder="Enter your project description"
+                value={this.state.newDescription}
+                onChange={e => this.onChangeFileDescription(e, 'newDescription')}
+              />
+            </div>
+          </Modal>
+        )}
       </div>
     );
   }
