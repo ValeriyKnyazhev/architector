@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import axios from "axios";
-import debounce from "lodash/debounce";
-import { Link } from "react-router-dom";
-import { Button, Icon, Spin, Table, Tag } from "antd";
-import CodeEditor from "components/CodeEditor";
-import HistoryChanges from "components/HistoryChanges";
-import "./File.sass";
+import React, { Component } from 'react';
+import axios from 'axios';
+import debounce from 'lodash/debounce';
+import { Link } from 'react-router-dom';
+import { Button, Icon, Spin, Table, Tag } from 'antd';
+import CodeEditor from 'components/CodeEditor';
+import HistoryChanges from 'components/HistoryChanges';
+import './File.sass';
 
 const mainInfoColumns = [
   {
@@ -187,10 +187,15 @@ export default class File extends Component {
       }
     } = this.props;
 
-    axios.put(`/api/projects/${projectId}/files/${fileId}/content`, {
-      commitMessage: 'update file',
-      content: this.state.updatedContent
-    });
+    axios
+      .put(`/api/projects/${projectId}/files/${fileId}/content`, {
+        commitMessage: 'update file',
+        content: this.state.updatedContent
+      })
+      .then(() => {
+        this.fetchFileHistoryChanges();
+        this.onEditContent();
+      });
   };
 
   onUpdateContent = debounce(contentState => {

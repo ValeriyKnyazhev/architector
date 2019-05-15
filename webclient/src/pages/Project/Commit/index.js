@@ -1,4 +1,5 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
+import { Icon } from 'antd';
 import cn from 'classnames';
 import axios from 'axios';
 import './Commit.sass';
@@ -65,13 +66,22 @@ export default class Commit extends PureComponent {
           <h2>Commit #{commitId}</h2>
           {changedFiles.map(file => (
             <div className="commit__file">
-              {file.sections.map(section => (
-                <div>
-                  {section.items.map(item => (
-                    <DiffRowComponent data={item} />
-                  ))}
-                </div>
-              ))}
+              <div className="commit__file-info">
+                TYPE: {file.statistics.type}
+                <br />+ {file.statistics.addedLines} / - {file.statistics.deletedLines}
+              </div>
+              <div>
+                {file.sections.map(section => (
+                  <Fragment>
+                    <div className="commit__section">
+                      {section.items.map(item => (
+                        <DiffRowComponent data={item} />
+                      ))}
+                    </div>
+                    <Icon type="small-dash" />
+                  </Fragment>
+                ))}
+              </div>
             </div>
           ))}
         </div>
