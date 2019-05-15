@@ -21,13 +21,6 @@ const mainInfoColumns = [
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: 'Updated',
-    dataIndex: 'updated',
-    key: 'updated',
-    width: 4,
-    render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
-  },
-  {
     title: 'Author',
     dataIndex: 'author',
     key: 'author',
@@ -166,6 +159,7 @@ export default class Project extends Component {
           },
           () => {
             this.fetchProject.call(this);
+            this.fetchProjectHistoryChanges.call(this);
             message.success('upload successfully.');
           }
         )
@@ -180,6 +174,19 @@ export default class Project extends Component {
           message.success('upload failed.')
         )
       );
+  };
+
+  handleDeleteFile = id => {
+    const {
+      match: {
+        params: { projectId }
+      }
+    } = this.props;
+
+    axios.delete(`/api/projects/${projectId}/files/${id}`).then(() => {
+      this.fetchProject.call(this);
+      this.fetchProjectHistoryChanges.call(this);
+    });
   };
 
   render() {
@@ -253,6 +260,21 @@ export default class Project extends Component {
         key: 'updated',
         width: 4,
         render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
+      },
+      ,
+      {
+        key: 'action',
+        width: 2,
+        render: record => (
+          <Button
+            className="project__files-create-file "
+            onClick={() => this.handleDeleteFile(record.identifier)}
+            type="danger"
+            style={{ alignContent: 'right' }}
+          >
+            <Icon type="delete" />
+          </Button>
+        )
       }
     ];
     const filesListData = project.files.map((file, index) => {
