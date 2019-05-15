@@ -91,6 +91,7 @@ public class ChangesApplicationService
         {
             return new FileChangesData(
                 changes.fileId().id(),
+                changes.metadata().name(),
                 FileChangesStatistics.added(changes.items().size(), true),
                 constructFileMetadataChanges(null, changes.metadata()),
                 constructFileDescriptionChanges(null, changes.description()),
@@ -106,6 +107,7 @@ public class ChangesApplicationService
         boolean characteristicsModified = !(changes.metadata().isEmpty() && changes.description().isEmpty());
         return new FileChangesData(
             changes.fileId().id(),
+            fileProjection.metadata().name(),
             createChangesStatistics(fileProjection, changes.items(), characteristicsModified),
             metadataChanges,
             descriptionChanges,
