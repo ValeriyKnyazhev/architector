@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -52,7 +53,7 @@ public class Project
     @Nonnull
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "project_id", nullable = false)
     @OrderColumn(name = "file_order")
     @Nonnull
@@ -114,7 +115,7 @@ public class Project
     @Nonnull
     public List<File> files()
     {
-        return this.files;
+        return Collections.unmodifiableList(this.files);
     }
 
     public void addFile(@Nonnull File file)
