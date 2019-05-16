@@ -1,6 +1,6 @@
 # Architector
 
-## Запуск проекта
+## Локальный запуск проекта для разработки
 
 Запустить ``postgresql``:
 
@@ -13,8 +13,26 @@ docker-compose up -d
 ./gradlew clean build
 ```
 
-После, запустить приложение следующим способом:
+После, запустить отдельно бекенд и фронтенд:
 
 ```bash
 ./gradlew :backend:bootRun
 ```
+
+```bash
+cd webclient
+yarn start
+```
+
+## Запуск сервиса в production
+
+Осуществить сборку проекта:
+```bash
+./build.sh
+```
+
+Затем запустить полученный `jar` файл:
+```bash
+java -jar ./architector.jar
+```
+
