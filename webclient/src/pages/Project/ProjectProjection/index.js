@@ -141,7 +141,7 @@ export default class ProjectProjection extends Component {
     return (
       <Card type="inner" style={{ marginTop: 16 }} title={metadata.name}>
         <div className="project__file-metadata">
-          <div className="row file__metadata-header">
+          <div className="row project__file-metadata-header">
             <div
               className="col-xs-3"
               style={{ textAlign: 'left', marginBottom: '10px', marginTop: '10px' }}
@@ -160,7 +160,7 @@ export default class ProjectProjection extends Component {
           </div>
         </div>
         <div className="project__file-description">
-          <div className="row file__description-header">
+          <div className="row project__file-escription-header">
             <div
               className="col-xs-3"
               style={{ textAlign: 'left', marginBottom: '10px', marginTop: '10px' }}
@@ -179,7 +179,7 @@ export default class ProjectProjection extends Component {
           </div>
         </div>
         <div className="project__file-content">
-          <div className="row file__content-header">
+          <div className="row project__file-content-header">
             <div
               className="col-xs-3"
               style={{ textAlign: 'left', marginBottom: '10px', marginTop: '10px' }}
@@ -188,7 +188,7 @@ export default class ProjectProjection extends Component {
             </div>
             <div className="col-xs-9" />
           </div>
-          <div className="file__content-info">
+          <div className="project__file-content-info">
             {content && <CodeEditor content={content} readOnly={true} onUpdateContent={() => {}} />}
           </div>
         </div>
@@ -219,8 +219,11 @@ export default class ProjectProjection extends Component {
           <div className="project__description-info col-xs-10 start-xs">{description}</div>
         </div>
         <div className="project__files">
-          <div className="row file__content-header">
-            <div className="col-xs-3">
+          <div className="row project__files-header">
+            <div
+              className="col-xs-3"
+              style={{ textAlign: 'left', marginBottom: '10px', marginTop: '10px' }}
+            >
               <b>Files</b>
             </div>
             <div className="col-xs-9" />
