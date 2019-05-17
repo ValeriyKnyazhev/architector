@@ -1,7 +1,7 @@
 version: "3.2"
 
 services:
-  postgresql:
+  architector_db:
     image: postgres:11.1
     environment:
       POSTGRES_DB: architector
@@ -9,3 +9,16 @@ services:
       POSTGRES_PASSWORD: architector
     ports:
     - 5432:5432
+    volumes:
+    - ./postgres-db-architector:/var/lib/postgresql/data
+
+  service:
+    image: valeriyknyazhev/architector:1
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/architector
+    deploy:
+      replicas: 1
+    ports:
+    - 8080:8080
+    depends_on:
+    - architector_db

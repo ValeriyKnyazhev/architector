@@ -5,7 +5,7 @@
 Запустить ``postgresql``:
 
 ```bash
-docker-compose up -d
+docker-compose -f docker-compose-db.yml up -d
 ```
 
 Собрать проект:
