@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import valeriy.knyazhev.architector.port.adapter.resources.user.ArchitectorEmailResolver;
+import valeriy.knyazhev.architector.port.adapter.util.ArchitectorEmailResolver;
 
 import java.util.List;
 

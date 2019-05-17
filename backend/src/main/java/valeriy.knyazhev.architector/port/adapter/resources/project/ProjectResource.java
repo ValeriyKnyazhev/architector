@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.port.adapter.resources.project;
 
 import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import valeriy.knyazhev.architector.application.project.ProjectManagementService;
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
@@ -47,10 +48,10 @@ public class ProjectResource
                  consumes = APPLICATION_JSON_UTF8_VALUE,
                  produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request,
-                                                @Nonnull String author)
+                                                @Nonnull String architector)
     {
         ProjectId projectId = this.managementService.createProject(
-            new CreateProjectCommand(request.name(), author, request.description()));
+            new CreateProjectCommand(request.name(), architector, request.description()));
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("Project " + projectId.id() + " was created.")
@@ -58,9 +59,13 @@ public class ProjectResource
     }
 
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> findAllProjects()
+    public ResponseEntity<Object> findProjects(@Nonnull Authentication authentication,
+                                               @Nonnull String architector)
     {
-        List<ProjectDescriptorModel> projects = this.queryService.findAllProjects().stream()
+        boolean isAdmin = authentication.getAuthorities().stream()
+            .map(authority -> (authority).getAuthority())
+            .anyMatch("ADMIN"::equals);
+        List<ProjectDescriptorModel> projects = this.queryService.findProjects(isAdmin ? null : architector).stream()
             .map(ProjectMapper::buildProject)
             .collect(toList());
         return ResponseEntity.ok(Collections.singletonMap("projects", projects));
@@ -81,14 +86,13 @@ public class ProjectResource
     @PutMapping(value = "/api/projects/{qProjectId}",
                 consumes = APPLICATION_JSON_UTF8_VALUE,
                 produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> updateProjectData(
-        @PathVariable String qProjectId,
-        @RequestBody @Valid UpdateProjectDataRequest request,
-        @Nonnull String author)
+    public ResponseEntity<Object> updateProjectData(@PathVariable String qProjectId,
+                                                    @RequestBody @Valid UpdateProjectDataRequest request,
+                                                    @Nonnull String architector)
     {
         this.managementService.updateProjectData(
             new UpdateProjectDataCommand(
-                qProjectId, request.name(), request.description(), author
+                qProjectId, request.name(), request.description(), architector
             )
         );
         return ResponseEntity.ok()

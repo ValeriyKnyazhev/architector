@@ -10,6 +10,7 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -31,9 +32,18 @@ public class ProjectQueryService
     }
 
     @Nonnull
-    public List<Project> findAllProjects()
+    public List<Project> findProjects(@Nullable String architector)
     {
-        return this.repository.findAll();
+        List<Project> allProjects = this.repository.findAll();
+        if (architector != null)
+        {
+            return allProjects.stream()
+                .filter(project -> architector.equals(project.author()))
+                .collect(Collectors.toList());
+        } else
+        {
+            return allProjects;
+        }
     }
 
 }
