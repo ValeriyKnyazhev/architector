@@ -4,6 +4,9 @@
 # Configuration files
 *.conf
 
+# Key files
+*.pem
+
 # Jar file
 *.jar
 

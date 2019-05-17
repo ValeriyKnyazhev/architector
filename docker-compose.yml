@@ -1,7 +1,7 @@
 version: "3.2"
 
 services:
-  architector_db:
+  postgresql:
     image: postgres:11.1
     environment:
       POSTGRES_DB: architector
@@ -19,6 +19,6 @@ services:
     deploy:
       replicas: 1
     ports:
-    - 8080:8080
+    - 80:8080
     depends_on:
-    - architector_db
+    - postgresql
