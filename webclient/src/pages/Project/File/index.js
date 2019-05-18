@@ -3,10 +3,10 @@ import axios from 'axios';
 import debounce from 'lodash/debounce';
 import { Link } from 'react-router-dom';
 import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Spin, Table, Tag, message, Modal, Input } from 'antd';
+import { Button, Icon, Spin, Table, message, Modal, Input } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import HistoryChanges from 'components/HistoryChanges';
-import MultiEdit from 'components/MultiEdit';
+import FileMetadata from './FileMetadata';
 import './File.sass';
 const mainInfoColumns = [
   {
@@ -28,61 +28,6 @@ const mainInfoColumns = [
     dataIndex: 'schema',
     key: 'schema',
     width: 4
-  }
-];
-
-const metadataColumns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    width: 3
-  },
-  {
-    title: 'Authors',
-    key: 'authors',
-    dataIndex: 'authors',
-    width: 3,
-    render: authors => (
-      <span>
-        {authors.map(author => {
-          return (
-            <Tag color="geekblue" key={author}>
-              {author}
-            </Tag>
-          );
-        })}
-      </span>
-    )
-  },
-  {
-    title: 'Organizations',
-    key: 'organizations',
-    dataIndex: 'organizations',
-    width: 2,
-    render: organizations => (
-      <span>
-        {organizations.map(organization => {
-          return (
-            <Tag color="geekblue" key={organization}>
-              {organization.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </span>
-    )
-  },
-  {
-    title: 'Originating system',
-    dataIndex: 'originatingSystem',
-    key: 'originatingSystem',
-    width: 2
-  },
-  {
-    title: 'Preprocessor version',
-    dataIndex: 'preprocessorVersion',
-    key: 'preprocessorVersion',
-    width: 2
   }
 ];
 
@@ -112,6 +57,7 @@ export default class File extends Component {
   state = {
     isContentLoaded: false,
     isContentShow: false,
+    fileDataLoaded: false,
     file: {
       createdDate: '',
       updatedDate: '',
@@ -156,7 +102,7 @@ export default class File extends Component {
       }
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
-    this.setState({ file: data });
+    this.setState({ file: data, fileDataLoaded: true });
   };
 
   handleEditDescr = modalVisible => {
@@ -270,7 +216,8 @@ export default class File extends Component {
       isContentLoaded,
       isContentShow,
       contentReadOnly,
-      visibleEditDescr
+      visibleEditDescr,
+      fileDataLoaded
     } = this.state;
 
     const mainInfoData = [
@@ -281,16 +228,7 @@ export default class File extends Component {
         schema: file.schema
       }
     ];
-    const metadataData = [
-      {
-        key: '1',
-        name: file.metadata.name,
-        authors: file.metadata.authors,
-        organizations: file.metadata.organizations,
-        originatingSystem: file.metadata.originatingSystem,
-        preprocessorVersion: file.metadata.preprocessorVersion
-      }
-    ];
+
     const descriptionData = [
       {
         key: '1',
@@ -298,7 +236,8 @@ export default class File extends Component {
         implementationLevel: file.description.implementationLevel
       }
     ];
-    return (
+
+    return fileDataLoaded ? (
       <div className="container">
         <div>
           <h2>File: {file.metadata.name}</h2>
@@ -311,22 +250,12 @@ export default class File extends Component {
               dataSource={mainInfoData}
               pagination={false}
             />
-            <div className="file__metadata">
-              <div className="row file__metadata-header">
-                <div className="col-xs-3" style={{ textAlign: 'left', marginBottom: '4px' }}>
-                  <b>Metadata</b>
-                </div>
-                <div className="col-xs-9" />
-              </div>
-              <div className="file__metadata-info">
-                <Table
-                  className="file__metadata-table"
-                  columns={metadataColumns}
-                  dataSource={metadataData}
-                  pagination={false}
-                />
-              </div>
-            </div>
+            <FileMetadata
+              file={file}
+              fetchFileInfo={this.fetchFileInfo}
+              fetchFileHistoryChanges={this.fetchFileHistoryChanges}
+              match={this.props.match}
+            />
             <div className="file__description">
               <div className="row file__description-header">
                 <div className="col-xs-3" style={{ textAlign: 'left', marginBottom: '4px' }}>
@@ -448,6 +377,8 @@ export default class File extends Component {
           </Modal>
         )}
       </div>
+    ) : (
+      <Spin />
     );
   }
 }
