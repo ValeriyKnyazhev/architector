@@ -148,7 +148,14 @@ export default class FileMetadata extends Component {
 
   render() {
     const { file } = this.props;
-    const { visibleEditMetada, newAuthors, newOrganizations, newName } = this.state;
+    const {
+      visibleEditMetada,
+      newAuthors,
+      newOrganizations,
+      newName,
+      newOriginatingSystem,
+      newPreprocessorVersion
+    } = this.state;
     const metadataData = [
       {
         key: '1',
@@ -193,12 +200,17 @@ export default class FileMetadata extends Component {
             onOk={() => this.handleEditMetadata('visibleEditMetada')}
             onCancel={() => this.handleCancel('visibleEditMetada')}
             okButtonProps={{
-              disabled: _isEmpty(newAuthors) || _isEmpty(newOrganizations) || _isEmpty(newName)
+              disabled:
+                _isEmpty(newAuthors) ||
+                _isEmpty(newOrganizations) ||
+                _isEmpty(newName) ||
+                _isEmpty(newOriginatingSystem) ||
+                _isEmpty(newPreprocessorVersion)
             }}
           >
             <div className="file__input-label">Name:</div>
             <Input
-              placeholder="Add author"
+              placeholder="Add Name"
               className="file__multiply-input"
               value={newName}
               onChange={e => this.onChangeValue(e, 'newName')}
@@ -257,6 +269,20 @@ export default class FileMetadata extends Component {
                 </div>
               ))}
             </div>
+            <div className="file__input-label">OriginatingSystem:</div>
+            <Input
+              placeholder="Add OriginatingSystem"
+              className="file__multiply-input"
+              value={newOriginatingSystem}
+              onChange={e => this.onChangeValue(e, 'newOriginatingSystem')}
+            />
+            <div className="file__input-label">PreprocessorVersion:</div>
+            <Input
+              placeholder="Add PreprocessorVersion"
+              className="file__multiply-input"
+              value={newPreprocessorVersion}
+              onChange={e => this.onChangeValue(e, 'newPreprocessorVersion')}
+            />
           </Modal>
         )}
       </div>
