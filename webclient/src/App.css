@@ -3,3 +3,11 @@
 .App {
   text-align: center;
 }
+
+.d-flex {
+  display: flex;
+}
+
+.around {
+  margin-right: 16px;
+}
