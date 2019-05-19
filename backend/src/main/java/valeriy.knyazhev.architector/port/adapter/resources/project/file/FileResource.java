@@ -13,6 +13,7 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.*;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
@@ -72,13 +73,13 @@ public class FileResource
                  produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> addFileFromUrl(@PathVariable String qProjectId,
                                                  @RequestBody CreateFileFromUrlRequest request,
-                                                 @Nonnull String architector)
+                                                 @Nonnull Architector architector)
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(request, "Add file from url request is required.");
         File newFile = this.managementService.addFile(
             new AddFileFromUrlCommand(
-                qProjectId, architector, request.sourceUrl()
+                qProjectId, architector.email(), request.sourceUrl()
             )
         );
         return newFile != null
@@ -98,13 +99,13 @@ public class FileResource
                  produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> addFileFromFile(@PathVariable String qProjectId,
                                                            @RequestParam("file") MultipartFile multipartFile,
-                                                           @Nonnull String architector)
+                                                           @Nonnull Architector architector)
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(multipartFile, "Upload file is required.");
         File newFile = this.managementService.addFile(
             new AddFileFromUploadCommand(
-                qProjectId, architector, multipartFile
+                qProjectId, architector.email(), multipartFile
             )
         );
         return newFile != null
@@ -126,11 +127,11 @@ public class FileResource
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
                                                 @RequestBody UpdateFileContentRequest request,
-                                                @Nonnull String architector)
+                                                @Nonnull Architector architector)
     {
         boolean updated = this.managementService.updateFile(
             new UpdateFileContentCommand(
-                qProjectId, qFileId, architector, request.content(), request.commitMessage()
+                qProjectId, qFileId, architector.email(), request.content(), request.commitMessage()
             )
         );
         return updated
@@ -150,11 +151,11 @@ public class FileResource
     public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
                                                 @PathVariable String qFileId,
                                                 @RequestBody UpdateFileFromUrlRequest request,
-                                                @Nonnull String architector)
+                                                @Nonnull Architector architector)
     {
         boolean updated = this.managementService.updateFile(
             new UpdateFileFromUrlCommand(
-                qProjectId, qFileId, architector, request.sourceUrl()
+                qProjectId, qFileId, architector.email(), request.sourceUrl()
             )
         );
         return updated
@@ -174,11 +175,11 @@ public class FileResource
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
                                                           @RequestParam("file") MultipartFile multipartFile,
-                                                          @Nonnull String architector)
+                                                          @Nonnull Architector architector)
     {
         boolean updated = this.managementService.updateFile(
             new UpdateFileFromUploadCommand(
-                qProjectId, qFileId, architector, multipartFile
+                qProjectId, qFileId, architector.email(), multipartFile
             )
         );
         return updated
@@ -198,13 +199,13 @@ public class FileResource
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
                                                               @RequestBody UpdateFileDescriptionRequest request,
-                                                              @Nonnull String architector)
+                                                              @Nonnull Architector architector)
     {
         this.managementService.updateFileDescription(
             UpdateFileDescriptionCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
-                .author(architector)
+                .author(architector.email())
                 .descriptions(request.descriptions())
                 .implementationLevel(request.implementationLevel())
                 .build()
@@ -221,13 +222,13 @@ public class FileResource
     public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
                                                               @PathVariable String qFileId,
                                                               @RequestBody UpdateFileMetadataRequest request,
-                                                              @Nonnull String architector)
+                                                              @Nonnull Architector architector)
     {
         this.managementService.updateFileMetadata(
             UpdateFileMetadataCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
-                .author(architector)
+                .author(architector.email())
                 .name(request.name())
                 .timestamp(request.timestamp())
                 .authors(request.authors())
@@ -247,10 +248,10 @@ public class FileResource
                    produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
                                                           @PathVariable String qFileId,
-                                                          @Nonnull String architector)
+                                                          @Nonnull Architector architector)
     {
         boolean deleted = this.managementService.deleteFile(
-            new DeleteFileCommand(qProjectId, qFileId, architector)
+            new DeleteFileCommand(qProjectId, qFileId, architector.email())
         );
         return deleted
                ? ResponseEntity.ok()

@@ -53,7 +53,7 @@ public class ProjectResource
                                                 @Nonnull Architector architector)
     {
         ProjectId projectId = this.managementService.createProject(
-            new CreateProjectCommand(request.name(), architector.getEmail(), request.description()));
+            new CreateProjectCommand(request.name(), architector.email(), request.description()));
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("Project " + projectId.id() + " was created.")
@@ -87,11 +87,11 @@ public class ProjectResource
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> updateProjectData(@PathVariable String qProjectId,
                                                     @RequestBody @Valid UpdateProjectDataRequest request,
-                                                    @Nonnull String architector)
+                                                    @Nonnull Architector architector)
     {
         this.managementService.updateProjectData(
             new UpdateProjectDataCommand(
-                qProjectId, request.name(), request.description(), architector
+                qProjectId, request.name(), request.description(), architector.email()
             )
         );
         return ResponseEntity.ok()

@@ -58,12 +58,12 @@ public class ArchitectorApplicationService
 
     public Architector register(Architector architector)
     {
-        this.architectorRepository.findByEmail(architector.getEmail())
+        this.architectorRepository.findByEmail(architector.email())
             .ifPresent(user -> {
-                    throw new ArchitectorAlreadyExistException(architector.getEmail());
+                    throw new ArchitectorAlreadyExistException(architector.email());
                 }
             );
-        architector.setPassword(this.passwordEncoder.encode(architector.getPassword()));
+        architector.setPassword(this.passwordEncoder.encode(architector.password()));
         architector.setRoles(new HashSet<>(this.roleRepository.findAll()));
         return this.architectorRepository.save(architector);
     }

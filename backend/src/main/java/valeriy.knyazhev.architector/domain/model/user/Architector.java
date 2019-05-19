@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.domain.model.user;
 
 import lombok.EqualsAndHashCode;
 
+import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.util.Set;
 
@@ -18,16 +19,37 @@ public class Architector
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Nonnull
     private String email;
 
+    @Nonnull
     private String password;
 
     @ManyToMany
+    @Nonnull
     private Set<Role> roles;
 
-    public Long getId()
+    public Long id()
     {
         return this.id;
+    }
+
+    @Nonnull
+    public String email()
+    {
+        return this.email;
+    }
+
+    @Nonnull
+    public String password()
+    {
+        return this.password;
+    }
+
+    @Nonnull
+    public Set<Role> roles()
+    {
+        return this.roles;
     }
 
     public void setId(Long id)
@@ -35,32 +57,18 @@ public class Architector
         this.id = id;
     }
 
-    public String getEmail()
-    {
-        return this.email;
-    }
 
-    public void setEmail(String email)
+    public void setEmail(@Nonnull String email)
     {
         this.email = email;
     }
 
-    public String getPassword()
-    {
-        return this.password;
-    }
-
-    public void setPassword(String password)
+    public void setPassword(@Nonnull String password)
     {
         this.password = password;
     }
 
-    public Set<Role> getRoles()
-    {
-        return this.roles;
-    }
-
-    public void setRoles(Set<Role> roles)
+    public void setRoles(@Nonnull Set<Role> roles)
     {
         this.roles = roles;
     }

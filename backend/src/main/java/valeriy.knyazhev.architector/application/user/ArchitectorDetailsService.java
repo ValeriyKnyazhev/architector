@@ -15,6 +15,7 @@ import valeriy.knyazhev.architector.domain.model.user.Role;
 import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Valeriy Knyazhev
@@ -35,14 +36,13 @@ public class ArchitectorDetailsService implements UserDetailsService
     {
         Architector architector = this.architectorRepository.findByEmail(email)
             .orElseThrow(() -> new ArchitectorNotFoundException(email));
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (Role role : architector.getRoles())
-        {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
+        Set<GrantedAuthority> grantedAuthorities = architector.roles().stream()
+            .map(Role::getName)
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toSet());
         return new User(
-            architector.getEmail(),
-            architector.getPassword(),
+            architector.email(),
+            architector.password(),
             grantedAuthorities
         );
     }

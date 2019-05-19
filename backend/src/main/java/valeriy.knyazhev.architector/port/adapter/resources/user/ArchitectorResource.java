@@ -41,10 +41,10 @@ public class ArchitectorResource
     }
 
     @GetMapping("/api/me")
-    public ResponseEntity<Object> userInfo(@Nonnull String architector)
+    public ResponseEntity<Object> userInfo(@Nonnull Architector architector)
     {
         return ResponseEntity.ok().body(
-            new ArchitectorModel(architector)
+            new ArchitectorModel(architector.email())
         );
     }
 

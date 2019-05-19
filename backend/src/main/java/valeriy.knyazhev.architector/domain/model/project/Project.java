@@ -182,8 +182,7 @@ public class Project
         {
             return WRITE;
         }
-        if (this.writeAccessRights.stream()
-            .map(Architector::getEmail)
+        if (this.readAccessRights.stream()
             .anyMatch(architector::equals))
         {
             return READ;
@@ -193,7 +192,7 @@ public class Project
 
     private boolean isOwner(@Nonnull Architector architector)
     {
-        return Args.notNull(architector, "Architector is required.").getEmail().equals(this.author);
+        return Args.notNull(architector, "Architector is required.").email().equals(this.author);
     }
 
     public void addFile(@Nonnull File file)

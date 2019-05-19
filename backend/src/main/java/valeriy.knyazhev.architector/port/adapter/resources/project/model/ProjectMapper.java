@@ -26,9 +26,10 @@ public final class ProjectMapper
             project.projectId(),
             project.createdDate(),
             project.updatedDate(),
+            project.accessRights(),
             project.name(),
-            project.author(),
             project.description(),
+            project.author(),
             files
         );
     }

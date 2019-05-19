@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.port.adapter.resources.project.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights;
 import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileBriefModel;
 
@@ -31,10 +32,13 @@ public class ProjectDescriptorModel
     private LocalDateTime updatedDate;
 
     @Nonnull
-    private String projectName;
+    private String author;
 
     @Nonnull
-    private String author;
+    private ProjectAccessRights accessRights;
+
+    @Nonnull
+    private String projectName;
 
     @Nonnull
     private String description;
@@ -43,16 +47,17 @@ public class ProjectDescriptorModel
     private List<FileBriefModel> files;
 
     public ProjectDescriptorModel(@Nonnull String projectId, @Nonnull LocalDateTime createdDate,
-                                  @Nonnull LocalDateTime updatedDate, @Nonnull String projectName,
-                                  @Nonnull String author, @Nonnull String description,
-                                  @Nonnull List<FileBriefModel> files)
+                                  @Nonnull LocalDateTime updatedDate, @Nonnull ProjectAccessRights accessRights,
+                                  @Nonnull String projectName, @Nonnull String description,
+                                  @Nonnull String author, @Nonnull List<FileBriefModel> files)
     {
         this.projectId = projectId;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
+        this.accessRights = accessRights;
         this.projectName = projectName;
-        this.author = author;
         this.description = description;
+        this.author = author;
         this.files = files;
     }
 

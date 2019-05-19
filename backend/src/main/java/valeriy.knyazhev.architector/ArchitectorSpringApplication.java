@@ -1,5 +1,6 @@
 package valeriy.knyazhev.architector;
 
+import org.apache.http.util.Args;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,8 +23,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import valeriy.knyazhev.architector.domain.model.user.ArchitectorRepository;
 import valeriy.knyazhev.architector.port.adapter.util.ArchitectorResolver;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -44,6 +47,13 @@ public class ArchitectorSpringApplication
     public class WebConfig implements WebMvcConfigurer
     {
 
+        private final ArchitectorRepository architectorRepository;
+
+        public WebConfig(@Nonnull ArchitectorRepository architectorRepository)
+        {
+            this.architectorRepository = Args.notNull(architectorRepository, "Architector repository is required.");
+        }
+
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry)
         {
@@ -55,7 +65,7 @@ public class ArchitectorSpringApplication
         @Override
         public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers)
         {
-            argumentResolvers.add(new ArchitectorResolver());
+            argumentResolvers.add(new ArchitectorResolver(this.architectorRepository));
         }
 
         @GetMapping(value = {"/", "/projects/**", "/commits/**"}, produces = MediaType.TEXT_HTML_VALUE)
@@ -86,7 +96,9 @@ public class ArchitectorSpringApplication
 
         @Override
         @Bean
-        public AuthenticationManager authenticationManagerBean() throws Exception {
+        public AuthenticationManager authenticationManagerBean() throws
+            Exception
+        {
             return super.authenticationManagerBean();
         }
 
