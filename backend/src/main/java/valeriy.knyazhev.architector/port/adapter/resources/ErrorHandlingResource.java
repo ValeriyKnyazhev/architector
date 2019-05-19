@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 import valeriy.knyazhev.architector.application.commit.CommitNotFoundException;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
+import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.NothingToCommitException;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -50,6 +50,14 @@ public class ErrorHandlingResource
         ResponseMessage responseMessage = new ResponseMessage()
             .error(ex.getMessage());
         return ResponseEntity.status(BAD_REQUEST).body(responseMessage);
+    }
+
+    @ExceptionHandler(AccessRightsNotFoundException.class)
+    public ResponseEntity<ResponseMessage> catchAccessRightsNotFoundException(AccessRightsNotFoundException ex)
+    {
+        ResponseMessage responseMessage = new ResponseMessage()
+            .error(ex.getMessage());
+        return ResponseEntity.status(FORBIDDEN).body(responseMessage);
     }
 
 }

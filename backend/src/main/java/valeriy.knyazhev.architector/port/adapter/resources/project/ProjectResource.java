@@ -90,6 +90,7 @@ public class ProjectResource
                                                     @Nonnull Architector architector)
     {
         this.managementService.updateProjectData(
+            architector,
             new UpdateProjectDataCommand(
                 qProjectId, request.name(), request.description(), architector.email()
             )

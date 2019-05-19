@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.application.project.file.command;
 
 import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 
@@ -15,17 +16,17 @@ public class AddFileFromUploadCommand
     private String projectId;
 
     @Nonnull
-    private String author;
+    private Architector architector;
 
     @Nonnull
     private MultipartFile content;
 
     public AddFileFromUploadCommand(@Nonnull String projectId,
-                                    @Nonnull String author,
+                                    @Nonnull Architector architector,
                                     @Nonnull MultipartFile content)
     {
         this.projectId = projectId;
-        this.author = author;
+        this.architector = architector;
         this.content = content;
     }
 
@@ -36,9 +37,9 @@ public class AddFileFromUploadCommand
     }
 
     @Nonnull
-    public String author()
+    public Architector architector()
     {
-        return this.author;
+        return this.architector;
     }
 
     @Nonnull

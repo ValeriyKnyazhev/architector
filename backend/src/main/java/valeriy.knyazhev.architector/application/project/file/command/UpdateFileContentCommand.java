@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.application.project.file.command;
 
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -21,7 +22,7 @@ public class UpdateFileContentCommand
     private String fileId;
 
     @Nonnull
-    private String author;
+    private Architector architector;
 
     @Nonnull
     private List<String> content;
@@ -31,13 +32,13 @@ public class UpdateFileContentCommand
 
     public UpdateFileContentCommand(@Nonnull String projectId,
                                     @Nonnull String fileId,
-                                    @Nonnull String author,
+                                    @Nonnull Architector architector,
                                     @Nonnull String content,
                                     @Nonnull String commitMessage)
     {
         this.projectId = projectId;
         this.fileId = fileId;
-        this.author = author;
+        this.architector = architector;
         this.content = asList(content.split(System.lineSeparator()));
         this.commitMessage = commitMessage;
     }
@@ -55,9 +56,9 @@ public class UpdateFileContentCommand
     }
 
     @Nonnull
-    public String author()
+    public Architector architector()
     {
-        return this.author;
+        return this.architector;
     }
 
     @Nonnull

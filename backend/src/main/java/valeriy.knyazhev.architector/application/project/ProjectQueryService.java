@@ -3,6 +3,7 @@ package valeriy.knyazhev.architector.application.project;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.util.Args;
 import org.springframework.stereotype.Service;
+import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -32,10 +33,17 @@ public class ProjectQueryService
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         ProjectId projectId = ProjectId.of(qProjectId);
-        return this.repository.findByProjectId(projectId)
-            .map(project -> buildProjectData(project, architector))
-            .filter(project -> FORBIDDEN != project.accessRights())
+        Project project = this.repository.findByProjectId(projectId)
             .orElse(null);
+        if (project == null)
+        {
+            return null;
+        }
+        if (!project.canBeRead(architector))
+        {
+            throw new AccessRightsNotFoundException();
+        }
+        return buildProjectData(project, architector);
     }
 
     @Nonnull
@@ -43,8 +51,8 @@ public class ProjectQueryService
     {
         return this.repository.findAll()
             .stream()
+            .filter(project -> project.canBeRead(architector))
             .map(project -> buildProjectData(project, architector))
-            .filter(project -> FORBIDDEN != project.accessRights())
             .collect(toList());
     }
 

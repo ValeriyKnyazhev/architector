@@ -73,12 +73,18 @@ public class ProjectManagementService
         return this.projectRepository.saveAndFlush(project).projectId();
     }
 
-    public boolean updateProjectData(@Nonnull UpdateProjectDataCommand command)
+    public boolean updateProjectData(@Nonnull Architector architector,
+                                     @Nonnull UpdateProjectDataCommand command)
     {
+        Args.notNull(architector, "Architector is required.");
         Args.notNull(command, "Update project data command is required.");
         ProjectId projectId = command.projectId();
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        if (!project.canBeUpdated(architector))
+        {
+            throw new AccessRightsNotFoundException();
+        }
         boolean nameUpdated = project.updateName(command.name());
         boolean descriptionUpdated = project.updateDescription(command.description());
         this.projectRepository.saveAndFlush(project);

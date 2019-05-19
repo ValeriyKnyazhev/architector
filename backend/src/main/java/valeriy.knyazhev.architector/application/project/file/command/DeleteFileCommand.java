@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.application.project.file.command;
 
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 
@@ -18,15 +19,15 @@ public class DeleteFileCommand
     private String fileId;
 
     @Nonnull
-    private String author;
+    private Architector architector;
 
     public DeleteFileCommand(@Nonnull String projectId,
                              @Nonnull String fileId,
-                             @Nonnull String author)
+                             @Nonnull Architector architector)
     {
         this.projectId = projectId;
         this.fileId = fileId;
-        this.author = author;
+        this.architector = architector;
     }
 
     @Nonnull
@@ -42,9 +43,9 @@ public class DeleteFileCommand
     }
 
     @Nonnull
-    public String author()
+    public Architector architector()
     {
-        return this.author;
+        return this.architector;
     }
 
 }

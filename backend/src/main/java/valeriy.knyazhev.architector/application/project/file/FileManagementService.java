@@ -7,11 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.command.*;
+import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.*;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,7 +54,7 @@ public class FileManagementService
         }
         return addNewFile(
             command.projectId(),
-            command.author(),
+            command.architector(),
             "File from " + command.sourceUrl() + " was added to project.",
             newFile);
     }
@@ -72,7 +74,7 @@ public class FileManagementService
         }
         return addNewFile(
             command.projectId(),
-            command.author(),
+            command.architector(),
             "File from uploaded file was added to project.",
             newFile);
     }
@@ -81,12 +83,9 @@ public class FileManagementService
     {
         Args.notNull(command, "Update file from url command is required.");
         ProjectId projectId = command.projectId();
-        Project project = findProject(projectId);
+        Architector architector = command.architector();
         FileId fileId = command.fileId();
-        File foundFile = project.files().stream()
-            .filter(file -> fileId.equals(file.fileId()))
-            .findFirst()
-            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+        File foundFile = fetchFile(projectId, fileId, architector);
         FileData newFile = new FileData(
             foundFile.schema(),
             "FIXME ISO_ID",
@@ -97,7 +96,7 @@ public class FileManagementService
         return updateFile(
             command.projectId(),
             command.fileId(),
-            command.author(),
+            architector,
             "File " + command.fileId().id() + " content was updated: " + command.commitMessage(),
             newFile);
     }
@@ -137,7 +136,7 @@ public class FileManagementService
         return updateFile(
             command.projectId(),
             command.fileId(),
-            command.author(),
+            command.architector(),
             "File " + command.fileId().id() + " was updated from uploaded file.",
             newFile);
     }
@@ -146,12 +145,9 @@ public class FileManagementService
     {
         Args.notNull(command, "Update file metadata command is required.");
         ProjectId projectId = command.projectId();
-        Project project = findProject(projectId);
+        Architector architector = command.architector();
         FileId fileId = command.fileId();
-        File foundFile = project.files().stream()
-            .filter(file -> fileId.equals(file.fileId()))
-            .findFirst()
-            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+        File foundFile = fetchFile(projectId, fileId, architector);
         FileMetadata newMetadata = command.constructMetadata();
         FileMetadataChanges changes = FileDiffCalculator.defineMetadataChanges(
             foundFile.metadata(), newMetadata
@@ -164,7 +160,7 @@ public class FileManagementService
             updateFile(
                 projectId,
                 fileId,
-                command.author(),
+                architector,
                 "File " + fileId.id() + " metadata was updated.",
                 new FileData(
                     foundFile.schema(), "FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content()
@@ -179,12 +175,9 @@ public class FileManagementService
     {
         Args.notNull(command, "Update file description command is required.");
         ProjectId projectId = command.projectId();
-        Project project = findProject(projectId);
+        Architector architector = command.architector();
         FileId fileId = command.fileId();
-        File foundFile = project.files().stream()
-            .filter(file -> fileId.equals(file.fileId()))
-            .findFirst()
-            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+        File foundFile = fetchFile(projectId, fileId, architector);
         FileDescription newDescription = command.constructDescription();
         FileDescriptionChanges changes = FileDiffCalculator.defineDescriptionChanges(
             foundFile.description(), newDescription
@@ -197,7 +190,7 @@ public class FileManagementService
             updateFile(
                 projectId,
                 fileId,
-                command.author(),
+                architector,
                 "File " + fileId.id() + " description was updated.",
                 new FileData(
                     foundFile.schema(), "FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content()
@@ -211,16 +204,16 @@ public class FileManagementService
     public boolean deleteFile(@Nonnull DeleteFileCommand command)
     {
         Args.notNull(command, "Update file from upload file command is required.");
-        return deleteFile(command.projectId(), command.fileId(), command.author());
+        return deleteFile(command.projectId(), command.fileId(), command.architector());
     }
 
     @Nullable
     private File addNewFile(@Nonnull ProjectId projectId,
-                            @Nonnull String author,
+                            @Nonnull Architector architector,
                             @Nonnull String commitMessage,
                             @Nonnull FileData newFileData)
     {
-        Project project = findProject(projectId);
+        Project project = findProject(projectId, architector);
         File newFile = constructFile(FileId.nextId(), newFileData);
         project.addFile(newFile);
         this.projectRepository.saveAndFlush(project);
@@ -240,7 +233,7 @@ public class FileManagementService
             .build();
         boolean added = commitChanges(
             project.projectId(),
-            author,
+            architector.email(),
             commitMessage,
             commitData);
         return added ? newFile : null;
@@ -248,17 +241,17 @@ public class FileManagementService
 
     private boolean updateFile(@Nonnull ProjectId projectId,
                                @Nonnull FileId fileId,
-                               @Nonnull String author,
+                               @Nonnull Architector architector,
                                @Nonnull String commitMessage,
                                @Nonnull FileData newFileData)
     {
-        Project project = findProject(projectId);
+        Project project = findProject(projectId, architector);
         File oldFile = project.files().stream()
             .filter(file -> fileId.equals(file.fileId()))
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
         File newFile = constructFile(fileId, newFileData);
-        if (oldFile.schema() != newFile.schema())
+        if (!oldFile.schema().equals(newFile.schema()))
         {
             throw new IllegalStateException("File schema version must not be updated.");
         }
@@ -284,14 +277,14 @@ public class FileManagementService
             )
             .build();
         updateFileContent(project, oldFile.fileId(), newFile);
-        return commitChanges(project.projectId(), author, commitMessage, commitData);
+        return commitChanges(project.projectId(), architector.email(), commitMessage, commitData);
     }
 
     private boolean deleteFile(@Nonnull ProjectId projectId,
                                @Nonnull FileId fileId,
-                               @Nonnull String author)
+                               @Nonnull Architector architector)
     {
-        Project project = findProject(projectId);
+        Project project = findProject(projectId, architector);
         File deleted = project.deleteFile(fileId);
         this.projectRepository.saveAndFlush(project);
         CommitDescription commitData = CommitDescription.builder()
@@ -310,7 +303,7 @@ public class FileManagementService
             .build();
         return commitChanges(
             project.projectId(),
-            author,
+            architector.email(),
             "File " + fileId.id() + " was deleted from project.",
             commitData
         );
@@ -325,11 +318,27 @@ public class FileManagementService
     }
 
     @Nonnull
-    private Project findProject(@Nonnull ProjectId projectId)
+    private Project findProject(@Nonnull ProjectId projectId, @Nonnull Architector architector)
     {
-        this.projectRepository.flush();
-        return this.projectRepository.findByProjectId(projectId)
+        Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        if (!project.canBeUpdated(architector))
+        {
+            throw new AccessRightsNotFoundException();
+        }
+        else {
+            return project;
+        }
+    }
+
+    @Nonnull
+    private File fetchFile(@Nonnull ProjectId projectId, @Nonnull FileId fileId, @Nonnull Architector architector)
+    {
+        Project project = findProject(projectId, architector);
+        return project.files().stream()
+            .filter(file -> fileId.equals(file.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
     }
 
     // TODO move to commit service

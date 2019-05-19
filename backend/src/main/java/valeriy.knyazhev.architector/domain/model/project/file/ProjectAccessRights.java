@@ -13,11 +13,23 @@ public enum ProjectAccessRights
             {
                 return true;
             }
+
+            @Override
+            public boolean canBeRead()
+            {
+                return true;
+            }
         },
     WRITE
         {
             @Override
             public boolean canBeUpdated()
+            {
+                return true;
+            }
+
+            @Override
+            public boolean canBeRead()
             {
                 return true;
             }
@@ -29,6 +41,12 @@ public enum ProjectAccessRights
             {
                 return false;
             }
+
+            @Override
+            public boolean canBeRead()
+            {
+                return true;
+            }
         },
     FORBIDDEN
         {
@@ -37,8 +55,16 @@ public enum ProjectAccessRights
             {
                 return false;
             }
+
+            @Override
+            public boolean canBeRead()
+            {
+                return false;
+            }
         };
 
     public abstract boolean canBeUpdated();
+
+    public abstract boolean canBeRead();
 
 }

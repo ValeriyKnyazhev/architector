@@ -159,6 +159,13 @@ public class Project
         return accessRights.canBeUpdated();
     }
 
+    public boolean canBeRead(@Nonnull Architector architector)
+    {
+        Args.notNull(architector, "Architector is required.");
+        ProjectAccessRights accessRights = defineAccessRightsFor(architector);
+        return accessRights.canBeRead();
+    }
+
     @Nonnull
     public ProjectAccessRights accessRights(@Nonnull Architector architector)
     {

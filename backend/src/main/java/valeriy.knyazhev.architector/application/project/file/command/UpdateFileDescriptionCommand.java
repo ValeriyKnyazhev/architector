@@ -4,6 +4,7 @@ import lombok.Builder;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -21,7 +22,7 @@ public class UpdateFileDescriptionCommand
     private String fileId;
 
     @Nonnull
-    private String author;
+    private Architector architector;
 
     @Nonnull
     private List<String> descriptions;
@@ -32,13 +33,13 @@ public class UpdateFileDescriptionCommand
     @Builder
     private UpdateFileDescriptionCommand(@Nonnull String projectId,
                                          @Nonnull String fileId,
-                                         @Nonnull String author,
+                                         @Nonnull Architector architector,
                                          @Nonnull List<String> descriptions,
                                          @Nonnull String implementationLevel)
     {
         this.projectId = projectId;
         this.fileId = fileId;
-        this.author = author;
+        this.architector = architector;
         this.descriptions = descriptions;
         this.implementationLevel = implementationLevel;
     }
@@ -56,9 +57,9 @@ public class UpdateFileDescriptionCommand
     }
 
     @Nonnull
-    public String author()
+    public Architector architector()
     {
-        return this.author;
+        return this.architector;
     }
 
     @Nonnull

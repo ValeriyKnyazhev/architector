@@ -1,6 +1,8 @@
 package valeriy.knyazhev.architector.application.project.file.command;
 
+import org.apache.commons.lang3.arch.Processor;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 
@@ -14,17 +16,17 @@ public class AddFileFromUrlCommand
     private String projectId;
 
     @Nonnull
-    private String author;
+    private Architector architector;
 
     @Nonnull
     private String sourceUrl;
 
     public AddFileFromUrlCommand(@Nonnull String projectId,
-                                 @Nonnull String author,
+                                 @Nonnull Architector architector,
                                  @Nonnull String sourceUrl)
     {
         this.projectId = projectId;
-        this.author = author;
+        this.architector = architector;
         this.sourceUrl = sourceUrl;
     }
 
@@ -35,9 +37,9 @@ public class AddFileFromUrlCommand
     }
 
     @Nonnull
-    public String author()
+    public Architector architector()
     {
-        return this.author;
+        return this.architector;
     }
 
     @Nonnull

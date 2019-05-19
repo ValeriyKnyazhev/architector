@@ -4,6 +4,7 @@ import lombok.Builder;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class UpdateFileMetadataCommand
     private String fileId;
 
     @Nonnull
-    private String author;
+    private Architector architector;
 
     @Nonnull
     private String name;
@@ -47,14 +48,14 @@ public class UpdateFileMetadataCommand
 
     @Builder
     private UpdateFileMetadataCommand(@Nonnull String projectId, @Nonnull String fileId,
-                                      @Nonnull String author, @Nonnull String name,
+                                      @Nonnull Architector architector, @Nonnull String name,
                                       @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
                                       @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
                                       @Nonnull String originatingSystem, @Nonnull String authorization)
     {
         this.projectId = projectId;
         this.fileId = fileId;
-        this.author = author;
+        this.architector = architector;
         this.name = name;
         this.timestamp = timestamp;
         this.authors = authors;
@@ -77,9 +78,9 @@ public class UpdateFileMetadataCommand
     }
 
     @Nonnull
-    public String author()
+    public Architector architector()
     {
-        return this.author;
+        return this.architector;
     }
 
     @Nonnull

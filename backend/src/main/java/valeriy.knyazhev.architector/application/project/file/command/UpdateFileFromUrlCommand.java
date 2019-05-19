@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.application.project.file.command;
 
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 
@@ -18,19 +19,19 @@ public class UpdateFileFromUrlCommand
     private String fileId;
 
     @Nonnull
-    private String author;
+    private Architector architector;
 
     @Nonnull
     private String sourceUrl;
 
     public UpdateFileFromUrlCommand(@Nonnull String projectId,
                                     @Nonnull String fileId,
-                                    @Nonnull String author,
+                                    @Nonnull Architector architector,
                                     @Nonnull String sourceUrl)
     {
         this.projectId = projectId;
         this.fileId = fileId;
-        this.author = author;
+        this.architector = architector;
         this.sourceUrl = sourceUrl;
     }
 
@@ -47,9 +48,9 @@ public class UpdateFileFromUrlCommand
     }
 
     @Nonnull
-    public String author()
+    public Architector author()
     {
-        return this.author;
+        return this.architector;
     }
 
     @Nonnull

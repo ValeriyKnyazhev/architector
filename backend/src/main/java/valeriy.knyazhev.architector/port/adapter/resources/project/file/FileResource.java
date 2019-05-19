@@ -8,6 +8,7 @@ import valeriy.knyazhev.architector.application.project.ProjectNotFoundException
 import valeriy.knyazhev.architector.application.project.file.FileManagementService;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.command.*;
+import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -45,26 +46,30 @@ public class FileResource
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> findFile(@PathVariable String qProjectId,
-                                           @PathVariable String qFileId)
+                                           @PathVariable String qFileId,
+                                           @Nonnull Architector architector)
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(qFileId, "File identifier is required.");
         ProjectId projectId = ProjectId.of(qProjectId);
         FileId fileId = FileId.of(qFileId);
-        File foundFile = fetchFile(projectId, fileId);
+        // TODO add file access rights into model
+        File foundFile = fetchFile(projectId, fileId, architector);
         return ResponseEntity.ok(buildFile(foundFile));
     }
 
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/content",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchFileContent(@PathVariable String qProjectId,
-                                                   @PathVariable String qFileId)
+                                                   @PathVariable String qFileId,
+                                                   @Nonnull Architector architector)
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(qFileId, "File identifier is required.");
         ProjectId projectId = ProjectId.of(qProjectId);
         FileId fileId = FileId.of(qFileId);
-        File foundFile = fetchFile(projectId, fileId);
+        // TODO add file access rights into model
+        File foundFile = fetchFile(projectId, fileId, architector);
         return ResponseEntity.ok(buildContent(foundFile));
     }
 
@@ -79,7 +84,7 @@ public class FileResource
         Args.notNull(request, "Add file from url request is required.");
         File newFile = this.managementService.addFile(
             new AddFileFromUrlCommand(
-                qProjectId, architector.email(), request.sourceUrl()
+                qProjectId, architector, request.sourceUrl()
             )
         );
         return newFile != null
@@ -105,7 +110,7 @@ public class FileResource
         Args.notNull(multipartFile, "Upload file is required.");
         File newFile = this.managementService.addFile(
             new AddFileFromUploadCommand(
-                qProjectId, architector.email(), multipartFile
+                qProjectId, architector, multipartFile
             )
         );
         return newFile != null
@@ -131,7 +136,7 @@ public class FileResource
     {
         boolean updated = this.managementService.updateFile(
             new UpdateFileContentCommand(
-                qProjectId, qFileId, architector.email(), request.content(), request.commitMessage()
+                qProjectId, qFileId, architector, request.content(), request.commitMessage()
             )
         );
         return updated
@@ -155,7 +160,7 @@ public class FileResource
     {
         boolean updated = this.managementService.updateFile(
             new UpdateFileFromUrlCommand(
-                qProjectId, qFileId, architector.email(), request.sourceUrl()
+                qProjectId, qFileId, architector, request.sourceUrl()
             )
         );
         return updated
@@ -179,7 +184,7 @@ public class FileResource
     {
         boolean updated = this.managementService.updateFile(
             new UpdateFileFromUploadCommand(
-                qProjectId, qFileId, architector.email(), multipartFile
+                qProjectId, qFileId, architector, multipartFile
             )
         );
         return updated
@@ -205,7 +210,7 @@ public class FileResource
             UpdateFileDescriptionCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
-                .author(architector.email())
+                .architector(architector)
                 .descriptions(request.descriptions())
                 .implementationLevel(request.implementationLevel())
                 .build()
@@ -228,7 +233,7 @@ public class FileResource
             UpdateFileMetadataCommand.builder()
                 .projectId(qProjectId)
                 .fileId(qFileId)
-                .author(architector.email())
+                .architector(architector)
                 .name(request.name())
                 .timestamp(request.timestamp())
                 .authors(request.authors())
@@ -251,7 +256,7 @@ public class FileResource
                                                           @Nonnull Architector architector)
     {
         boolean deleted = this.managementService.deleteFile(
-            new DeleteFileCommand(qProjectId, qFileId, architector.email())
+            new DeleteFileCommand(qProjectId, qFileId, architector)
         );
         return deleted
                ? ResponseEntity.ok()
@@ -265,10 +270,14 @@ public class FileResource
     }
 
     @Nonnull
-    private File fetchFile(@Nonnull ProjectId projectId, @Nonnull FileId fileId)
+    private File fetchFile(@Nonnull ProjectId projectId, @Nonnull FileId fileId, @Nonnull Architector architector)
     {
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        if (!project.canBeRead(architector))
+        {
+            throw new AccessRightsNotFoundException();
+        }
         return project.files().stream()
             .filter(file -> fileId.equals(file.fileId()))
             .findFirst()
