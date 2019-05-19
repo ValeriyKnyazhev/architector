@@ -56,14 +56,10 @@ function DiffMetadataValues({ descr, data }) {
       </div>
       <div className="d-flex around">
         <div className="commit__row--delete around">
-          {data.oldValue.map(value => (
-            <div className="start-xs">{value}</div>
-          ))}
+          {data.oldValue && data.oldValue.map(value => <div className="start-xs">{value}</div>)}
         </div>
         <div className="commit__row--add around">
-          {data.newValue.map(value => (
-            <div className="start-xs">{value}</div>
-          ))}
+          {data.newValue && data.newValue.map(value => <div className="start-xs">{value}</div>)}
         </div>
       </div>
     </>
@@ -120,7 +116,10 @@ export default class Commit extends PureComponent {
                   <DiffMetadataValues descr="Metadata Authors" data={file.metadata.authors} />
                 )}
                 {file.metadata.organizations !== null && (
-                  <DiffMetadataValues descr="Metadata Authors" data={file.metadata.organizations} />
+                  <DiffMetadataValues
+                    descr="Metadata Organizations"
+                    data={file.metadata.organizations}
+                  />
                 )}
                 {file.metadata.preprocessorVersion !== null && (
                   <DiffMetadataValue
@@ -136,11 +135,17 @@ export default class Commit extends PureComponent {
                 )}
                 {file.description.descriptions !== null && (
                   <DiffMetadataValues
-                    descr="Metadata Authors"
+                    descr="Description tags"
                     data={file.description.descriptions}
                   />
                 )}
-                <div>
+                {file.description.implementationLevel !== null && (
+                  <DiffMetadataValue
+                    descr="Description implemenation level"
+                    data={file.description.implementationLevel}
+                  />
+                )}
+                <div style={{ marginTop: '8px' }}>
                   {file.sections.map(section => (
                     <Fragment>
                       <div className="commit__section">
