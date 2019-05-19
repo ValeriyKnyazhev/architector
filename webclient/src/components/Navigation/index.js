@@ -31,19 +31,21 @@ class Navigation extends Component {
     return (
       <header>
         <div className="container architector">
-          <div className="row architector__header col-xs-4 start-xs">
+          <div className="row architector__header">
             <Link to="/projects">
               <h3 className="architector__header-title start-xs">Architector</h3>
             </Link>
             <div className="architector__header-user col-xs-6">User: {email}</div>
-            <Button
-              className="architector__header-logout col-xs-2 end-xs"
-              href="/logout"
-              type="danger"
-              style={{ alignContent: 'right' }}
-            >
-              Logout <Icon type="logout" />
-            </Button>
+            <div className="col-xs-5 end-xs">
+              <Button
+                className="architector__header-logout "
+                href="/logout"
+                type="danger"
+                style={{ alignContent: 'right' }}
+              >
+                Logout <Icon type="logout" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
