@@ -3,16 +3,23 @@ package valeriy.knyazhev.architector.application.project;
 import org.apache.http.util.Args;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import valeriy.knyazhev.architector.application.project.command.CreateProjectCommand;
-import valeriy.knyazhev.architector.application.project.command.UpdateProjectDataCommand;
+import org.springframework.web.client.HttpClientErrorException;
+import valeriy.knyazhev.architector.application.project.command.*;
+import valeriy.knyazhev.architector.application.user.ArchitectorNotFoundException;
+import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.commit.CommitDescription;
 import valeriy.knyazhev.architector.domain.model.commit.CommitRepository;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
+import valeriy.knyazhev.architector.domain.model.user.ArchitectorRepository;
 
 import javax.annotation.Nonnull;
+import javax.security.auth.login.AccountNotFoundException;
+
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
@@ -28,11 +35,15 @@ public class ProjectManagementService
 
     private final CommitRepository commitRepository;
 
+    private final ArchitectorRepository architectorRepository;
+
     public ProjectManagementService(@Nonnull ProjectRepository projectRepository,
-                                    @Nonnull CommitRepository commitRepository)
+                                    @Nonnull CommitRepository commitRepository,
+                                    @Nonnull ArchitectorRepository architectorRepository)
     {
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
+        this.architectorRepository = Args.notNull(architectorRepository, "Architector repository is required.");
     }
 
     @Nonnull
@@ -86,6 +97,51 @@ public class ProjectManagementService
         } else
         {
             return false;
+        }
+    }
+
+    public void addReadAccessRights(@Nonnull Architector architector,
+                                    @Nonnull AddReadAccessRightsCommand command)
+    {
+        ProjectId projectId = command.projectId();
+        Project project = this.projectRepository.findByProjectId(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        if (architector.isAdmin() || project.author().equals(architector.email())){
+            Architector requestedArchitector = this.architectorRepository.findByEmail(command.architector())
+                .orElseThrow(()-> new ArchitectorNotFoundException(command.architector()));
+            project.addReadAccessRights(requestedArchitector);
+        } else {
+            throw new AccessRightsNotFoundException();
+        }
+    }
+
+    public void addWriteAccessRights(@Nonnull Architector architector,
+                                     @Nonnull AddWriteAccessRightsCommand command)
+    {
+        ProjectId projectId = command.projectId();
+        Project project = this.projectRepository.findByProjectId(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        if (architector.isAdmin() || project.author().equals(architector.email())){
+            Architector requestedArchitector = this.architectorRepository.findByEmail(command.architector())
+                .orElseThrow(()-> new ArchitectorNotFoundException(command.architector()));
+            project.addWriteAccessRights(requestedArchitector);
+        } else {
+            throw new AccessRightsNotFoundException();
+        }
+    }
+
+    public void takeAwayAccessRights(@Nonnull Architector architector,
+                                     @Nonnull TakeAwayAccessRightsCommand command)
+    {
+        ProjectId projectId = command.projectId();
+        Project project = this.projectRepository.findByProjectId(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+        if (architector.isAdmin() || project.author().equals(architector.email())){
+            Architector requestedArchitector = this.architectorRepository.findByEmail(command.architector())
+                .orElseThrow(()-> new ArchitectorNotFoundException(command.architector()));
+            project.takeAwayAccessRights(requestedArchitector);
+        } else {
+            throw new AccessRightsNotFoundException();
         }
     }
 

@@ -12,7 +12,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Valeriy Knyazhev
@@ -56,8 +58,10 @@ public class ArchitectorApplicationService
         this.architectorRepository.save(admin);
     }
 
-    public Architector register(Architector architector)
+    @Nonnull
+    public Architector register(@Nonnull Architector architector)
     {
+        Args.notNull(architector, "Architector is required.");
         this.architectorRepository.findByEmail(architector.email())
             .ifPresent(user -> {
                     throw new ArchitectorAlreadyExistException(architector.email());
@@ -68,10 +72,21 @@ public class ArchitectorApplicationService
         return this.architectorRepository.save(architector);
     }
 
-    public Architector findByEmail(String email)
+    @Nonnull
+    public Architector findByEmail(@Nonnull String email)
     {
+        Args.notNull(email, "Email is required");
         return this.architectorRepository.findByEmail(email)
             .orElseThrow(() -> new ArchitectorNotFoundException(email));
+    }
+
+    @Nonnull
+    public List<Architector> findArchitectors(@Nonnull String query)
+    {
+        Args.notNull(query, "Query value is required");
+        return this.architectorRepository.findByEmailContaining(query).stream()
+            .filter(architector -> !architector.isAdmin())
+            .collect(Collectors.toList());
     }
 
 }

@@ -195,6 +195,26 @@ public class Project
         return Args.notNull(architector, "Architector is required.").email().equals(this.author);
     }
 
+    public void addWriteAccessRights(@Nonnull Architector architector)
+    {
+        this.readAccessRights.remove(architector);
+        this.writeAccessRights.add(architector);
+    }
+
+    public void addReadAccessRights(@Nonnull Architector architector)
+    {
+        if (!this.writeAccessRights.contains(architector))
+        {
+            this.readAccessRights.add(architector);
+        }
+    }
+
+    public void takeAwayAccessRights(@Nonnull Architector architector)
+    {
+        this.readAccessRights.remove(architector);
+        this.writeAccessRights.remove(architector);
+    }
+
     public void addFile(@Nonnull File file)
     {
         this.files.add(file);

@@ -2,6 +2,8 @@ package valeriy.knyazhev.architector.domain.model.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -9,5 +11,11 @@ import java.util.Optional;
  */
 public interface ArchitectorRepository extends JpaRepository<Architector, Long>
 {
-    public Optional<Architector> findByEmail(String email);
+
+    @Nonnull
+    public Optional<Architector> findByEmail(@Nonnull String email);
+
+    @Nonnull
+    public List<Architector> findByEmailContaining(@Nonnull String email);
+
 }

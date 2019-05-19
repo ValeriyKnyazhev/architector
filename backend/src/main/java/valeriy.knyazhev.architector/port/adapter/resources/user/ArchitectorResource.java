@@ -1,17 +1,21 @@
 package valeriy.knyazhev.architector.port.adapter.resources.user;
 
 import org.apache.http.util.Args;
+import org.eclipse.osgi.service.runnable.ApplicationLauncher;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import valeriy.knyazhev.architector.application.user.ArchitectorApplicationService;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
 import javax.validation.Valid;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonMap;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 /**
  * @author Valeriy Knyazhev
@@ -40,6 +44,17 @@ public class ArchitectorResource
         );
     }
 
+    @GetMapping(value = "/api/architectors", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> findArchitectors(@RequestParam(defaultValue = "") String query,
+                                                   @Nonnull Architector architector)
+    {
+        List<String> users = this.applicationService.findArchitectors(query).stream()
+            .map(Architector::email)
+            .filter(user -> !architector.email().equals(user))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(singletonMap("architectors", users));
+    }
+
     @GetMapping("/api/me")
     public ResponseEntity<Object> userInfo(@Nonnull Architector architector)
     {
@@ -47,5 +62,7 @@ public class ArchitectorResource
             new ArchitectorModel(architector.email())
         );
     }
+
+
 
 }

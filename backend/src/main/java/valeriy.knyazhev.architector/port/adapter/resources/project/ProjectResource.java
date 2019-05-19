@@ -2,19 +2,19 @@ package valeriy.knyazhev.architector.port.adapter.resources.project;
 
 import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import valeriy.knyazhev.architector.application.project.ProjectData;
 import valeriy.knyazhev.architector.application.project.ProjectManagementService;
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
-import valeriy.knyazhev.architector.application.project.command.CreateProjectCommand;
-import valeriy.knyazhev.architector.application.project.command.UpdateProjectDataCommand;
-import valeriy.knyazhev.architector.domain.model.project.Project;
+import valeriy.knyazhev.architector.application.project.command.*;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectDescriptorModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectMapper;
+import valeriy.knyazhev.architector.port.adapter.resources.project.request.AddAccessRightsToProjectRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.request.AddAccessRightsToProjectRequest.AccessRights;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.CreateProjectRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.request.TakeAwayAccessRightsFromProjectRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.UpdateProjectDataRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
@@ -97,6 +97,52 @@ public class ProjectResource
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("Project " + qProjectId + " data was updated.")
+            );
+    }
+
+    @PostMapping(value = "/api/projects/{qProjectId}/access-rights",
+                 consumes = APPLICATION_JSON_UTF8_VALUE,
+                 produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> addAccessRights(@PathVariable String qProjectId,
+                                                  @RequestBody @Valid AddAccessRightsToProjectRequest request,
+                                                  @Nonnull Architector architector)
+    {
+        if (request.accessRights() == AccessRights.READ)
+        {
+            this.managementService.addReadAccessRights(
+                architector, new AddReadAccessRightsCommand(qProjectId, request.email())
+            );
+        } else if (request.accessRights() == AccessRights.WRITE)
+        {
+            this.managementService.addWriteAccessRights(
+                architector, new AddWriteAccessRightsCommand(qProjectId, request.email())
+            );
+        } else
+        {
+            throw new IllegalArgumentException(
+                "Unable to find " + request.accessRights() + " type of access rights for projects."
+            );
+        }
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("For architector " + request.email() + " added " +
+                                           request.accessRights() + " access rights into project" + qProjectId)
+            );
+    }
+
+    @DeleteMapping(value = "/api/projects/{qProjectId}/access-rights",
+                   consumes = APPLICATION_JSON_UTF8_VALUE,
+                   produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> addAccessRights(@PathVariable String qProjectId,
+                                                  @RequestBody @Valid TakeAwayAccessRightsFromProjectRequest request,
+                                                  @Nonnull Architector architector)
+    {
+        this.managementService.takeAwayAccessRights(
+            architector, new TakeAwayAccessRightsCommand(qProjectId, request.email())
+        );
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("For architector " + request.email() + " took away access rights into project" + qProjectId)
             );
     }
 
