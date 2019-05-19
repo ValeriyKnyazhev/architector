@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import axios from "axios";
-import HistoryChanges from "components/HistoryChanges";
-import "./ProjectChangesHistory.sass";
+import React, { Component } from 'react';
+import axios from 'axios';
+import HistoryChanges from 'components/HistoryChanges';
+import './ProjectChangesHistory.sass';
 
 export default class ProjectChangesHistory extends Component {
   state = {
     project: {
-      author: "",
-      projectName: "",
-      description: ""
+      author: '',
+      projectName: '',
+      description: ''
     },
     historyChanges: []
   };
@@ -41,7 +41,7 @@ export default class ProjectChangesHistory extends Component {
   render() {
     const {
       historyChanges,
-      project: { projectName, author, description }
+      project: { projectName, description }
     } = this.state;
 
     return (
@@ -60,9 +60,9 @@ export default class ProjectChangesHistory extends Component {
         <div className="project__changes">
           <div className="row project__changes-header">
             <div className="project__changes-header-title col-xs-3 start-xs">Changes</div>
-            <div className="col-xs-9 end-xs"/>
+            <div className="col-xs-9 end-xs" />
           </div>
-          <HistoryChanges commits={historyChanges} isBriefModel={false}/>
+          <HistoryChanges commits={historyChanges} isBriefModel={false} />
         </div>
       </div>
     );

@@ -129,7 +129,7 @@ class HistoryChanges extends Component {
   };
 
   render() {
-    const { isBriefModel, commits } = this.props;
+    const { commits } = this.props;
 
     const recordsSize = this.calculateRecordsSize();
 
