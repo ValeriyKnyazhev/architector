@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import valeriy.knyazhev.architector.port.adapter.util.ArchitectorEmailResolver;
+import valeriy.knyazhev.architector.port.adapter.util.ArchitectorResolver;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class ArchitectorSpringApplication
         @Override
         public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers)
         {
-            argumentResolvers.add(new ArchitectorEmailResolver());
+            argumentResolvers.add(new ArchitectorResolver());
         }
 
         @GetMapping(value = {"/", "/projects/**", "/commits/**"}, produces = MediaType.TEXT_HTML_VALUE)

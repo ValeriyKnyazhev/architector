@@ -1,5 +1,6 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.model;
 
+import valeriy.knyazhev.architector.application.project.ProjectData;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileBriefModel;
@@ -16,13 +17,13 @@ public final class ProjectMapper
 {
 
     @Nonnull
-    public static ProjectDescriptorModel buildProject(@Nonnull Project project)
+    public static ProjectDescriptorModel buildProject(@Nonnull ProjectData project)
     {
         List<FileBriefModel> files = project.files().stream()
             .map(ProjectMapper::constructFile)
             .collect(toList());
         return new ProjectDescriptorModel(
-            project.projectId().id(),
+            project.projectId(),
             project.createdDate(),
             project.updatedDate(),
             project.name(),

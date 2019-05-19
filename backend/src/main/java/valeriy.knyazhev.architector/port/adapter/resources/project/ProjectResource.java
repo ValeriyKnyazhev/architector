@@ -4,12 +4,14 @@ import org.apache.http.util.Args;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import valeriy.knyazhev.architector.application.project.ProjectData;
 import valeriy.knyazhev.architector.application.project.ProjectManagementService;
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
 import valeriy.knyazhev.architector.application.project.command.CreateProjectCommand;
 import valeriy.knyazhev.architector.application.project.command.UpdateProjectDataCommand;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectDescriptorModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectMapper;
 import valeriy.knyazhev.architector.port.adapter.resources.project.request.CreateProjectRequest;
@@ -48,10 +50,10 @@ public class ProjectResource
                  consumes = APPLICATION_JSON_UTF8_VALUE,
                  produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request,
-                                                @Nonnull String architector)
+                                                @Nonnull Architector architector)
     {
         ProjectId projectId = this.managementService.createProject(
-            new CreateProjectCommand(request.name(), architector, request.description()));
+            new CreateProjectCommand(request.name(), architector.getEmail(), request.description()));
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("Project " + projectId.id() + " was created.")
@@ -59,22 +61,19 @@ public class ProjectResource
     }
 
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> findProjects(@Nonnull Authentication authentication,
-                                               @Nonnull String architector)
+    public ResponseEntity<Object> findProjects(@Nonnull Architector architector)
     {
-        boolean isAdmin = authentication.getAuthorities().stream()
-            .map(authority -> (authority).getAuthority())
-            .anyMatch("ADMIN"::equals);
-        List<ProjectDescriptorModel> projects = this.queryService.findProjects(isAdmin ? null : architector).stream()
+        List<ProjectDescriptorModel> projects = this.queryService.findProjects(architector).stream()
             .map(ProjectMapper::buildProject)
             .collect(toList());
         return ResponseEntity.ok(Collections.singletonMap("projects", projects));
     }
 
     @GetMapping(value = "/api/projects/{qProjectId}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> findProject(@PathVariable String qProjectId)
+    public ResponseEntity<Object> findProject(@PathVariable String qProjectId,
+                                              @Nonnull Architector architector)
     {
-        Project project = this.queryService.findById(qProjectId);
+        ProjectData project = this.queryService.findById(qProjectId, architector);
         if (project == null)
         {
             return ResponseEntity.status(NOT_FOUND).body(new ResponseMessage()

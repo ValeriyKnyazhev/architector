@@ -1,11 +1,15 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.arch.Processor;
 import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
+import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights;
+import valeriy.knyazhev.architector.domain.model.user.Architector;
+import valeriy.knyazhev.architector.domain.model.user.Role;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
@@ -13,10 +17,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
+import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.*;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -58,6 +64,22 @@ public class Project
     @OrderColumn(name = "file_order")
     @Nonnull
     private List<File> files = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "architector_project_read_access_rights",
+        joinColumns = @JoinColumn(name = "project_id"),
+        inverseJoinColumns = @JoinColumn(name = "architector_id")
+    )
+    private Set<Architector> readAccessRights;
+
+    @ManyToMany
+    @JoinTable(
+        name = "architector_project_write_access_rights",
+        joinColumns = @JoinColumn(name = "project_id"),
+        inverseJoinColumns = @JoinColumn(name = "architector_id")
+    )
+    private Set<Architector> writeAccessRights;
 
     @Nonnull
     @Version
@@ -116,6 +138,62 @@ public class Project
     public List<File> files()
     {
         return Collections.unmodifiableList(this.files);
+    }
+
+    @Nonnull
+    public Set<Architector> writeAccessRights()
+    {
+        return Collections.unmodifiableSet(this.writeAccessRights);
+    }
+
+    @Nonnull
+    public Set<Architector> readAccessRights()
+    {
+        return Collections.unmodifiableSet(this.readAccessRights);
+    }
+
+    public boolean canBeUpdated(@Nonnull Architector architector)
+    {
+        Args.notNull(architector, "Architector is required.");
+        ProjectAccessRights accessRights = defineAccessRightsFor(architector);
+        return accessRights.canBeUpdated();
+    }
+
+    @Nonnull
+    public ProjectAccessRights accessRights(@Nonnull Architector architector)
+    {
+        Args.notNull(architector, "Architector is required.");
+        return defineAccessRightsFor(architector);
+    }
+
+    @Nonnull
+    private ProjectAccessRights defineAccessRightsFor(@Nonnull Architector architector)
+    {
+        if (isOwner(architector))
+        {
+            return OWNER;
+        }
+        if (architector.isAdmin())
+        {
+            return WRITE;
+        }
+        if (this.writeAccessRights.stream()
+            .anyMatch(architector::equals))
+        {
+            return WRITE;
+        }
+        if (this.writeAccessRights.stream()
+            .map(Architector::getEmail)
+            .anyMatch(architector::equals))
+        {
+            return READ;
+        }
+        return FORBIDDEN;
+    }
+
+    private boolean isOwner(@Nonnull Architector architector)
+    {
+        return Args.notNull(architector, "Architector is required.").getEmail().equals(this.author);
     }
 
     public void addFile(@Nonnull File file)
