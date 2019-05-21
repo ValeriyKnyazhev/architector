@@ -7,6 +7,7 @@ import { Button, Icon, Spin, Table, message, Modal, Input } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import HistoryChanges from 'components/HistoryChanges';
 import FileMetadata from './FileMetadata';
+import FileDescr from './FileDescr';
 import './File.sass';
 const mainInfoColumns = [
   {
@@ -28,28 +29,6 @@ const mainInfoColumns = [
     dataIndex: 'schema',
     key: 'schema',
     width: 4
-  }
-];
-
-const descriptionColumns = [
-  {
-    title: 'Descriptions',
-    key: 'descriptions',
-    dataIndex: 'descriptions',
-    width: 9,
-    render: descriptions => (
-      <span>
-        {descriptions.map(description => {
-          return <div key={description}>{description}</div>;
-        })}
-      </span>
-    )
-  },
-  {
-    title: 'Implementation level',
-    dataIndex: 'implementationLevel',
-    key: 'implementationLevel',
-    width: 3
   }
 ];
 
@@ -103,38 +82,6 @@ export default class File extends Component {
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
     this.setState({ file: data, fileDataLoaded: true });
-  };
-
-  handleEditDescr = modalVisible => {
-    const { newDescription } = this.state;
-    const {
-      match: {
-        params: { projectId, fileId }
-      }
-    } = this.props;
-    axios
-      .put(`/api/projects/${projectId}/files/${fileId}/description`, {
-        descriptions: [newDescription],
-        implementationLevel: this.state.file.description.implementationLevel
-      })
-      .then(() => {
-        this.setState(
-          {
-            [modalVisible]: false
-          },
-          () => {
-            this.fetchFileInfo();
-            this.fetchFileHistoryChanges();
-            message.success('Descr was updated');
-          }
-        );
-      });
-  };
-
-  onChangeFileDescription = (event, data) => {
-    this.setState({
-      newDescription: event.target.value
-    });
   };
 
   fetchFileHistoryChanges = async () => {
@@ -197,7 +144,6 @@ export default class File extends Component {
     });
 
   onUpdateContent = debounce(contentState => {
-    console.log(contentState);
     this.setState({
       updatedContent: String(contentState)
     });
@@ -229,14 +175,6 @@ export default class File extends Component {
       }
     ];
 
-    const descriptionData = [
-      {
-        key: '1',
-        descriptions: file.description.descriptions,
-        implementationLevel: file.description.implementationLevel
-      }
-    ];
-
     return fileDataLoaded ? (
       <div className="container">
         <div>
@@ -256,32 +194,12 @@ export default class File extends Component {
               fetchFileHistoryChanges={this.fetchFileHistoryChanges}
               match={this.props.match}
             />
-            <div className="file__description">
-              <div className="row file__description-header">
-                <div className="col-xs-3" style={{ textAlign: 'left', marginBottom: '4px' }}>
-                  <b>Description</b>
-                  <Button
-                    type="primary"
-                    style={{ marginLeft: 8, alignContent: 'right' }}
-                    onClick={() => {
-                      this.setEditedDescr(file.description.descriptions[0]);
-                      this.showModal('visibleEditDescr');
-                    }}
-                  >
-                    <Icon type={'edit'} />
-                  </Button>
-                </div>
-                <div className="col-xs-9" />
-              </div>
-              <div className="file__description-info">
-                <Table
-                  className="file__description-table"
-                  columns={descriptionColumns}
-                  dataSource={descriptionData}
-                  pagination={false}
-                />
-              </div>
-            </div>
+            <FileDescr
+              file={file}
+              fetchFileInfo={this.fetchFileInfo}
+              fetchFileHistoryChanges={this.fetchFileHistoryChanges}
+              match={this.props.match}
+            />
             <div className="file__file-content">
               <div className="file__file-show-content" onClick={this.onToggleShowContent}>
                 <b>Content</b> <Icon type={isContentShow ? 'up' : 'down'} />{' '}
