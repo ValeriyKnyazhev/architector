@@ -1,9 +1,21 @@
 import React, { Component } from "react";
 import axios from "axios";
 import _isEmpty from "lodash/isEmpty";
-import { Button, Icon, Input, message, Modal, Pagination, Popconfirm } from "antd";
+import { Button, Icon, Input, message, Modal, Pagination, Popconfirm , Tag} from "antd";
 import dayjs from "dayjs";
 import "./ProjectsList.sass";
+
+function renderAccessRights(accessRights) {
+  if (accessRights === 'OWNER')
+  {return <Tag color="gold">{accessRights}</Tag>}
+  else if (accessRights === 'WRITE')
+  {
+    return <Tag color="blue">{accessRights}</Tag>
+  } else if (accessRights === 'READ')
+  {
+    return <Tag color="green">{accessRights}</Tag>
+  } else {return <div />}
+}
 
 const { TextArea } = Input;
 export default class Projects extends Component {
@@ -233,6 +245,7 @@ export default class Projects extends Component {
               .map(
                 ({
                   projectId,
+                  accessRights,
                   createdDate,
                   updatedDate,
                   projectName,
@@ -262,6 +275,12 @@ export default class Projects extends Component {
                           <div className="projects__field-name">Updated:</div>
                           <div className="projects__field-value">
                             {dayjs(updatedDate).format('YYYY-MM-DD')}
+                          </div>
+                        </div>
+                        <div className="projects__project-field">
+                          <div className="projects__field-name">Access Rights:</div>
+                          <div className="projects__field-value">
+                            {renderAccessRights(accessRights)}
                           </div>
                         </div>
                       </div>

@@ -21,6 +21,13 @@ const mainInfoColumns = [
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
+    title: 'Updated',
+    dataIndex: 'updated',
+    key: 'updated',
+    width: 4,
+    render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
+  },
+  {
     title: 'Author',
     dataIndex: 'author',
     key: 'author',
@@ -261,7 +268,6 @@ export default class Project extends Component {
         width: 4,
         render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
       },
-      ,
       {
         key: 'action',
         width: 2,
