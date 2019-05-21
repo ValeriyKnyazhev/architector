@@ -56,10 +56,20 @@ function DiffMetadataValues({ descr, data }) {
       </div>
       <div className="d-flex around">
         <div className="commit__row--delete around">
-          {data.oldValue && data.oldValue.map(value => <div className="start-xs">{value}</div>)}
+          {data.oldValue &&
+            data.oldValue.map((value, index) => (
+              <div className="start-xs" key={index}>
+                {value}
+              </div>
+            ))}
         </div>
         <div className="commit__row--add around">
-          {data.newValue && data.newValue.map(value => <div className="start-xs">{value}</div>)}
+          {data.newValue &&
+            data.newValue.map((value, index) => (
+              <div className="start-xs" key={index}>
+                {value}
+              </div>
+            ))}
         </div>
       </div>
     </>
@@ -96,14 +106,14 @@ export default class Commit extends PureComponent {
       <div className="container">
         <div>
           <h2>Commit #{commitId}</h2>
-          {changedFiles.map(file => (
-            <>
+          {changedFiles.map((file, index) => (
+            <Fragment key={index}>
               <p style={{ textAlign: 'left' }}>File name: {file.name}</p>
               <div className="commit__file">
                 <div className="commit__file-info">
                   TYPE: {file.statistics.type}
                   <br />
-                  {file.sections.lenght > 0 && (
+                  {file.sections.length > 0 && (
                     <div>
                       {file.statistics.addedLines} / - {file.statistics.deletedLines}
                     </div>
@@ -146,19 +156,20 @@ export default class Commit extends PureComponent {
                   />
                 )}
                 <div style={{ marginTop: '8px' }}>
-                  {file.sections.map(section => (
-                    <Fragment>
+                  <div style={{ textAlign: 'left' }}>Content: </div>
+                  {file.sections.map((section, i, { length }) => (
+                    <Fragment key={i}>
                       <div className="commit__section">
-                        {section.items.map(item => (
-                          <DiffRowComponent data={item} />
+                        {section.items.map((item, index) => (
+                          <DiffRowComponent data={item} key={index} />
                         ))}
                       </div>
-                      <Icon type="small-dash" />
+                      {i + 1 !== length && <Icon type="small-dash" />}
                     </Fragment>
                   ))}
                 </div>
               </div>
-            </>
+            </Fragment>
           ))}
         </div>
       </div>

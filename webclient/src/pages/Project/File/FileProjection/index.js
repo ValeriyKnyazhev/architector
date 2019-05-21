@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Table, Tag } from 'antd';
+import { Table, Tag, Icon, Spin } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import './FileProjection.sass';
 
@@ -93,11 +93,12 @@ export default class FileProjection extends Component {
         descriptions: []
       },
       content: ''
-    }
+    },
+    isContentShow: false
   };
 
   async componentDidMount() {
-    this.fetchFileProjection();
+    //this.fetchFileProjection();
   }
 
   fetchFileProjection = async () => {
@@ -112,6 +113,16 @@ export default class FileProjection extends Component {
     this.setState({ file: data });
   };
 
+  onToggleShowContent = () => {
+    const { isContentShow, isContentLoaded } = this.state;
+    if (!isContentShow) {
+      this.setState({ isContentShow: true });
+      !isContentLoaded && this.fetchFileProjection();
+    } else {
+      this.setState({ isContentShow: false });
+    }
+  };
+
   render() {
     const {
       match: {
@@ -119,7 +130,8 @@ export default class FileProjection extends Component {
       }
     } = this.props;
     const {
-      file: { metadata, description, content }
+      file: { metadata, description, content },
+      isContentShow
     } = this.state;
 
     const metadataData = [
@@ -197,9 +209,20 @@ export default class FileProjection extends Component {
               </div>
               <div className="col-xs-9" />
             </div>
-            <div className="file__content-info">
-              {content && (
-                <CodeEditor content={content} readOnly={true} onUpdateContent={() => {}} />
+            <div className="file__file-content">
+              <div className="file__file-show-content" onClick={this.onToggleShowContent}>
+                <b>Content</b> <Icon type={isContentShow ? 'up' : 'down'} />{' '}
+              </div>
+              {isContentShow && (
+                <div className="file__content-info">
+                  {content ? (
+                    <CodeEditor content={content} readOnly={true} onUpdateContent={() => {}} />
+                  ) : (
+                    <div className="file__file-content-loader">
+                      <Spin size="large" />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
