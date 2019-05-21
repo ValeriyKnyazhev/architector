@@ -19,7 +19,6 @@ class Navigation extends Component {
 
   async fetchArchitectorInfo() {
     const { data } = await axios.get(`/api/me`);
-    console.log(data);
     this.setState({ architector: data });
   }
 

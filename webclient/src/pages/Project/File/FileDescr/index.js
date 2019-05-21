@@ -25,7 +25,7 @@ const descriptionColumns = [
   }
 ];
 
-export default class FileMetadata extends Component {
+export default class FileDescr extends Component {
   state = {
     visibleEditDescr: false,
     newDescription: this.props.file.description.descriptions,
