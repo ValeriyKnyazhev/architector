@@ -16,21 +16,21 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 public class CommitChangesData
 {
 
-    @Nullable
-    private final ChangedValue<String> name;
+    @Nonnull
+    private final String name;
 
-    @Nullable
-    private final ChangedValue<String> description;
+    @Nonnull
+    private final String description;
 
     @Nonnull
     private final List<FileChangesData> changedFiles;
 
-    public CommitChangesData(@Nullable ChangedValue<String> name,
-                             @Nullable ChangedValue<String> description,
+    public CommitChangesData(@Nonnull String name,
+                             @Nonnull String description,
                              @Nonnull List<FileChangesData> files)
     {
-        this.name = name;
-        this.description = description;
+        this.name = Args.notBlank(name, "Project name is required.");
+        this.description = Args.notNull(description, "Project description is required.");
         this.changedFiles = Args.notNull(files, "Changed files are required.");
     }
 

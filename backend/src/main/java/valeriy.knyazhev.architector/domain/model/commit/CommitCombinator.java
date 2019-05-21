@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.domain.model.commit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Args;
 import org.springframework.stereotype.Service;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection.FileProjection;
@@ -30,9 +31,14 @@ public final class CommitCombinator
 {
 
     @Nonnull
-    public static Projection combineCommits(@Nonnull List<Commit> commits)
+    public static Projection combineCommits(@Nonnull String projectName,
+                                            @Nonnull String projectDescription,
+                                            @Nonnull List<Commit> commits)
     {
-        Projection projection = Projection.empty();
+        Args.notBlank(projectName, "Project name is required.");
+        Args.notNull(projectDescription, "Project description is required.");
+        Args.notNull(commits, "Project commits are required.");
+        Projection projection = Projection.initial(projectName, projectDescription);
         commits.stream()
             .sorted(Comparator.comparing(Commit::timestamp))
             .map(Commit::data)
@@ -43,16 +49,6 @@ public final class CommitCombinator
     private static void addNextChangesToProjection(@Nonnull Projection projection,
                                                    @Nonnull CommitDescription nextCommit)
     {
-        String name = nextCommit.name();
-        String description = nextCommit.description();
-        if (name != null)
-        {
-            projection.updateName(name);
-        }
-        if (description != null)
-        {
-            projection.updateDescription(description);
-        }
         nextCommit.changedFiles().forEach(file -> addNextFileChangesToProjection(projection, file));
     }
 

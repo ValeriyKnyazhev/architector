@@ -33,16 +33,12 @@ public class ProjectManagementService
 
     private final ProjectRepository projectRepository;
 
-    private final CommitRepository commitRepository;
-
     private final ArchitectorRepository architectorRepository;
 
     public ProjectManagementService(@Nonnull ProjectRepository projectRepository,
-                                    @Nonnull CommitRepository commitRepository,
                                     @Nonnull ArchitectorRepository architectorRepository)
     {
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
-        this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
         this.architectorRepository = Args.notNull(architectorRepository, "Architector repository is required.");
     }
 
@@ -56,20 +52,6 @@ public class ProjectManagementService
             .withAuthor(command.author())
             .withDescription(command.description())
             .construct();
-        CommitDescription commitData = CommitDescription.builder()
-            .name(project.name())
-            .description(project.description())
-            .files(emptyList())
-            .build();
-        boolean added = commitChanges(
-            project.projectId(),
-            command.author(),
-            "Project was created.",
-            commitData);
-        if (!added)
-        {
-            throw new IllegalStateException("Something went wrong during creating project.");
-        }
         return this.projectRepository.saveAndFlush(project).projectId();
     }
 
@@ -88,22 +70,7 @@ public class ProjectManagementService
         boolean nameUpdated = project.updateName(command.name());
         boolean descriptionUpdated = project.updateDescription(command.description());
         this.projectRepository.saveAndFlush(project);
-        if (nameUpdated || descriptionUpdated)
-        {
-            CommitDescription commitData = CommitDescription.builder()
-                .name(nameUpdated ? command.name() : null)
-                .description(descriptionUpdated ? command.description() : null)
-                .files(emptyList())
-                .build();
-            return commitChanges(
-                project.projectId(),
-                command.author(),
-                "Project " + projectId.id() + " data was updated.",
-                commitData);
-        } else
-        {
-            return false;
-        }
+        return nameUpdated || descriptionUpdated;
     }
 
     public void addReadAccessRights(@Nonnull Architector architector,
@@ -149,29 +116,6 @@ public class ProjectManagementService
         } else {
             throw new AccessRightsNotFoundException();
         }
-    }
-
-    // TODO move to commit service
-    private boolean commitChanges(@Nonnull ProjectId projectId,
-                                  @Nonnull String author,
-                                  @Nonnull String commitMessage,
-                                  @Nonnull CommitDescription commitData)
-    {
-        // FIXME get next id from db
-        Long parentId = this.commitRepository.findByProjectIdOrderById(projectId)
-            .stream()
-            .map(Commit::id)
-            .max(Long::compareTo)
-            .orElse(null);
-        Commit newCommit = Commit.builder()
-            .parentId(parentId)
-            .projectId(projectId)
-            .message(commitMessage)
-            .author(author)
-            .data(commitData)
-            .build();
-        this.commitRepository.saveAndFlush(newCommit);
-        return true;
     }
 
 }

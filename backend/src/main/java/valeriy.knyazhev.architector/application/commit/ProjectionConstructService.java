@@ -8,10 +8,12 @@ import valeriy.knyazhev.architector.domain.model.commit.Commit;
 import valeriy.knyazhev.architector.domain.model.commit.CommitCombinator;
 import valeriy.knyazhev.architector.domain.model.commit.CommitRepository;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
+import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,12 +42,12 @@ public class ProjectionConstructService
 
     @Nonnull
     public Projection makeProjection(@Nonnull ProjectId projectId,
-                                     long commitId)
+                                     @Nullable Long commitId)
     {
-        this.projectRepository.findByProjectId(projectId)
+        Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        List<Commit> history = extractHistoryForId(projectId, commitId);
-        return CommitCombinator.combineCommits(history);
+        List<Commit> history = commitId != null ? extractHistoryForId(projectId, commitId) : List.of();
+        return CommitCombinator.combineCommits(project.name(), project.description(), history);
     }
 
     @Nonnull

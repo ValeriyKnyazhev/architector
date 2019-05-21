@@ -29,10 +29,14 @@ import static valeriy.knyazhev.architector.domain.model.commit.CommitItem.delete
 public class CommitCombinatorTests
 {
 
-    private static ProjectId PROJECT_ID = ProjectId.nextId();
+    private final static ProjectId PROJECT_ID = ProjectId.nextId();
+
+    private final static String PROJECT_NAME = "Name";
+
+    private final static String PROJECT_DESCRIPTION = "Description";
 
     private static FileMetadataChanges FILE_METADATA = FileMetadataChanges.builder()
-        .name("")
+        .name("File")
         .authors(emptyList())
         .organizations(emptyList())
         .build();
@@ -52,7 +56,7 @@ public class CommitCombinatorTests
                 addItem("2", 1))));
 
         // when
-        Projection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
@@ -73,7 +77,7 @@ public class CommitCombinatorTests
             sampleCommit(firstCommit.id(), fileId, singletonList(addItem("2", 1))));
 
         // when
-        Projection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
@@ -94,7 +98,7 @@ public class CommitCombinatorTests
             sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("1", 1))));
 
         // when
-        Projection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
@@ -115,7 +119,7 @@ public class CommitCombinatorTests
             sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("2", 1))));
 
         // expect
-        assertThatThrownBy(() -> CommitCombinator.combineCommits(commits))
+        assertThatThrownBy(() -> CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("Current item does not match with deleted item.");
     }
@@ -132,7 +136,7 @@ public class CommitCombinatorTests
                 deleteItem("1", 1), deleteItem("2", 1))));
 
         // expect
-        assertThatThrownBy(() -> CommitCombinator.combineCommits(commits))
+        assertThatThrownBy(() -> CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("Commit must not have a few deletion items in one position.");
     }
@@ -160,7 +164,7 @@ public class CommitCombinatorTests
                 deleteItem("9", 7))));
 
         // when
-        Projection projection = CommitCombinator.combineCommits(commits);
+        Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);
 
         // then
         assertThat(projection.files()).size().isEqualTo(1);
