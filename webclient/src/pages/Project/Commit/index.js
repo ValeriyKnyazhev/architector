@@ -101,11 +101,13 @@ export default class Commit extends PureComponent {
         params: { commitId }
       }
     } = this.props;
-    const { changedFiles } = this.state;
+    const { changedFiles, name = '', description = '' } = this.state;
     return (
       <div className="container">
         <div>
           <h2>Commit #{commitId}</h2>
+          <div style={{ textAlign: 'left' }}>Project Name: {name}</div>
+          <div style={{ textAlign: 'left' }}>Project Description: {description}</div>
           {changedFiles.map((file, index) => (
             <Fragment key={index}>
               <p style={{ textAlign: 'left' }}>File name: {file.name}</p>
