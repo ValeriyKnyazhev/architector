@@ -28,8 +28,8 @@ const descriptionColumns = [
 export default class FileDescr extends Component {
   state = {
     visibleEditDescr: false,
-    newDescription: this.props.file.description.descriptions,
-    newImplementationLevel: this.props.file.description.implementationLevel
+    newDescription: this.props.description.descriptions,
+    newImplementationLevel: this.props.description.implementationLevel
   };
 
   handleCancel = state => {
@@ -47,7 +47,6 @@ export default class FileDescr extends Component {
   onChangeValues = (event, index, valueName) => {
     const values = this.state[valueName];
     values[index] = event.target.value;
-    console.log(values);
     this.setState({
       [valueName]: values
     });
@@ -102,37 +101,40 @@ export default class FileDescr extends Component {
   };
 
   render() {
-    const { file } = this.props;
+    const { description, readOnly } = this.props;
     const { visibleEditDescr, newDescription, newImplementationLevel } = this.state;
     const descriptionData = [
       {
         key: '1',
-        descriptions: file.description.descriptions,
-        implementationLevel: file.description.implementationLevel
+        descriptions: description.descriptions,
+        implementationLevel: description.implementationLevel
       }
     ];
+
     return (
-      <div className="file__metadata">
-        <div className="row file__metadata-header">
+      <div className="file__description">
+        <div className="row file__description-header">
           <div className="col-xs-3" style={{ textAlign: 'left', marginBottom: '4px' }}>
-            <b>Metadata</b>
-            <Button
-              type="primary"
-              style={{ marginLeft: 8, alignContent: 'right' }}
-              onClick={() => {
-                this.setState({
-                  visibleEditDescr: true
-                });
-              }}
-            >
-              <Icon type={'edit'} />
-            </Button>
+            <b>Description</b>
+            {!readOnly && (
+              <Button
+                type="primary"
+                style={{ marginLeft: 8, alignContent: 'right' }}
+                onClick={() => {
+                  this.setState({
+                    visibleEditDescr: true
+                  });
+                }}
+              >
+                <Icon type={'edit'} />
+              </Button>
+            )}
           </div>
           <div className="col-xs-9" />
         </div>
-        <div className="file__metadata-info">
+        <div className="file__description-info">
           <Table
-            className="file__metadata-table"
+            className="file__description-table"
             columns={descriptionColumns}
             dataSource={descriptionData}
             pagination={false}
@@ -161,7 +163,7 @@ export default class FileDescr extends Component {
               {newDescription.map((value, index) => (
                 <div className="file__multiply-input-container" key={index}>
                   <Input
-                    placeholder="Add author"
+                    placeholder="Add description"
                     className="file__multiply-input"
                     value={value}
                     onChange={e => this.onChangeValues(e, index, 'newDescription')}
@@ -175,9 +177,9 @@ export default class FileDescr extends Component {
                 </div>
               ))}
             </div>
-            <div className="file__input-label">OriginatingSystem:</div>
+            <div className="file__input-label">Implementation Level:</div>
             <Input
-              placeholder="Add OriginatingSystem"
+              placeholder="Add Implementation Level"
               className="file__multiply-input"
               value={newImplementationLevel}
               onChange={e => this.onChangeValue(e, 'newImplementationLevel')}

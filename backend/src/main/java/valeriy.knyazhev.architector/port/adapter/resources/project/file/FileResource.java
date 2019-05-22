@@ -51,11 +51,9 @@ public class FileResource
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(qFileId, "File identifier is required.");
-        ProjectId projectId = ProjectId.of(qProjectId);
-        FileId fileId = FileId.of(qFileId);
-        // TODO add file access rights into model
-        File foundFile = fetchFile(projectId, fileId, architector);
-        return ResponseEntity.ok(buildFile(foundFile));
+        Project project = findProject(ProjectId.of(qProjectId), architector);
+        File foundFile = fetchFile(project, FileId.of(qFileId));
+        return ResponseEntity.ok(buildFile(foundFile, project.accessRights(architector)));
     }
 
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/content",
@@ -66,10 +64,8 @@ public class FileResource
     {
         Args.notNull(qProjectId, "Project identifier is required.");
         Args.notNull(qFileId, "File identifier is required.");
-        ProjectId projectId = ProjectId.of(qProjectId);
-        FileId fileId = FileId.of(qFileId);
-        // TODO add file access rights into model
-        File foundFile = fetchFile(projectId, fileId, architector);
+        Project project = findProject(ProjectId.of(qProjectId), architector);
+        File foundFile = fetchFile(project, FileId.of(qFileId));
         return ResponseEntity.ok(buildContent(foundFile));
     }
 
@@ -270,7 +266,7 @@ public class FileResource
     }
 
     @Nonnull
-    private File fetchFile(@Nonnull ProjectId projectId, @Nonnull FileId fileId, @Nonnull Architector architector)
+    private Project findProject(@Nonnull ProjectId projectId, @Nonnull Architector architector)
     {
         Project project = this.projectRepository.findByProjectId(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId));
@@ -278,10 +274,16 @@ public class FileResource
         {
             throw new AccessRightsNotFoundException();
         }
+        return project;
+    }
+
+    @Nonnull
+    private File fetchFile(@Nonnull Project project, @Nonnull FileId fileId)
+    {
         return project.files().stream()
             .filter(file -> fileId.equals(file.fileId()))
             .findFirst()
-            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+            .orElseThrow(() -> new FileNotFoundException(project.projectId(), fileId));
     }
 
 }

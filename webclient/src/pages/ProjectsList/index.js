@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import axios from "axios";
-import _isEmpty from "lodash/isEmpty";
-import { Button, Icon, Input, message, Modal, Pagination, Popconfirm , Tag} from "antd";
-import dayjs from "dayjs";
-import "./ProjectsList.sass";
+import React, { Component } from 'react';
+import axios from 'axios';
+import _isEmpty from 'lodash/isEmpty';
+import { Button, Icon, Input, message, Modal, Pagination, Popconfirm, Tag } from 'antd';
+import dayjs from 'dayjs';
+import './ProjectsList.sass';
 
 function renderAccessRights(accessRights) {
-  if (accessRights === 'OWNER')
-  {return <Tag color="gold">{accessRights}</Tag>}
-  else if (accessRights === 'WRITE')
-  {
-    return <Tag color="blue">{accessRights}</Tag>
-  } else if (accessRights === 'READ')
-  {
-    return <Tag color="green">{accessRights}</Tag>
-  } else {return <div />}
+  if (accessRights === 'OWNER') {
+    return <Tag color="gold">{accessRights}</Tag>;
+  } else if (accessRights === 'WRITE') {
+    return <Tag color="blue">{accessRights}</Tag>;
+  } else if (accessRights === 'READ') {
+    return <Tag color="green">{accessRights}</Tag>;
+  } else {
+    return <div />;
+  }
 }
 
 const { TextArea } = Input;
@@ -112,7 +112,7 @@ export default class Projects extends Component {
           },
           () => {
             this.fetchProjects.call(this);
-            message.success("Project was edited");
+            message.success('Project was edited');
           }
         );
       });
@@ -294,6 +294,7 @@ export default class Projects extends Component {
                         <div className="col-xs-3">Files</div>
                         <div className="col-xs-9">{files.length}</div>
                       </div>
+                      {(accessRights === 'OWNER' || accessRights === 'WRITE') &&
                       <Button
                         className="projects__project-edit"
                         onClick={e => {
@@ -302,8 +303,9 @@ export default class Projects extends Component {
                           this.showModal('visibleEditProject');
                         }}
                       >
-                        <Icon type="edit" />
+                        <Icon type="edit"/>
                       </Button>
+                      }
                     </div>
                   </div>
                 )

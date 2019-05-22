@@ -212,6 +212,9 @@ export default class Project extends Component {
         author: project.author
       }
     ];
+
+    const readOnly = !(project.accessRights === 'OWNER' || project.accessRights === 'WRITE');
+
     const { file } = this.state;
     const props = {
       onRemove: file => {
@@ -315,14 +318,16 @@ export default class Project extends Component {
             <div className="row project__files-header">
               <div className="project__files_header-title col-xs-3 start-xs">Files</div>
               <div className="col-xs-9 end-xs">
-                <Button
-                  className="project__files-create-file "
-                  onClick={() => this.showModal('visibleCreateFile')}
-                  type="primary"
-                  style={{ marginBottom: 16, alignContent: 'right' }}
-                >
-                  Add file <Icon type="plus-circle" />
-                </Button>
+                {!readOnly && (
+                  <Button
+                    className="project__files-create-file "
+                    onClick={() => this.showModal('visibleCreateFile')}
+                    type="primary"
+                    style={{ marginBottom: 16, alignContent: 'right' }}
+                  >
+                    Add file <Icon type="plus-circle" />
+                  </Button>
+                )}
               </div>
             </div>
             <Table

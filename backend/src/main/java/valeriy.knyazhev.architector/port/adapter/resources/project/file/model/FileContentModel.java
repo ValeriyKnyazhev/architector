@@ -1,6 +1,7 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights;
 
 import javax.annotation.Nonnull;
 import java.util.List;
