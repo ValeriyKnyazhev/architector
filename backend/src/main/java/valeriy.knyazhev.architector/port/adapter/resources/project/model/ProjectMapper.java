@@ -27,6 +27,7 @@ public final class ProjectMapper
             project.createdDate(),
             project.updatedDate(),
             project.accessRights(),
+            project.accessGrantedInfo(),
             project.name(),
             project.description(),
             project.author(),

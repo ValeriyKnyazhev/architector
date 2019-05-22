@@ -6,6 +6,7 @@ import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,11 +40,14 @@ public class ProjectData
     @Nonnull
     private ProjectAccessRights accessRights;
 
+    @Nullable
+    private AccessGrantedInfo accessGrantedInfo;
+
     @Builder
     private ProjectData(@Nonnull String projectId, @Nonnull String author, @Nonnull String name,
                         @Nonnull String description, @Nonnull LocalDateTime createdDate,
                         @Nonnull LocalDateTime updatedDate, @Nonnull List<File> files,
-                        @Nonnull ProjectAccessRights accessRights)
+                        @Nonnull ProjectAccessRights accessRights, @Nullable AccessGrantedInfo accessGrantedInfo)
     {
         this.projectId = Args.notBlank(projectId, "Project identifier is required.");
         this.author = Args.notBlank(author, "Project author is required.");
@@ -53,6 +57,7 @@ public class ProjectData
         this.updatedDate = Args.notNull(updatedDate, "Project updated date is required.");
         this.files = Args.notNull(files, "Project files is required.");
         this.accessRights = Args.notNull(accessRights, "Project access rights is required.");
+        this.accessGrantedInfo = accessGrantedInfo;
     }
 
     @Nonnull
@@ -102,5 +107,13 @@ public class ProjectData
     {
         return this.accessRights;
     }
+
+    @Nullable
+    public AccessGrantedInfo accessGrantedInfo()
+    {
+        return this.accessGrantedInfo;
+    }
+
+
 
 }

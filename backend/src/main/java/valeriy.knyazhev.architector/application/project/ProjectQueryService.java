@@ -13,10 +13,10 @@ import valeriy.knyazhev.architector.domain.model.user.Architector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
-import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.*;
+import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.OWNER;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -66,10 +66,31 @@ public class ProjectQueryService
             .name(project.name())
             .description(project.description())
             .accessRights(accessRights)
+            .accessGrantedInfo(accessGranted(project, accessRights))
             .createdDate(project.createdDate())
             .updatedDate(project.updatedDate())
             .files(project.files())
             .build();
+    }
+
+    @Nullable
+    private static AccessGrantedInfo accessGranted(@Nonnull Project project,
+                                                   @Nonnull ProjectAccessRights accessRights)
+    {
+        if (accessRights != OWNER)
+        {
+            return null;
+        } else
+        {
+            return new AccessGrantedInfo(
+                project.readAccessRights().stream()
+                    .map(Architector::email)
+                    .collect(Collectors.toUnmodifiableList()),
+                project.writeAccessRights().stream()
+                    .map(Architector::email)
+                    .collect(Collectors.toUnmodifiableList())
+            );
+        }
     }
 
 }

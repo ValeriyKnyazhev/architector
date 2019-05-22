@@ -47,6 +47,7 @@ https://acloudxpert.com/how-to-install-docker-compose-on-amazon-linux-ami/
 ```bash
 scp -i ./deploy/architector_ssh_key.pem  ./docker-compose.yml ec2-user@ip_address:/home/ec2-user/
 ```
+
  Подключиться к машине:
  ```bash
 ssh -i ./deploy/architector_ssh_key.pem  ec2-user@ip_address

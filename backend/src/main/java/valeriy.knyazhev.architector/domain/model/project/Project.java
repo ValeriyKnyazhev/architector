@@ -1,7 +1,6 @@
 package valeriy.knyazhev.architector.domain.model.project;
 
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.arch.Processor;
 import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
@@ -9,7 +8,6 @@ import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
-import valeriy.knyazhev.architector.domain.model.user.Role;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
