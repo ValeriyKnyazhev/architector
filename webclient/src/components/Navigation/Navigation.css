@@ -1,0 +1,20 @@
+.architector {
+  background: #6960ff;
+}
+
+.architector__header-user {
+  color: #ffffff;
+}
+
+.architector__header-title {
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  border-bottom: 1px solid;
+}
+
+.architector__header {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+}
