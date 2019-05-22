@@ -259,13 +259,18 @@ export default class File extends Component {
               </div>
             </div>
             <div className="file__changes">
-              <div className="row file__changes-header">
-                <div className="file__changes-header-title col-xs-3 start-xs">Last changes</div>
+              <div
+                className="row file__changes-header"
+                style={{ textAlign: 'left', marginBottom: '4px' }}
+              >
+                <div className="file__changes-header-title col-xs-3 start-xs">
+                  <b>Last changes</b>
+                </div>
                 <div className="col-xs-9 end-xs">
                   <Button
                     className="file__changes-show-more "
                     type="primary"
-                    style={{ marginBottom: 16, alignContent: 'right' }}
+                    style={{ marginLeft: 8, alignContent: 'right' }}
                   >
                     <Link
                       to={{
