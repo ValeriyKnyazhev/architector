@@ -37,8 +37,8 @@ class Navigation extends Component {
                   <div className="architector__header-title  start-xs">Architector</div>
                 </Link>
               </div>
-              <div className="architector__header-user col-xs-6">User: {email}</div>
-              <div className="col-xs-5 end-xs">
+              <div className="architector__header-user col-xs-5">User: {email}</div>
+              <div className="col-xs-6 end-xs">
                 <Button
                   className="architector__header-logout "
                   href="/logout"
