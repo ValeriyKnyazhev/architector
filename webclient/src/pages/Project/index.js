@@ -21,6 +21,13 @@ const mainInfoColumns = [
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
+    title: 'Updated',
+    dataIndex: 'updated',
+    key: 'updated',
+    width: 4,
+    render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
+  },
+  {
     title: 'Author',
     dataIndex: 'author',
     key: 'author',
@@ -205,6 +212,9 @@ export default class Project extends Component {
         author: project.author
       }
     ];
+
+    const readOnly = !(project.accessRights === 'OWNER' || project.accessRights === 'WRITE');
+
     const { file } = this.state;
     const props = {
       onRemove: file => {
@@ -261,7 +271,6 @@ export default class Project extends Component {
         width: 4,
         render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
       },
-      ,
       {
         key: 'action',
         width: 2,
@@ -294,7 +303,9 @@ export default class Project extends Component {
         </div>
         <div>
           <div className="row project__description">
-            <div className="project__description-header col-xs-2 start-xs">Description</div>
+            <div className="project__description-header col-xs-2 start-xs">
+              <b>Description</b>
+            </div>
             <div className="project__description-info col-xs-10 start-xs">
               {project.description}
             </div>
@@ -306,17 +317,24 @@ export default class Project extends Component {
             pagination={false}
           />
           <div className="project__files">
-            <div className="row project__files-header">
-              <div className="project__files_header-title col-xs-3 start-xs">Files</div>
+            <div
+              className="row project__files-header"
+              style={{ textAlign: 'left', marginBottom: '4px' }}
+            >
+              <div className="col-xs-3 start-xs">
+                <b>Files</b>
+              </div>
               <div className="col-xs-9 end-xs">
-                <Button
-                  className="project__files-create-file "
-                  onClick={() => this.showModal('visibleCreateFile')}
-                  type="primary"
-                  style={{ marginBottom: 16, alignContent: 'right' }}
-                >
-                  Add file <Icon type="plus-circle" />
-                </Button>
+                {!readOnly && (
+                  <Button
+                    className="project__files-create-file "
+                    onClick={() => this.showModal('visibleCreateFile')}
+                    type="primary"
+                    style={{ marginLeft: 8, alignContent: 'right' }}
+                  >
+                    Add file <Icon type="plus-circle" />
+                  </Button>
+                )}
               </div>
             </div>
             <Table
@@ -385,13 +403,18 @@ export default class Project extends Component {
             </div>
           </div>
           <div className="project__changes">
-            <div className="row project__changes-header">
-              <div className="project__changes-header-title col-xs-3 start-xs">Last changes</div>
+            <div
+              className="row project__changes-header"
+              style={{ textAlign: 'left', marginBottom: '4px' }}
+            >
+              <div className="project__changes-header-title col-xs-3 start-xs">
+                <b>Last changes</b>
+              </div>
               <div className="col-xs-9 end-xs">
                 <Button
                   className="project__changes-show-more "
                   type="primary"
-                  style={{ marginBottom: 16, alignContent: 'right' }}
+                  style={{ marginLeft: 8, alignContent: 'right' }}
                 >
                   <Link
                     to={{

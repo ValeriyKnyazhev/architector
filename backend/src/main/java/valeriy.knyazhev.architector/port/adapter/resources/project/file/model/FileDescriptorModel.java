@@ -3,6 +3,7 @@ package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bimserver.emf.Schema;
+import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights;
 import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 
 import javax.annotation.Nonnull;
@@ -38,9 +39,13 @@ public class FileDescriptorModel
     @Nonnull
     private DescriptionModel description;
 
+    @Nonnull
+    private ProjectAccessRights accessRights;
+
     public FileDescriptorModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
                                @Nonnull LocalDateTime updatedDate, @Nonnull String schema,
-                               @Nonnull MetadataModel metadata, @Nonnull DescriptionModel description)
+                               @Nonnull MetadataModel metadata, @Nonnull DescriptionModel description,
+                               @Nonnull ProjectAccessRights accessRights)
     {
         this.fileId = fileId;
         this.createdDate = createdDate;
@@ -48,6 +53,7 @@ public class FileDescriptorModel
         this.schema = schema;
         this.metadata = metadata;
         this.description = description;
+        this.accessRights = accessRights;
     }
 
 }

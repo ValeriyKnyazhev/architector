@@ -80,10 +80,11 @@ public class Projection
         this.description = description;
     }
 
-    public static Projection empty()
+    public static Projection initial(@Nonnull String name, @Nonnull String description)
     {
-        // FIXME initial projection for combinator
-        return new Projection("INIT", "", ImmutableList.of());
+        Args.notBlank(name, "Project name is required.");
+        Args.notNull(description, "Project description is required.");
+        return new Projection(name, description, ImmutableList.of());
     }
 
     @Nonnull

@@ -6,9 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import valeriy.knyazhev.architector.application.commit.command.FetchCommitChangesCommand;
 import valeriy.knyazhev.architector.application.commit.data.changes.*;
 import valeriy.knyazhev.architector.application.commit.data.changes.FileChangesData.FileChangesStatistics;
+import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection.FileProjection;
+import valeriy.knyazhev.architector.domain.model.project.Project;
+import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
@@ -32,12 +36,16 @@ public class ChangesApplicationService
 
     private final CommitRepository commitRepository;
 
+    private final ProjectRepository projectRepository;
+
     private final ProjectionConstructService projectionConstructService;
 
     public ChangesApplicationService(@Nonnull CommitRepository commitRepository,
+                                     @Nonnull ProjectRepository projectRepository,
                                      @Nonnull ProjectionConstructService projectionConstructService)
     {
         this.commitRepository = Args.notNull(commitRepository, "Commit repository is required.");
+        this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
         this.projectionConstructService = Args.notNull(projectionConstructService,
             "Projection construct service is required.");
     }
@@ -55,25 +63,14 @@ public class ChangesApplicationService
         }
         CommitDescription commit = commitEntity.data();
         Long commitParentId = commitEntity.parentId();
-        if (commitParentId == null)
-        {
-            // it is init commit (project creating)
-            // FIXME probably will be added file changes in init commit
-            return new CommitChangesData(
-                newValue(commit.name()),
-                newValue(commit.description()),
-                Collections.emptyList()
-            );
-        }
         Projection projection = this.projectionConstructService.makeProjection(
             commitEntity.projectId(), commitParentId
         );
-        String newName = commit.name();
-        String newDescription = commit.description();
         return new CommitChangesData(
-            newName != null ? changeValue(projection.name(), newName) : null,
-            newDescription != null ? changeValue(projection.description(), newDescription) : null,
-            commit.changedFiles().stream()
+            projection.name(),
+            projection.description(),
+            commit.changedFiles()
+                .stream()
                 .map(file -> constructFileChanges(projection, file))
                 .collect(Collectors.toList())
         );

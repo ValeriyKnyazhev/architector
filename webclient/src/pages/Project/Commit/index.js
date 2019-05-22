@@ -78,7 +78,9 @@ function DiffMetadataValues({ descr, data }) {
 
 export default class Commit extends PureComponent {
   state = {
-    changedFiles: []
+    changedFiles: [],
+    projectName: '',
+    projectDescription: ''
   };
 
   async componentDidMount() {
@@ -92,7 +94,11 @@ export default class Commit extends PureComponent {
       }
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/commits/${commitId}/changes`);
-    this.setState({ changedFiles: data.changedFiles });
+    this.setState({
+      changedFiles: data.changedFiles,
+      projectName: data.name,
+      projectDescription: data.description
+    });
   };
 
   render() {
@@ -101,13 +107,13 @@ export default class Commit extends PureComponent {
         params: { commitId }
       }
     } = this.props;
-    const { changedFiles, name = '', description = '' } = this.state;
+    const { changedFiles, projectName, projectDescription } = this.state;
     return (
       <div className="container">
         <div>
           <h2>Commit #{commitId}</h2>
-          <div style={{ textAlign: 'left' }}>Project Name: {name}</div>
-          <div style={{ textAlign: 'left' }}>Project Description: {description}</div>
+          <div style={{ textAlign: 'left' }}>Project Name: {projectName}</div>
+          <div style={{ textAlign: 'left' }}>Project Description: {projectDescription}</div>
           {changedFiles.map((file, index) => (
             <Fragment key={index}>
               <p style={{ textAlign: 'left' }}>File name: {file.name}</p>

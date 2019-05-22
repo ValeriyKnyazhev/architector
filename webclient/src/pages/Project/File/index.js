@@ -9,6 +9,7 @@ import HistoryChanges from 'components/HistoryChanges';
 import FileMetadata from './FileMetadata';
 import FileDescr from './FileDescr';
 import './File.sass';
+
 const mainInfoColumns = [
   {
     title: 'Created',
@@ -175,6 +176,8 @@ export default class File extends Component {
       }
     ];
 
+    const readOnly = !(file.accessRights === 'OWNER' || file.accessRights === 'WRITE');
+
     return fileDataLoaded ? (
       <div className="container">
         <div>
@@ -189,16 +192,18 @@ export default class File extends Component {
               pagination={false}
             />
             <FileMetadata
-              file={file}
+              metadata={file.metadata}
               fetchFileInfo={this.fetchFileInfo}
               fetchFileHistoryChanges={this.fetchFileHistoryChanges}
               match={this.props.match}
+              readOnly={readOnly}
             />
             <FileDescr
-              file={file}
+              description={file.description}
               fetchFileInfo={this.fetchFileInfo}
               fetchFileHistoryChanges={this.fetchFileHistoryChanges}
               match={this.props.match}
+              readOnly={readOnly}
             />
             <div className="file__file-content">
               <div className="file__file-show-content" onClick={this.onToggleShowContent}>
@@ -210,13 +215,15 @@ export default class File extends Component {
                   visibility: isContentShow ? 'visible' : 'hidden'
                 }}
               >
-                <Button
-                  type="primary"
-                  style={{ marginBottom: 16, alignContent: 'right' }}
-                  onClick={this.onEditContent}
-                >
-                  <Icon type={contentReadOnly ? 'edit' : 'close'} />
-                </Button>
+                {!readOnly && (
+                  <Button
+                    type="primary"
+                    style={{ marginBottom: 16, alignContent: 'right' }}
+                    onClick={this.onEditContent}
+                  >
+                    <Icon type={contentReadOnly ? 'edit' : 'close'} />
+                  </Button>
+                )}
               </div>
               <div
                 className="file__file-content-save"
@@ -252,13 +259,18 @@ export default class File extends Component {
               </div>
             </div>
             <div className="file__changes">
-              <div className="row file__changes-header">
-                <div className="file__changes-header-title col-xs-3 start-xs">Last changes</div>
+              <div
+                className="row file__changes-header"
+                style={{ textAlign: 'left', marginBottom: '4px' }}
+              >
+                <div className="file__changes-header-title col-xs-3 start-xs">
+                  <b>Last changes</b>
+                </div>
                 <div className="col-xs-9 end-xs">
                   <Button
                     className="file__changes-show-more "
                     type="primary"
-                    style={{ marginBottom: 16, alignContent: 'right' }}
+                    style={{ marginLeft: 8, alignContent: 'right' }}
                   >
                     <Link
                       to={{

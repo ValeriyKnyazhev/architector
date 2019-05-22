@@ -60,12 +60,12 @@ const metadataColumns = [
 
 export default class FileMetadata extends Component {
   state = {
-    visibleEditMetada: false,
-    newAuthors: this.props.file.metadata.authors,
-    newOrganizations: this.props.file.metadata.organizations,
-    newName: this.props.file.metadata.name,
-    newOriginatingSystem: this.props.file.metadata.originatingSystem,
-    newPreprocessorVersion: this.props.file.metadata.preprocessorVersion
+    visibleEditMetadata: false,
+    newAuthors: this.props.metadata.authors,
+    newOrganizations: this.props.metadata.organizations,
+    newName: this.props.metadata.name,
+    newOriginatingSystem: this.props.metadata.originatingSystem,
+    newPreprocessorVersion: this.props.metadata.preprocessorVersion
   };
 
   handleCancel = state => {
@@ -125,7 +125,7 @@ export default class FileMetadata extends Component {
     } = this.props;
     axios
       .put(`/api/projects/${projectId}/files/${fileId}/metadata`, {
-        ...this.props.file.metadata,
+        ...this.props.metadata,
         name: newName,
         authors: newAuthors,
         organizations: newOrganizations,
@@ -147,9 +147,9 @@ export default class FileMetadata extends Component {
   };
 
   render() {
-    const { file } = this.props;
+    const { metadata, readOnly } = this.props;
     const {
-      visibleEditMetada,
+      visibleEditMetadata,
       newAuthors,
       newOrganizations,
       newName,
@@ -159,11 +159,11 @@ export default class FileMetadata extends Component {
     const metadataData = [
       {
         key: '1',
-        name: file.metadata.name,
-        authors: file.metadata.authors,
-        organizations: file.metadata.organizations,
-        originatingSystem: file.metadata.originatingSystem,
-        preprocessorVersion: file.metadata.preprocessorVersion
+        name: metadata.name,
+        authors: metadata.authors,
+        organizations: metadata.organizations,
+        originatingSystem: metadata.originatingSystem,
+        preprocessorVersion: metadata.preprocessorVersion
       }
     ];
     return (
@@ -171,17 +171,19 @@ export default class FileMetadata extends Component {
         <div className="row file__metadata-header">
           <div className="col-xs-3" style={{ textAlign: 'left', marginBottom: '4px' }}>
             <b>Metadata</b>
-            <Button
-              type="primary"
-              style={{ marginLeft: 8, alignContent: 'right' }}
-              onClick={() => {
-                this.setState({
-                  visibleEditMetada: true
-                });
-              }}
-            >
-              <Icon type={'edit'} />
-            </Button>
+            {!readOnly && (
+              <Button
+                type="primary"
+                style={{ marginLeft: 8, alignContent: 'right' }}
+                onClick={() => {
+                  this.setState({
+                    visibleEditMetadata: true
+                  });
+                }}
+              >
+                <Icon type={'edit'} />
+              </Button>
+            )}
           </div>
           <div className="col-xs-9" />
         </div>
@@ -193,12 +195,12 @@ export default class FileMetadata extends Component {
             pagination={false}
           />
         </div>
-        {visibleEditMetada && (
+        {visibleEditMetadata && (
           <Modal
             title="Edit file metadata"
-            visible={visibleEditMetada}
-            onOk={() => this.handleEditMetadata('visibleEditMetada')}
-            onCancel={() => this.handleCancel('visibleEditMetada')}
+            visible={visibleEditMetadata}
+            onOk={() => this.handleEditMetadata('visibleEditMetadata')}
+            onCancel={() => this.handleCancel('visibleEditMetadata')}
             okButtonProps={{
               disabled:
                 _isEmpty(newAuthors) ||
@@ -269,16 +271,16 @@ export default class FileMetadata extends Component {
                 </div>
               ))}
             </div>
-            <div className="file__input-label">OriginatingSystem:</div>
+            <div className="file__input-label">Originating System:</div>
             <Input
-              placeholder="Add OriginatingSystem"
+              placeholder="Add Originating System"
               className="file__multiply-input"
               value={newOriginatingSystem}
               onChange={e => this.onChangeValue(e, 'newOriginatingSystem')}
             />
-            <div className="file__input-label">PreprocessorVersion:</div>
+            <div className="file__input-label">Preprocessor Version:</div>
             <Input
-              placeholder="Add PreprocessorVersion"
+              placeholder="Add Preprocessor Version"
               className="file__multiply-input"
               value={newPreprocessorVersion}
               onChange={e => this.onChangeValue(e, 'newPreprocessorVersion')}
