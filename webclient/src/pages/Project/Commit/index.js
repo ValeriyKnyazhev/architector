@@ -20,6 +20,7 @@ const typeDiff = type => {
   }
   return;
 };
+
 function DiffRowComponent({ data }) {
   return (
     <div className={rowClass(data.type)}>

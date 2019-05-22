@@ -4,6 +4,7 @@ import axios from 'axios';
 import _isEmpty from 'lodash/isEmpty';
 import { Button, Icon, Input, message, Modal, Popconfirm, Radio, Table, Upload } from 'antd';
 import HistoryChanges from 'components/HistoryChanges';
+import AccessGrantedBlock from 'components/AccessGrantedBlock';
 import './Project.sass';
 
 const RadioGroup = Radio.Group;
@@ -316,6 +317,24 @@ export default class Project extends Component {
             dataSource={mainInfoData}
             pagination={false}
           />
+          {project.accessGrantedInfo && (
+            <div className="project__access-granted-info">
+              <div
+                className="row project__access-granted-info-header"
+                style={{ textAlign: 'left', marginBottom: '4px' }}
+              >
+                <div className="col-xs-4 start-xs">
+                  <b>Access Granted To</b>
+                </div>
+                <div className="col-xs-8" />
+              </div>
+              <AccessGrantedBlock
+                projectId={projectId}
+                accessGranted={project.accessGrantedInfo}
+                fetchProjectInfo={this.fetchProject}
+              />
+            </div>
+          )}
           <div className="project__files">
             <div
               className="row project__files-header"

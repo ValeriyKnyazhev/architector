@@ -16,6 +16,6 @@ public interface ArchitectorRepository extends JpaRepository<Architector, Long>
     public Optional<Architector> findByEmail(@Nonnull String email);
 
     @Nonnull
-    public List<Architector> findByEmailContaining(@Nonnull String email);
+    public List<Architector> findByEmailIgnoreCaseContaining(@Nonnull String email);
 
 }

@@ -68,7 +68,10 @@ public class ArchitectorApplicationService
                 }
             );
         architector.setPassword(this.passwordEncoder.encode(architector.password()));
-        architector.setRoles(new HashSet<>(this.roleRepository.findAll()));
+        Set<Role> roles = this.roleRepository.findAll().stream()
+            .filter(role -> "USER".equals(role.getName()))
+            .collect(Collectors.toSet());
+        architector.setRoles(roles);
         return this.architectorRepository.save(architector);
     }
 
@@ -84,7 +87,7 @@ public class ArchitectorApplicationService
     public List<Architector> findArchitectors(@Nonnull String query)
     {
         Args.notNull(query, "Query value is required");
-        return this.architectorRepository.findByEmailContaining(query).stream()
+        return this.architectorRepository.findByEmailIgnoreCaseContaining(query).stream()
             .filter(architector -> !architector.isAdmin())
             .collect(Collectors.toList());
     }

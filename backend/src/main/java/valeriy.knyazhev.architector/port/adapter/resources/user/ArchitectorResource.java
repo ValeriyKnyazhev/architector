@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonMap;
@@ -52,7 +53,7 @@ public class ArchitectorResource
             .map(Architector::email)
             .filter(user -> !architector.email().equals(user))
             .collect(Collectors.toList());
-        return ResponseEntity.ok(singletonMap("architectors", users));
+        return ResponseEntity.ok(Map.of("architectors", users));
     }
 
     @GetMapping("/api/me")
