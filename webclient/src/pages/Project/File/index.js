@@ -215,7 +215,7 @@ export default class File extends Component {
                   visibility: isContentShow ? 'visible' : 'hidden'
                 }}
               >
-                {readOnly && (
+                {!readOnly && (
                   <Button
                     type="primary"
                     style={{ marginBottom: 16, alignContent: 'right' }}
