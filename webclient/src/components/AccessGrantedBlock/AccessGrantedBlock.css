@@ -1,0 +1,12 @@
+.access-granted-info__grant-access {
+    align-items: center;
+}
+
+.user-tag {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    border: 1px solid lightgrey;
+    padding: 4px;
+    border-radius: 4px
+}

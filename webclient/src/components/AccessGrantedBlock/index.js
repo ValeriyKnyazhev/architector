@@ -64,13 +64,12 @@ class AccessGrantedBlock extends Component {
 
   wrapUserTag = user => {
     return (
-      <div className="row user-tag">
-        <div className="col-xs-10 start-xs">{user}</div>
-        <div className="col-xs-2 end-xs">
+      <div className="user-tag">
+        <div className="start-xs">{user}</div>
+        <div className="end-xs">
           <Button
-            type="primary"
+            type="danger"
             size="small"
-            shape="circle"
             icon="close"
             onClick={() => this.handleTakeAwayAccessRights(user)}
           />
@@ -89,7 +88,7 @@ class AccessGrantedBlock extends Component {
     return (
       <div
         className="row access-granted-info"
-        style={{ border: '1px solid #DDDDDD', margin: 'auto' }}
+        style={{ border: '1px solid #DDDDDD', margin: 'auto', padding: '8px 0'}}
       >
         <div className="access-granted-info__read col-xs-3">
           <div className="access-granted-info__read-users">
@@ -103,13 +102,13 @@ class AccessGrantedBlock extends Component {
             {writeAccess && writeAccess.map(user => this.wrapUserTag(user))}
           </div>
         </div>
-        <div className="access-granted-info__grant-access col-xs-6" style={{ margin: 'auto' }}>
+        <div className="access-granted-info__grant-access col-xs-6">
           <Select
             showSearch
             allowClear
             value={this.state.selectedUser}
             placeholder="Select user"
-            style={{ width: 250 }}
+            style={{ width: 250, marginRight: '8px', marginBottom: '4px' }}
             defaultActiveFirstOption={false}
             showArrow={false}
             filterOption={false}
@@ -121,7 +120,7 @@ class AccessGrantedBlock extends Component {
           </Select>
           <Select
             defaultValue="READ"
-            style={{ width: 100 }}
+            style={{ width: 100, marginRight: '8px' }}
             onChange={this.handleAccessRightsTypeChange}
           >
             <Option value="READ">Read</Option>
@@ -131,7 +130,6 @@ class AccessGrantedBlock extends Component {
             className="access-granted-info__grant-access-btn"
             type="primary"
             onClick={() => this.handleAddAccessRights()}
-            style={{ alignContent: 'right', margin: '4px' }}
           >
             Grant <Icon type="plus-circle" />
           </Button>

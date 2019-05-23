@@ -57,11 +57,11 @@ export default class Project extends Component {
   };
 
   async componentDidMount() {
-    this.fetchProject.call(this);
-    this.fetchProjectHistoryChanges.call(this);
+    this.fetchProject();
+    this.fetchProjectHistoryChanges();
   }
 
-  async fetchProject() {
+  fetchProject = async () => {
     const {
       match: {
         params: { projectId }
@@ -69,9 +69,9 @@ export default class Project extends Component {
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}`);
     this.setState({ project: data });
-  }
+  };
 
-  async fetchProjectHistoryChanges() {
+  fetchProjectHistoryChanges = async () => {
     const {
       match: {
         params: { projectId }
@@ -79,7 +79,7 @@ export default class Project extends Component {
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/commits`);
     this.setState({ historyChanges: data.commits });
-  }
+  };
 
   showModal = state => {
     this.setState({
