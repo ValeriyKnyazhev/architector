@@ -52,8 +52,10 @@ public class CommitCombinatorTests
         FileId fileId = FileId.nextId();
         List<Commit> commits = singletonList(
             sampleCommit(null, fileId, asList(
-                addItem("1", 1),
-                addItem("2", 1))));
+                addItem("1", 0),
+                addItem("2", 0))
+            )
+        );
 
         // when
         Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);
@@ -72,9 +74,11 @@ public class CommitCombinatorTests
     {
         // given
         FileId fileId = FileId.nextId();
-        Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
-        List<Commit> commits = asList(firstCommit,
-            sampleCommit(firstCommit.id(), fileId, singletonList(addItem("2", 1))));
+        Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 0)));
+        List<Commit> commits = asList(
+            firstCommit,
+            sampleCommit(firstCommit.id(), fileId, singletonList(addItem("2", 1)))
+        );
 
         // when
         Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);
@@ -93,9 +97,11 @@ public class CommitCombinatorTests
     {
         // given
         FileId fileId = FileId.nextId();
-        Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
-        List<Commit> commits = asList(firstCommit,
-            sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("1", 1))));
+        Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 0)));
+        List<Commit> commits = asList(
+            firstCommit,
+            sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("1", 1)))
+        );
 
         // when
         Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);
@@ -114,9 +120,11 @@ public class CommitCombinatorTests
     {
         // given
         FileId fileId = FileId.nextId();
-        Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 1)));
-        List<Commit> commits = asList(firstCommit,
-            sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("2", 1))));
+        Commit firstCommit = sampleCommit(null, fileId, singletonList(addItem("1", 0)));
+        List<Commit> commits = asList(
+            firstCommit,
+            sampleCommit(firstCommit.id(), fileId, singletonList(deleteItem("2", 1)))
+        );
 
         // expect
         assertThatThrownBy(() -> CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits))
@@ -130,10 +138,13 @@ public class CommitCombinatorTests
         // given
         FileId fileId = FileId.nextId();
         Commit firstCommit = sampleCommit(null, fileId, asList(
-            addItem("1", 1), addItem("2", 1)));
-        List<Commit> commits = asList(firstCommit,
-            sampleCommit(firstCommit.id(), fileId, asList(
-                deleteItem("1", 1), deleteItem("2", 1))));
+            addItem("1", 0), addItem("2", 0)));
+        List<Commit> commits = asList(
+            firstCommit,
+            sampleCommit(
+                firstCommit.id(), fileId, asList(deleteItem("1", 1), deleteItem("2", 1))
+            )
+        );
 
         // expect
         assertThatThrownBy(() -> CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits))
@@ -146,22 +157,30 @@ public class CommitCombinatorTests
     {
         // given
         FileId fileId = FileId.nextId();
-        Commit firstCommit = sampleCommit(null, fileId, asList(
-            addItem("1", 1),
-            addItem("2", 1),
-            addItem("3", 1),
-            addItem("4", 1),
-            addItem("5", 1),
-            addItem("8", 1),
-            addItem("9", 1)));
-        List<Commit> commits = asList(firstCommit,
-            sampleCommit(firstCommit.id(), fileId, asList(
-                addItem("0", 0),
-                deleteItem("3", 3),
-                deleteItem("4", 4),
-                addItem("6", 5),
-                addItem("7", 5),
-                deleteItem("9", 7))));
+        Commit firstCommit = sampleCommit(null, fileId,
+            asList(
+                addItem("1", 0),
+                addItem("2", 0),
+                addItem("3", 0),
+                addItem("4", 0),
+                addItem("5", 0),
+                addItem("8", 0),
+                addItem("9", 0)
+            )
+        );
+        List<Commit> commits = asList(
+            firstCommit,
+            sampleCommit(firstCommit.id(), fileId,
+                asList(
+                    addItem("0", 0),
+                    deleteItem("3", 3),
+                    deleteItem("4", 4),
+                    addItem("6", 5),
+                    addItem("7", 5),
+                    deleteItem("9", 7)
+                )
+            )
+        );
 
         // when
         Projection projection = CommitCombinator.combineCommits(PROJECT_NAME, PROJECT_DESCRIPTION, commits);

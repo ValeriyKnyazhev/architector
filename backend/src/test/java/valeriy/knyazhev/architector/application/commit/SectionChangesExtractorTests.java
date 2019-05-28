@@ -61,7 +61,7 @@ public class SectionChangesExtractorTests
         softly.assertThat(
             CollectionUtils.isEqualCollection(
                 sectionItems,
-                singletonList(SectionItem.addedItem(change.position(), change.value()))
+                singletonList(SectionItem.addedItem(change.position() + 1, change.value()))
             )
         ).isTrue();
         softly.assertAll();
@@ -73,7 +73,7 @@ public class SectionChangesExtractorTests
         // given
         List<String> content = sampleContent();
         int position = 4;
-        CommitItem change = deleteItem(content.get(position), position);
+        CommitItem change = deleteItem(content.get(position - 1), position);
 
         // when
         List<SectionChangesData> sections = SectionChangesExtractor.sectionsOf(content)
@@ -119,9 +119,9 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
-                    SectionItem.addedItem(position, change.value()),
-                    SectionItem.item(position, position + 1, content.get(position))
+                    SectionItem.item(position, position, content.get(position - 1)),
+                    SectionItem.addedItem(position + 1, change.value()),
+                    SectionItem.item(position + 1, position + 2, content.get(position))
                 )
             )
         ).isTrue();
@@ -134,7 +134,7 @@ public class SectionChangesExtractorTests
         // given
         List<String> content = sampleContent();
         int position = 4;
-        CommitItem change = deleteItem(content.get(position), position);
+        CommitItem change = deleteItem(content.get(position - 1), position);
         int linesOffsetSize = 1;
 
         // when
@@ -152,9 +152,9 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
+                    SectionItem.item(position - 1, position - 1, content.get(position - 2)),
                     SectionItem.deletedItem(position, change.value()),
-                    SectionItem.item(position + 1, position, content.get(position + 1))
+                    SectionItem.item(position + 1, position, content.get(position))
                 )
             )
         ).isTrue();
@@ -185,8 +185,8 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.addedItem(position, change.value()),
-                    SectionItem.item(position, position + 1, content.get(position))
+                    SectionItem.addedItem(position + 1, change.value()),
+                    SectionItem.item(position + 1, position + 2, content.get(position))
                 )
             )
         ).isTrue();
@@ -198,8 +198,8 @@ public class SectionChangesExtractorTests
     {
         // given
         List<String> content = sampleContent();
-        int position = 0;
-        CommitItem change = deleteItem(content.get(position), position);
+        int position = 1;
+        CommitItem change = deleteItem(content.get(position - 1), position);
         int linesOffsetSize = 1;
 
         // when
@@ -218,7 +218,7 @@ public class SectionChangesExtractorTests
                 sectionItems,
                 asList(
                     SectionItem.deletedItem(position, change.value()),
-                    SectionItem.item(position + 1, position, content.get(position + 1))
+                    SectionItem.item(position + 1, position, content.get(position))
                 )
             )
         ).isTrue();
@@ -249,8 +249,8 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
-                    SectionItem.addedItem(position, change.value())
+                    SectionItem.item(position, position, content.get(position - 1)),
+                    SectionItem.addedItem(position + 1, change.value())
                 )
             )
         ).isTrue();
@@ -262,8 +262,8 @@ public class SectionChangesExtractorTests
     {
         // given
         List<String> content = sampleContent();
-        int position = content.size() - 1;
-        CommitItem change = deleteItem(content.get(position), position);
+        int position = content.size();
+        CommitItem change = deleteItem(content.get(position - 1), position);
         int linesOffsetSize = 1;
 
         // when
@@ -281,7 +281,7 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
+                    SectionItem.item(position - 1, position - 1, content.get(position - 2)),
                     SectionItem.deletedItem(position, change.value())
                 )
             )
@@ -316,10 +316,10 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
-                    SectionItem.addedItem(position, "new 1"),
-                    SectionItem.addedItem(position + 1, "new 2"),
-                    SectionItem.item(position, position + 2, content.get(position))
+                    SectionItem.item(position, position, content.get(position - 1)),
+                    SectionItem.addedItem(position + 1, "new 1"),
+                    SectionItem.addedItem(position + 2, "new 2"),
+                    SectionItem.item(position + 1, position + 3, content.get(position))
                 )
             )
         ).isTrue();
@@ -333,8 +333,8 @@ public class SectionChangesExtractorTests
         List<String> content = sampleContent();
         int position = 4;
         List<CommitItem> changes = asList(
-            deleteItem(content.get(position), position),
-            deleteItem(content.get(position + 1), position + 1)
+            deleteItem(content.get(position - 1), position),
+            deleteItem(content.get(position), position + 1)
         );
         int linesOffsetSize = 1;
 
@@ -353,10 +353,10 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
-                    SectionItem.deletedItem(position, content.get(position)),
-                    SectionItem.deletedItem(position + 1, content.get(position + 1)),
-                    SectionItem.item(position + 2, position, content.get(position + 2))
+                    SectionItem.item(position - 1, position - 1, content.get(position - 2)),
+                    SectionItem.deletedItem(position, content.get(position - 1)),
+                    SectionItem.deletedItem(position + 1, content.get(position)),
+                    SectionItem.item(position + 2, position, content.get(position + 1))
                 )
             )
         ).isTrue();
@@ -368,11 +368,11 @@ public class SectionChangesExtractorTests
     {
         // given
         List<String> content = sampleContent();
-        int position = 3;
+        int position = 2;
         int linesOffsetSize = 1;
         List<CommitItem> changes = asList(
             addItem("new 1", position),
-            addItem("new 2", position + 1 + 2 * linesOffsetSize)
+            addItem("new 2", position + 2 * linesOffsetSize)
         );
 
         // when
@@ -390,12 +390,12 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
-                    SectionItem.addedItem(position, "new 1"),
-                    SectionItem.item(position, position + 1, content.get(position)),
-                    SectionItem.item(position + 1, position + 2, content.get(position + 1)),
-                    SectionItem.addedItem(position + 2, "new 2"),
-                    SectionItem.item(position + 2, position + 4, content.get(position + 2))
+                    SectionItem.item(position, position, content.get(position - 1)),
+                    SectionItem.addedItem(position + 1, "new 1"),
+                    SectionItem.item(position + 1, position + 2, content.get(position)),
+                    SectionItem.item(position + 2, position + 3, content.get(position + 1)),
+                    SectionItem.addedItem(position + 4, "new 2"),
+                    SectionItem.item(position + 3, position + 5, content.get(position + 2))
                 )
             )
         ).isTrue();
@@ -408,11 +408,11 @@ public class SectionChangesExtractorTests
         // given
         List<String> content = sampleContent();
         int linesOffsetSize = 1;
-        int firstPosition = 3;
+        int firstPosition = 2;
         int secondPosition = firstPosition + 1 + 2 * linesOffsetSize;
         List<CommitItem> changes = asList(
-            deleteItem(content.get(firstPosition), firstPosition),
-            deleteItem(content.get(secondPosition), secondPosition)
+            deleteItem(content.get(firstPosition - 1), firstPosition),
+            deleteItem(content.get(secondPosition - 1), secondPosition)
         );
 
         // when
@@ -430,12 +430,12 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 1)),
-                    SectionItem.deletedItem(firstPosition, content.get(firstPosition)),
-                    SectionItem.item(firstPosition + 1, firstPosition, content.get(firstPosition + 1)),
-                    SectionItem.item(secondPosition - 1, secondPosition - 1, content.get(secondPosition - 1)),
-                    SectionItem.deletedItem(secondPosition, content.get(secondPosition)),
-                    SectionItem.item(secondPosition + 1, secondPosition - 2, content.get(secondPosition + 1))
+                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 2)),
+                    SectionItem.deletedItem(firstPosition, content.get(firstPosition - 1)),
+                    SectionItem.item(firstPosition + 1, firstPosition, content.get(firstPosition)),
+                    SectionItem.item(secondPosition - 1, secondPosition - 2, content.get(secondPosition - 2)),
+                    SectionItem.deletedItem(secondPosition, content.get(secondPosition - 1)),
+                    SectionItem.item(secondPosition + 1, secondPosition - 1, content.get(secondPosition))
                 )
             )
         ).isTrue();
@@ -449,7 +449,7 @@ public class SectionChangesExtractorTests
         List<String> content = sampleContent();
         int linesOffsetSize = 1;
         int firstPosition = 2;
-        int secondPosition = 6;
+        int secondPosition = firstPosition + 1 + 2 * linesOffsetSize;
         List<CommitItem> changes = asList(
             addItem("new 1", firstPosition),
             addItem("new 2", secondPosition)
@@ -471,23 +471,23 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 firstSectionItems,
                 asList(
-                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 1)),
-                    SectionItem.addedItem(firstPosition, "new 1"),
-                    SectionItem.item(firstPosition, firstPosition + 1, content.get(firstPosition))
-                )
-            )
-        ).isTrue();
-        softly.assertThat(
-            CollectionUtils.isEqualCollection(
-                secondSectionItems,
-                asList(
-                    SectionItem.item(secondPosition - 1, secondPosition, content.get(secondPosition - 1)),
-                    SectionItem.addedItem(secondPosition + 1, "new 2"),
-                    SectionItem.item(secondPosition, secondPosition + 2, content.get(secondPosition))
+                    SectionItem.item(firstPosition, firstPosition, content.get(firstPosition - 1)),
+                    SectionItem.addedItem(firstPosition + 1, "new 1"),
+                    SectionItem.item(firstPosition + 1, firstPosition + 2, content.get(firstPosition))
                 )
             )
         ).isTrue();
         softly.assertThat(secondSectionItems.size()).isEqualTo(1 + 2 * linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                secondSectionItems,
+                asList(
+                    SectionItem.item(secondPosition, secondPosition + 1, content.get(secondPosition - 1)),
+                    SectionItem.addedItem(secondPosition + 2, "new 2"),
+                    SectionItem.item(secondPosition + 1, secondPosition + 3, content.get(secondPosition))
+                )
+            )
+        ).isTrue();
         softly.assertAll();
     }
 
@@ -498,10 +498,10 @@ public class SectionChangesExtractorTests
         List<String> content = sampleContent();
         int linesOffsetSize = 1;
         int firstPosition = 2;
-        int secondPosition = 6;
+        int secondPosition = firstPosition + 2 + 2 * linesOffsetSize;
         List<CommitItem> changes = asList(
-            deleteItem(content.get(firstPosition), firstPosition),
-            deleteItem(content.get(secondPosition), secondPosition)
+            deleteItem(content.get(firstPosition - 1), firstPosition),
+            deleteItem(content.get(secondPosition - 1), secondPosition)
         );
 
         // when
@@ -520,23 +520,23 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 firstSectionItems,
                 asList(
-                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 1)),
-                    SectionItem.deletedItem(firstPosition, content.get(firstPosition)),
-                    SectionItem.item(firstPosition + 1, firstPosition, content.get(firstPosition + 1))
-                )
-            )
-        ).isTrue();
-        softly.assertThat(
-            CollectionUtils.isEqualCollection(
-                secondSectionItems,
-                asList(
-                    SectionItem.item(secondPosition - 1, secondPosition - 2, content.get(secondPosition - 1)),
-                    SectionItem.deletedItem(secondPosition, content.get(secondPosition)),
-                    SectionItem.item(secondPosition + 1, secondPosition - 1, content.get(secondPosition + 1))
+                    SectionItem.item(firstPosition - 1, firstPosition - 1, content.get(firstPosition - 2)),
+                    SectionItem.deletedItem(firstPosition, content.get(firstPosition - 1)),
+                    SectionItem.item(firstPosition + 1, firstPosition, content.get(firstPosition))
                 )
             )
         ).isTrue();
         softly.assertThat(secondSectionItems.size()).isEqualTo(1 + 2 * linesOffsetSize);
+        softly.assertThat(
+            CollectionUtils.isEqualCollection(
+                secondSectionItems,
+                asList(
+                    SectionItem.item(secondPosition - 1, secondPosition - 2, content.get(secondPosition - 2)),
+                    SectionItem.deletedItem(secondPosition, content.get(secondPosition - 1)),
+                    SectionItem.item(secondPosition + 1, secondPosition - 1, content.get(secondPosition))
+                )
+            )
+        ).isTrue();
         softly.assertAll();
     }
 
@@ -548,8 +548,8 @@ public class SectionChangesExtractorTests
         int linesOffsetSize = 1;
         int position = 4;
         List<CommitItem> changes = asList(
-            deleteItem(content.get(position), position),
-            addItem("new", position)
+            addItem("new", position - 1),
+            deleteItem(content.get(position - 1), position)
         );
 
         // when
@@ -567,10 +567,10 @@ public class SectionChangesExtractorTests
             CollectionUtils.isEqualCollection(
                 sectionItems,
                 asList(
-                    SectionItem.item(position - 1, position - 1, content.get(position - 1)),
-                    SectionItem.deletedItem(position, content.get(position)),
+                    SectionItem.item(position - 1, position - 1, content.get(position - 2)),
                     SectionItem.addedItem(position, "new"),
-                    SectionItem.item(position + 1, position + 1, content.get(position + 1))
+                    SectionItem.deletedItem(position, content.get(position - 1)),
+                    SectionItem.item(position + 1, position + 1, content.get(position))
                 )
             )
         ).isTrue();

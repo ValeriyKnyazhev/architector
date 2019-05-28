@@ -86,10 +86,13 @@ public final class CommitCombinator
                 .map(CommitItem::value)
                 .collect(Collectors.toList());
             newItems.addAll(foundFile.items().stream()
-                .map(item -> defineValuesInPosition(foundFile.items().get(index.getAndIncrement()),
+                .map(item -> defineValuesInPosition(
+                    foundFile.items().get(index.getAndIncrement()),
                     fileChanges.items().stream()
                         .filter(changedItem -> index.get() == changedItem.position())
-                        .collect(Collectors.toList())))
+                        .collect(Collectors.toList())
+                    )
+                )
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList()));
             newItems.addAll(fileChanges.items().stream()

@@ -3,7 +3,6 @@ package valeriy.knyazhev.architector.application.commit;
 import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.application.commit.data.changes.SectionChangesData;
 import valeriy.knyazhev.architector.application.commit.data.changes.SectionChangesData.SectionItem;
-import valeriy.knyazhev.architector.domain.model.commit.ChangeType;
 import valeriy.knyazhev.architector.domain.model.commit.CommitItem;
 
 import javax.annotation.Nonnull;
@@ -13,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.ADDITION;
+import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.DELETION;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -51,34 +52,39 @@ public class SectionChangesExtractor
         List<SectionChangesData> sections = new LinkedList<>();
         int curOffset = 0;
         boolean isNewChange = true;
-        boolean isLastDeletionChange = false;
         int lastPosition = this.changes.get(0).position();
         List<SectionItem> newSectionItems = new LinkedList<>();
         for (CommitItem change : changes)
         {
-            if (change.position() - this.linesOffsetSize > lastPosition + this.linesOffsetSize + 1)
+            if (isNewSection(change, lastPosition))
             {
                 // Add offset lines from the content to the end of section
-                int startPosition = isLastDeletionChange ? lastPosition + 1 : lastPosition;
-                newSectionItems.addAll(extractLastContentLines(lastPosition, curOffset));
+                int startPosition = lastPosition + 1;
+                newSectionItems.addAll(extractLastContentLines(startPosition, curOffset));
 
                 // Create and add new section
                 sections.add(new SectionChangesData(newSectionItems));
-                lastPosition = change.position();// FIXME ?
+                lastPosition = change.position();
                 isNewChange = true;
                 newSectionItems = new LinkedList<>();
             }
-            if (isNewChange)
+            if (isNewChange && !isBeginOfContent(change))
             {
                 // Add offset lines from the content to the start of section
-                newSectionItems.addAll(extractFirstContentLines(lastPosition, curOffset));
+                int endPosition = change.type() == ADDITION
+                    ? change.position() + 1
+                    : change.position();
+                newSectionItems.addAll(extractFirstContentLines(endPosition, curOffset));
             } else
             {
                 if (change.position() > lastPosition + 1)
                 {
                     // Add offset lines from the content to the section space between changes
+                    int endPosition = change.type() == ADDITION
+                        ? change.position()
+                        : change.position() - 1;
                     newSectionItems.addAll(
-                        extractSectionItemsFromContent(lastPosition, change.position() - 1, curOffset)
+                        extractSectionItemsFromContent(lastPosition + 1, endPosition, curOffset)
                     );
                 }
             }
@@ -86,23 +92,48 @@ public class SectionChangesExtractor
             // Add changed line to section
             isNewChange = false;
             SectionItem newItem = null;
-            if (change.type() == ChangeType.ADDITION)
+            if (change.type() == ADDITION)
             {
-                newItem = SectionItem.addedItem(change.position() + curOffset, change.value());
                 curOffset++;
-                isLastDeletionChange = false;
+                newItem = SectionItem.addedItem(change.position() + curOffset, change.value());
             } else
             {
                 newItem = SectionItem.deletedItem(change.position(), change.value());
                 curOffset--;
-                isLastDeletionChange = true;
             }
             lastPosition = change.position();
             newSectionItems.add(newItem);
         }
-        newSectionItems.addAll(extractLastContentLines(lastPosition, curOffset));
+        if (!isEndOfContent(lastPosition))
+        {
+            int startPosition = lastPosition + 1;
+            newSectionItems.addAll(extractLastContentLines(startPosition, curOffset));
+        }
         sections.add(new SectionChangesData(newSectionItems));
         return sections;
+    }
+
+    private boolean isNewSection(@Nonnull CommitItem change, int position)
+    {
+        return (
+                   change.type() == ADDITION &&
+                   change.position() - this.linesOffsetSize > position + this.linesOffsetSize
+               ) ||
+               (
+                   change.type() == DELETION &&
+                   change.position() - this.linesOffsetSize > position + this.linesOffsetSize + 1
+               );
+    }
+
+    private boolean isBeginOfContent(@Nonnull CommitItem change)
+    {
+        return (change.type() == ADDITION && change.position() == 0) ||
+               (change.type() == DELETION && change.position() == 1);
+    }
+
+    private boolean isEndOfContent(int position)
+    {
+        return position == this.itemsSize;
     }
 
     @Nonnull
@@ -116,18 +147,17 @@ public class SectionChangesExtractor
     @Nonnull
     private List<SectionItem> extractLastContentLines(int position, int curOffset)
     {
-        int shift = (curOffset < 0) ? Math.abs(curOffset) : 0;
         return extractSectionItemsFromContent(
-            position + shift, position - 1 + shift + this.linesOffsetSize, curOffset
+            position, position - 1 + this.linesOffsetSize, curOffset
         );
     }
 
     @Nonnull
     private List<SectionItem> extractSectionItemsFromContent(int startIndex, int endIndex, int curOffset)
     {
-        startIndex = startIndex < 0 ? 0 : startIndex;
-        endIndex = endIndex >= this.itemsSize ? this.itemsSize - 1 : endIndex;
-        AtomicInteger lineIndex = new AtomicInteger(startIndex);
+        startIndex = startIndex < 1 ? 0 : startIndex - 1;
+        endIndex = endIndex > this.itemsSize ? this.itemsSize - 1 : endIndex - 1;
+        AtomicInteger lineIndex = new AtomicInteger(startIndex + 1);
         return fetchLines(startIndex, endIndex)
             .stream()
             .map(line ->
