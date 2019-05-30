@@ -275,16 +275,17 @@ export default class Project extends Component {
       {
         key: 'action',
         width: 2,
-        render: record => (
-          <Button
-            className="project__files-create-file "
-            onClick={() => this.handleDeleteFile(record.identifier)}
-            type="danger"
-            style={{ alignContent: 'right' }}
-          >
-            <Icon type="delete" />
-          </Button>
-        )
+        render: record =>
+          !readOnly && (
+            <Button
+              className="project__files-create-file "
+              onClick={() => this.handleDeleteFile(record.identifier)}
+              type="danger"
+              style={{ alignContent: 'right' }}
+            >
+              <Icon type="delete" />
+            </Button>
+          )
       }
     ];
     const filesListData = project.files.map((file, index) => {
