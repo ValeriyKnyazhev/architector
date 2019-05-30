@@ -22,7 +22,6 @@ import javax.annotation.Nonnull;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileMapper.buildContent;
 import static valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileMapper.buildFile;
 
 /**
@@ -53,20 +52,10 @@ public class FileResource
         Args.notNull(qFileId, "File identifier is required.");
         Project project = findProject(ProjectId.of(qProjectId), architector);
         File foundFile = fetchFile(project, FileId.of(qFileId));
-        return ResponseEntity.ok(buildFile(foundFile, project.accessRights(architector)));
-    }
-
-    @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/content",
-                produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> fetchFileContent(@PathVariable String qProjectId,
-                                                   @PathVariable String qFileId,
-                                                   @Nonnull Architector architector)
-    {
-        Args.notNull(qProjectId, "Project identifier is required.");
-        Args.notNull(qFileId, "File identifier is required.");
-        Project project = findProject(ProjectId.of(qProjectId), architector);
-        File foundFile = fetchFile(project, FileId.of(qFileId));
-        return ResponseEntity.ok(buildContent(foundFile));
+        // Project current commit id exist
+        return ResponseEntity.ok(
+            buildFile(foundFile, project.accessRights(architector), project.currentCommitId())
+        );
     }
 
     @PostMapping(value = "/api/projects/{qProjectId}/files/source",
@@ -84,15 +73,15 @@ public class FileResource
             )
         );
         return newFile != null
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage()
-                           .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to add file to project " + qProjectId + " from source URL.")
-                   );
+            ? ResponseEntity.ok()
+            .body(
+                new ResponseMessage()
+                    .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
+            )
+            : ResponseEntity.badRequest()
+                .body(
+                    new ResponseMessage().error("Unable to add file to project " + qProjectId + " from source URL.")
+                );
     }
 
     @PostMapping(value = "/api/projects/{qProjectId}/files/import",
@@ -110,15 +99,15 @@ public class FileResource
             )
         );
         return newFile != null
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage()
-                           .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to add file to project " + qProjectId + " from upload file.")
-                   );
+            ? ResponseEntity.ok()
+            .body(
+                new ResponseMessage()
+                    .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
+            )
+            : ResponseEntity.badRequest()
+                .body(
+                    new ResponseMessage().error("Unable to add file to project " + qProjectId + " from upload file.")
+                );
 
     }
 
@@ -136,62 +125,14 @@ public class FileResource
             )
         );
         return updated
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " was updated from source URL.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + " from source URL.")
-                   );
-    }
-
-    @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/source",
-                consumes = APPLICATION_JSON_UTF8_VALUE,
-                produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> updateFromUrl(@PathVariable String qProjectId,
-                                                @PathVariable String qFileId,
-                                                @RequestBody UpdateFileFromUrlRequest request,
-                                                @Nonnull Architector architector)
-    {
-        boolean updated = this.managementService.updateFile(
-            new UpdateFileFromUrlCommand(
-                qProjectId, qFileId, architector, request.sourceUrl()
+            ? ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("File " + qFileId + " was updated from source URL.")
             )
-        );
-        return updated
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " was updated from source URL.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + " from source URL.")
-                   );
-    }
-
-    @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/import",
-                consumes = MULTIPART_FORM_DATA_VALUE,
-                produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseMessage> updateFromFile(@PathVariable String qProjectId,
-                                                          @PathVariable String qFileId,
-                                                          @RequestParam("file") MultipartFile multipartFile,
-                                                          @Nonnull Architector architector)
-    {
-        boolean updated = this.managementService.updateFile(
-            new UpdateFileFromUploadCommand(
-                qProjectId, qFileId, architector, multipartFile
-            )
-        );
-        return updated
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " was updated from received file.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + " from received file.")
-                   );
+            : ResponseEntity.badRequest()
+                .body(
+                    new ResponseMessage().error("Unable to update file " + qFileId + " from source URL.")
+                );
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/description",
@@ -255,14 +196,14 @@ public class FileResource
             new DeleteFileCommand(qProjectId, qFileId, architector)
         );
         return deleted
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " was deleted from project.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to delete file " + qFileId + " from project.")
-                   );
+            ? ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("File " + qFileId + " was deleted from project.")
+            )
+            : ResponseEntity.badRequest()
+                .body(
+                    new ResponseMessage().error("Unable to delete file " + qFileId + " from project.")
+                );
     }
 
     @Nonnull

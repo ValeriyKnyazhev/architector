@@ -7,7 +7,9 @@ import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRight
 import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 
@@ -20,40 +22,48 @@ public class FileDescriptorModel
 
 
     @Nonnull
-    private String fileId;
+    private final String fileId;
 
     @Nonnull
     @JsonSerialize(using = ArchitectorLocalDateTimeSerializer.class)
-    private LocalDateTime createdDate;
+    private final LocalDateTime createdDate;
 
     @Nonnull
     @JsonSerialize(using = ArchitectorLocalDateTimeSerializer.class)
-    private LocalDateTime updatedDate;
+    private final LocalDateTime updatedDate;
 
     @Nonnull
-    private String schema;
+    private final ProjectAccessRights accessRights;
 
     @Nonnull
-    private MetadataModel metadata;
+    private final String schema;
 
     @Nonnull
-    private DescriptionModel description;
+    private final MetadataModel metadata;
 
     @Nonnull
-    private ProjectAccessRights accessRights;
+    private final DescriptionModel description;
 
-    public FileDescriptorModel(@Nonnull String fileId, @Nonnull LocalDateTime createdDate,
-                               @Nonnull LocalDateTime updatedDate, @Nonnull String schema,
-                               @Nonnull MetadataModel metadata, @Nonnull DescriptionModel description,
-                               @Nonnull ProjectAccessRights accessRights)
+    @Nonnull
+    private final Long currentCommitId;
+
+    public FileDescriptorModel(@Nonnull String fileId,
+                               @Nonnull LocalDateTime createdDate,
+                               @Nonnull LocalDateTime updatedDate,
+                               @Nonnull ProjectAccessRights accessRights,
+                               @Nonnull String schema,
+                               @Nonnull MetadataModel metadata,
+                               @Nonnull DescriptionModel description,
+                               @Nonnull Long currentCommitId)
     {
         this.fileId = fileId;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
+        this.accessRights = accessRights;
         this.schema = schema;
         this.metadata = metadata;
         this.description = description;
-        this.accessRights = accessRights;
+        this.currentCommitId = currentCommitId;
     }
 
 }

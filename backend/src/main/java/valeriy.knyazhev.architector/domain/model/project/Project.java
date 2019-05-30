@@ -10,6 +10,7 @@ import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRight
 import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAcce
 @Table(name = "projects")
 public class Project
 {
-
 
     @Id
     @GeneratedValue(strategy = TABLE)
@@ -78,6 +78,9 @@ public class Project
         inverseJoinColumns = @JoinColumn(name = "architector_id")
     )
     private Set<Architector> writeAccessRights;
+
+    @Nullable
+    private Long currentCommitId;
 
     @Nonnull
     @Version
@@ -136,6 +139,12 @@ public class Project
     public List<File> files()
     {
         return Collections.unmodifiableList(this.files);
+    }
+
+    @Nullable
+    public Long currentCommitId()
+    {
+        return this.currentCommitId;
     }
 
     @Nonnull
@@ -218,6 +227,11 @@ public class Project
     {
         this.readAccessRights.remove(architector);
         this.writeAccessRights.remove(architector);
+    }
+
+    public void updateCurrentCommitId(long commitId)
+    {
+        this.currentCommitId = commitId;
     }
 
     public void addFile(@Nonnull File file)

@@ -48,7 +48,8 @@ export default class File extends Component {
       },
       description: {
         descriptions: []
-      }
+      },
+      currentCommitId: 0
     },
     historyChanges: [],
     content: '',
@@ -82,7 +83,12 @@ export default class File extends Component {
       }
     } = this.props;
     const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}`);
-    this.setState({ file: data, fileDataLoaded: true });
+    this.setState({
+      file: data,
+      fileDataLoaded: true,
+      isContentLoaded: false,
+      isContentShow: false
+    });
   };
 
   fetchFileHistoryChanges = async () => {
@@ -101,7 +107,12 @@ export default class File extends Component {
         params: { projectId, fileId }
       }
     } = this.props;
-    const { data } = await axios.get(`/api/projects/${projectId}/files/${fileId}/content`);
+    const {
+      file: { currentCommitId }
+    } = this.state;
+    const { data } = await axios.get(
+      `/api/projects/${projectId}/files/${fileId}/commits/${currentCommitId}/content`
+    );
     this.setState({ content: data.content, isContentLoaded: true });
   };
 
@@ -127,22 +138,22 @@ export default class File extends Component {
         params: { projectId, fileId }
       }
     } = this.props;
+    const {
+      file: { currentCommitId }
+    } = this.state;
 
     axios
       .put(`/api/projects/${projectId}/files/${fileId}/content`, {
         commitMessage: 'update file',
-        content: this.state.updatedContent
+        content: this.state.updatedContent,
+        headCommitId: currentCommitId
       })
       .then(() => {
+        this.fetchFileInfo();
         this.fetchFileHistoryChanges();
         this.onEditContent();
       });
   };
-
-  setEditedDescr = description =>
-    this.setState({
-      newDescription: description
-    });
 
   onUpdateContent = debounce(contentState => {
     this.setState({
@@ -192,6 +203,7 @@ export default class File extends Component {
               pagination={false}
             />
             <FileMetadata
+              headCommitId={file.currentCommitId}
               metadata={file.metadata}
               fetchFileInfo={this.fetchFileInfo}
               fetchFileHistoryChanges={this.fetchFileHistoryChanges}
@@ -199,6 +211,7 @@ export default class File extends Component {
               readOnly={readOnly}
             />
             <FileDescr
+              headCommitId={file.currentCommitId}
               description={file.description}
               fetchFileInfo={this.fetchFileInfo}
               fetchFileHistoryChanges={this.fetchFileHistoryChanges}
@@ -286,26 +299,6 @@ export default class File extends Component {
             </div>
           </div>
         </div>
-        {visibleEditDescr && (
-          <Modal
-            title="Edit file description"
-            visible={visibleEditDescr}
-            onOk={() => this.handleEditDescr('visibleEditDescr')}
-            onCancel={() => this.handleCancel('visibleEditDescr')}
-            okButtonProps={{
-              disabled: _isEmpty(this.state.newDescription)
-            }}
-          >
-            <div>
-              <div className="projects__input-label">Description</div>
-              <Input
-                placeholder="Enter your project description"
-                value={this.state.newDescription}
-                onChange={e => this.onChangeFileDescription(e, 'newDescription')}
-              />
-            </div>
-          </Modal>
-        )}
       </div>
     ) : (
       <Spin />

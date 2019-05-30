@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Table, Tag, Icon, Spin, Card } from "antd";
+import { Table, Tag, Icon, Spin, Card } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import FileMetadata from 'pages/Project/File/FileMetadata';
 import FileDescr from 'pages/Project/File/FileDescr';
@@ -23,7 +23,7 @@ export default class FileProjection extends Component {
   };
 
   async componentDidMount() {
-    //this.fetchFileProjection();
+    this.fetchFileProjection();
   }
 
   fetchFileProjection = async () => {
@@ -39,13 +39,8 @@ export default class FileProjection extends Component {
   };
 
   onToggleShowContent = () => {
-    const { isContentShow, isContentLoaded } = this.state;
-    if (!isContentShow) {
-      this.setState({ isContentShow: true });
-      !isContentLoaded && this.fetchFileProjection();
-    } else {
-      this.setState({ isContentShow: false });
-    }
+    const { isContentShow } = this.state;
+    this.setState({ isContentShow: !isContentShow });
   };
 
   render() {
@@ -86,16 +81,8 @@ export default class FileProjection extends Component {
           File: {metadata.name} Change: {commitId}
         </div>
         <div>
-          <FileMetadata
-            metadata={metadata}
-            match={this.props.match}
-            readOnly={true}
-          />
-          <FileDescr
-            description={description}
-            match={this.props.match}
-            readOnly={true}
-          />
+          <FileMetadata metadata={metadata} match={this.props.match} readOnly={true} />
+          <FileDescr description={description} match={this.props.match} readOnly={true} />
           <div className="file__content">
             <div className="row file__content-header">
               <div

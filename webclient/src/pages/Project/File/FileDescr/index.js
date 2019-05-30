@@ -84,7 +84,8 @@ export default class FileDescr extends Component {
     axios
       .put(`/api/projects/${projectId}/files/${fileId}/description`, {
         descriptions: newDescription,
-        implementationLevel: newImplementationLevel
+        implementationLevel: newImplementationLevel,
+        headCommitId: this.props.headCommitId
       })
       .then(() => {
         this.setState(

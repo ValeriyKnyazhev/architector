@@ -130,7 +130,8 @@ export default class FileMetadata extends Component {
         authors: newAuthors,
         organizations: newOrganizations,
         preprocessorVersion: newPreprocessorVersion,
-        originatingSystem: newOriginatingSystem
+        originatingSystem: newOriginatingSystem,
+        headCommitId: this.props.headCommitId
       })
       .then(() => {
         this.setState(

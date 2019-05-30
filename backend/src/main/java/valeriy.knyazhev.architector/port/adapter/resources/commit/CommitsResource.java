@@ -72,9 +72,8 @@ public class CommitsResource
 
     @GetMapping(value = "api/projects/{qProjectId}/commits/{commitId}/content",
                 produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> fetchProjectContentByCommit(
-        @PathVariable String qProjectId,
-        @PathVariable long commitId)
+    public ResponseEntity<Object> fetchProjectContentByCommit(@PathVariable String qProjectId,
+                                                              @PathVariable long commitId)
     {
         Projection projection = this.commitQueryService.fetchProjection(
             new MakeProjectProjectionCommand(qProjectId, commitId)

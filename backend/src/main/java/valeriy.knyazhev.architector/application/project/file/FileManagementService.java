@@ -231,12 +231,17 @@ public class FileManagementService
                 )
             )
             .build();
-        boolean added = commitChanges(
+        Long commitId = commitChanges(
             project.projectId(),
             architector.email(),
             commitMessage,
             commitData);
-        return added ? newFile : null;
+        if (commitId == null)
+        {
+            return null;
+        }
+        project.updateCurrentCommitId(commitId);
+        return newFile;
     }
 
     private boolean updateFile(@Nonnull ProjectId projectId,
@@ -277,7 +282,13 @@ public class FileManagementService
             )
             .build();
         updateFileContent(project, oldFile.fileId(), newFile);
-        return commitChanges(project.projectId(), architector.email(), commitMessage, commitData);
+        Long commitId = commitChanges(project.projectId(), architector.email(), commitMessage, commitData);
+        if (commitId == null)
+        {
+            return false;
+        }
+        project.updateCurrentCommitId(commitId);
+        return true;
     }
 
     private boolean deleteFile(@Nonnull ProjectId projectId,
@@ -301,12 +312,18 @@ public class FileManagementService
                 )
             )
             .build();
-        return commitChanges(
+        Long commitId = commitChanges(
             project.projectId(),
             architector.email(),
             "File " + fileId.id() + " was deleted from project.",
             commitData
         );
+        if (commitId == null)
+        {
+            return false;
+        }
+        project.updateCurrentCommitId(commitId);
+        return true;
     }
 
     private void updateFileContent(@Nonnull Project project,
@@ -342,7 +359,8 @@ public class FileManagementService
     }
 
     // TODO move to commit service
-    private boolean commitChanges(@Nonnull ProjectId projectId,
+    @Nullable
+    private Long commitChanges(@Nonnull ProjectId projectId,
                                   @Nonnull String author,
                                   @Nonnull String commitMessage,
                                   @Nonnull CommitDescription commitData)
@@ -361,7 +379,7 @@ public class FileManagementService
             .data(commitData)
             .build();
         this.commitRepository.saveAndFlush(newCommit);
-        return true;
+        return newCommit.id();
     }
 
     @Nonnull

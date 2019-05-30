@@ -36,6 +36,9 @@ public class UpdateFileMetadataRequest
     @Nonnull
     private String authorization;
 
+    @Nonnull
+    private Long headCommitId;
+
     public void setName(@Nonnull String name)
     {
         this.name = Args.notNull(name, "Name is required.");
@@ -69,6 +72,11 @@ public class UpdateFileMetadataRequest
     public void setAuthorization(@Nonnull String authorization)
     {
         this.authorization = Args.notNull(authorization, "Authorization is required.");
+    }
+
+    public void setHeadCommitId(@Nonnull Long headCommitId)
+    {
+        this.headCommitId = Args.notNull(headCommitId, "Head commit identifier is required.");
     }
 
     @Nonnull
@@ -111,6 +119,11 @@ public class UpdateFileMetadataRequest
     public String authorization()
     {
         return this.authorization;
+    }
+
+    public long headCommitId()
+    {
+        return this.headCommitId;
     }
 
 }
