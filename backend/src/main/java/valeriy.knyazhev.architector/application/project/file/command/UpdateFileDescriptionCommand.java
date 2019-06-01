@@ -30,18 +30,23 @@ public class UpdateFileDescriptionCommand
     @Nonnull
     private String implementationLevel;
 
+    @Nonnull
+    private Long headCommitId;
+
     @Builder
     private UpdateFileDescriptionCommand(@Nonnull String projectId,
                                          @Nonnull String fileId,
                                          @Nonnull Architector architector,
                                          @Nonnull List<String> descriptions,
-                                         @Nonnull String implementationLevel)
+                                         @Nonnull String implementationLevel,
+                                         @Nonnull Long headCommitId)
     {
         this.projectId = projectId;
         this.fileId = fileId;
         this.architector = architector;
         this.descriptions = descriptions;
         this.implementationLevel = implementationLevel;
+        this.headCommitId = headCommitId;
     }
 
     @Nonnull
@@ -60,6 +65,11 @@ public class UpdateFileDescriptionCommand
     public Architector architector()
     {
         return this.architector;
+    }
+
+    public long headCommitId()
+    {
+        return this.headCommitId;
     }
 
     @Nonnull

@@ -30,17 +30,22 @@ public class UpdateFileContentCommand
     @Nonnull
     private String commitMessage;
 
+    @Nonnull
+    private Long headCommitId;
+
     public UpdateFileContentCommand(@Nonnull String projectId,
                                     @Nonnull String fileId,
                                     @Nonnull Architector architector,
                                     @Nonnull String content,
-                                    @Nonnull String commitMessage)
+                                    @Nonnull String commitMessage,
+                                    @Nonnull Long headCommitId)
     {
         this.projectId = projectId;
         this.fileId = fileId;
         this.architector = architector;
         this.content = asList(content.split(System.lineSeparator()));
         this.commitMessage = commitMessage;
+        this.headCommitId = headCommitId;
     }
 
     @Nonnull
@@ -72,4 +77,10 @@ public class UpdateFileContentCommand
     {
         return this.commitMessage;
     }
+
+    public long headCommitId()
+    {
+        return this.headCommitId;
+    }
+
 }

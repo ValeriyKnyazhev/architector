@@ -139,4 +139,10 @@ public class FileMetadataChanges
         return this.authorization != null ? this.authorization : oldValue;
     }
 
+    @Nonnull
+    public static FileMetadataChanges empty()
+    {
+        return new FileMetadataChanges();
+    }
+
 }

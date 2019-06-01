@@ -58,4 +58,10 @@ public class FileDescriptionChanges
         return this.implementationLevel != null ? this.implementationLevel : oldValue;
     }
 
+    @Nonnull
+    public static FileDescriptionChanges empty()
+    {
+        return new FileDescriptionChanges();
+    }
+
 }

@@ -5,10 +5,16 @@ import org.apache.http.util.Args;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import valeriy.knyazhev.architector.application.commit.ProjectionConstructService;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
+import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.ContentConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.DescriptionConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.MetadataConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
+import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
+import valeriy.knyazhev.architector.domain.model.commit.projection.Projection.FileProjection;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -35,9 +41,13 @@ public class FileManagementService
 
     private final ProjectRepository projectRepository;
 
+    private final ProjectionConstructService projectionConstructService;
+
     private final IFCFileReader fileReader;
 
     private final CommitRepository commitRepository;
+
+    private final ChangesConflictApplicationService conflictService;
 
     @Nullable
     public File addFile(@Nonnull AddFileFromUrlCommand command)
@@ -79,66 +89,82 @@ public class FileManagementService
             newFile);
     }
 
-    public boolean updateFile(@Nonnull UpdateFileContentCommand command)
+    public boolean updateFileContent(@Nonnull UpdateFileContentCommand command)
     {
-        Args.notNull(command, "Update file from url command is required.");
+        Args.notNull(command, "Update file content command is required.");
         ProjectId projectId = command.projectId();
         Architector architector = command.architector();
         FileId fileId = command.fileId();
-        File foundFile = fetchFile(projectId, fileId, architector);
-        FileData newFile = new FileData(
-            foundFile.schema(),
-            "FIXME ISO_ID",
-            foundFile.metadata(),
-            foundFile.description(),
-            FileContent.of(command.content())
+        Project project = findProject(projectId, architector);
+        File foundFile = findFile(project, fileId);
+        Long projectCommitId = project.currentCommitId();
+        if (projectCommitId == null)
+        {
+            throw new IllegalStateException("Project must have some changes.");
+        }
+        FileContent newContent = FileContent.of(command.content());
+        CommitDescription commitData = null;
+        if (projectCommitId == command.headCommitId())
+        {
+            List<CommitItem> commitItems = FileDiffCalculator.calculateDiff(
+                foundFile.content(), newContent
+            );
+            commitData = CommitDescription.builder()
+                .files(
+                    singletonList(
+                        CommitFileItem.of(
+                            fileId,
+                            FileMetadataChanges.empty(),
+                            FileDescriptionChanges.empty(),
+                            commitItems
+                        )
+                    )
+                )
+                .build();
+        } else
+        {
+            // FIXME get projection by commit id and calc diff
+            FileProjection projection = fetchFile(projectId, fileId, command.headCommitId());
+            FileContent oldContent = FileContent.of(projection.items());
+            List<CommitItem> headCommitItems = FileDiffCalculator.calculateDiff(oldContent, foundFile.content());
+            List<CommitItem> newCommitItems = FileDiffCalculator.calculateDiff(oldContent, newContent);
+            List<ContentConflictChanges> conflicts = this.conflictService.checkContentChangesConflicts(
+                headCommitItems, newCommitItems
+            );
+            if (conflicts.isEmpty())
+            {
+                commitData = CommitDescription.builder()
+                    .files(
+                        singletonList(
+                            CommitFileItem.of(
+                                fileId,
+                                FileMetadataChanges.empty(),
+                                FileDescriptionChanges.empty(),
+                                newCommitItems
+                            )
+                        )
+                    )
+                    .build();
+            } else
+            {
+                throw new IllegalStateException("FIXME");
+            }
+        }
+        Long commitId = commitChanges(
+            project.projectId(),
+            projectCommitId,
+            architector.email(),
+            command.commitMessage(),
+            commitData
         );
-        return updateFile(
-            command.projectId(),
-            command.fileId(),
-            architector,
-            "File " + command.fileId().id() + " content was updated: " + command.commitMessage(),
-            newFile);
-    }
-
-    public boolean updateFile(@Nonnull UpdateFileFromUrlCommand command)
-    {
-        Args.notNull(command, "Update file from url command is required.");
-        FileData newFile = null;
-        try
-        {
-            URL sourceUrl = new URL(command.sourceUrl());
-            newFile = this.fileReader.readFromUrl(sourceUrl);
-        } catch (MalformedURLException e)
+        if (commitId == null)
         {
             return false;
         }
-        return updateFile(
-            command.projectId(),
-            command.fileId(),
-            command.author(),
-            "File " + command.fileId().id() + " was updated from " + command.sourceUrl() + ".",
-            newFile);
-    }
-
-    public boolean updateFile(@Nonnull UpdateFileFromUploadCommand command)
-    {
-        Args.notNull(command, "Update file from upload file command is required.");
-        FileData newFile = null;
-        try
-        {
-            MultipartFile multipartFile = command.content();
-            newFile = this.fileReader.readFromFile(multipartFile.getInputStream());
-        } catch (IOException ex)
-        {
-            return false;
-        }
-        return updateFile(
-            command.projectId(),
-            command.fileId(),
-            command.architector(),
-            "File " + command.fileId().id() + " was updated from uploaded file.",
-            newFile);
+        project.updateFile(fileId, newContent);
+        project.updateCurrentCommitId(commitId);
+        this.projectRepository.saveAndFlush(project);
+        return true;
     }
 
     public boolean updateFileMetadata(@Nonnull UpdateFileMetadataCommand command)
@@ -147,28 +173,80 @@ public class FileManagementService
         ProjectId projectId = command.projectId();
         Architector architector = command.architector();
         FileId fileId = command.fileId();
-        File foundFile = fetchFile(projectId, fileId, architector);
-        FileMetadata newMetadata = command.constructMetadata();
-        FileMetadataChanges changes = FileDiffCalculator.defineMetadataChanges(
-            foundFile.metadata(), newMetadata
-        );
-        if (changes.isEmpty())
+        Project project = findProject(projectId, architector);
+        File foundFile = findFile(project, fileId);
+        Long projectCommitId = project.currentCommitId();
+        if (projectCommitId == null)
         {
-            return false;
+            throw new IllegalStateException("Project must have some changes.");
+        }
+        FileMetadata newMetadata = command.constructMetadata();
+        CommitDescription commitData = null;
+        if (projectCommitId == command.headCommitId())
+        {
+            FileMetadataChanges newChanges = FileDiffCalculator.defineMetadataChanges(
+                foundFile.metadata(), newMetadata
+            );
+            commitData = CommitDescription.builder()
+                .files(
+                    singletonList(
+                        CommitFileItem.of(
+                            fileId,
+                            newChanges,
+                            FileDescriptionChanges.empty(),
+                            List.of()
+                        )
+                    )
+                )
+                .build();
         } else
         {
-            updateFile(
-                projectId,
-                fileId,
-                architector,
-                "File " + fileId.id() + " metadata was updated.",
-                new FileData(
-                    foundFile.schema(), "FIXME ISO_ID", newMetadata, foundFile.description(), foundFile.content()
-                )
+            // FIXME get projection by commit id and calc diff
+            FileProjection projection = fetchFile(projectId, fileId, command.headCommitId());
+            FileMetadata oldMetadata = projection.metadata();
+            FileMetadataChanges headChanges = FileDiffCalculator.defineMetadataChanges(
+                oldMetadata, foundFile.metadata()
             );
-            foundFile.updateMetadata(newMetadata);
-            return true;
+            FileMetadataChanges newChanges = FileDiffCalculator.defineMetadataChanges(
+                oldMetadata, newMetadata
+            );
+            MetadataConflictChanges conflicts = this.conflictService.checkMetadataChangesConflicts(
+                oldMetadata, headChanges, newChanges
+            );
+            if (conflicts.isEmpty())
+            {
+                commitData = CommitDescription.builder()
+                    .files(
+                        singletonList(
+                            CommitFileItem.of(
+                                fileId,
+                                newChanges,
+                                FileDescriptionChanges.empty(),
+                                List.of()
+                            )
+                        )
+                    )
+                    .build();
+            } else
+            {
+                throw new IllegalStateException("FIXME");
+            }
         }
+        Long commitId = commitChanges(
+            project.projectId(),
+            projectCommitId,
+            architector.email(),
+            "File " + fileId.id() + " metadata was updated.",
+            commitData
+        );
+        if (commitId == null)
+        {
+            return false;
+        }
+        foundFile.updateMetadata(newMetadata);
+        project.updateCurrentCommitId(commitId);
+        this.projectRepository.saveAndFlush(project);
+        return true;
     }
 
     public boolean updateFileDescription(@Nonnull UpdateFileDescriptionCommand command)
@@ -177,28 +255,80 @@ public class FileManagementService
         ProjectId projectId = command.projectId();
         Architector architector = command.architector();
         FileId fileId = command.fileId();
-        File foundFile = fetchFile(projectId, fileId, architector);
-        FileDescription newDescription = command.constructDescription();
-        FileDescriptionChanges changes = FileDiffCalculator.defineDescriptionChanges(
-            foundFile.description(), newDescription
-        );
-        if (changes.isEmpty())
+        Project project = findProject(projectId, architector);
+        File foundFile = findFile(project, fileId);
+        Long projectCommitId = project.currentCommitId();
+        if (projectCommitId == null)
         {
-            return false;
+            throw new IllegalStateException("Project must have some changes.");
+        }
+        FileDescription newDescription = command.constructDescription();
+        CommitDescription commitData = null;
+        if (projectCommitId == command.headCommitId())
+        {
+            FileDescriptionChanges newChanges = FileDiffCalculator.defineDescriptionChanges(
+                foundFile.description(), newDescription
+            );
+            commitData = CommitDescription.builder()
+                .files(
+                    singletonList(
+                        CommitFileItem.of(
+                            fileId,
+                            FileMetadataChanges.empty(),
+                            newChanges,
+                            List.of()
+                        )
+                    )
+                )
+                .build();
         } else
         {
-            updateFile(
-                projectId,
-                fileId,
-                architector,
-                "File " + fileId.id() + " description was updated.",
-                new FileData(
-                    foundFile.schema(), "FIXME ISO_ID", foundFile.metadata(), newDescription, foundFile.content()
-                )
+            // FIXME get projection by commit id and calc diff
+            FileProjection projection = fetchFile(projectId, fileId, command.headCommitId());
+            FileDescription oldDescription = projection.description();
+            FileDescriptionChanges newChanges = FileDiffCalculator.defineDescriptionChanges(
+                oldDescription, newDescription
             );
-            foundFile.updateDescription(newDescription);
-            return true;
+            FileDescriptionChanges headChanges = FileDiffCalculator.defineDescriptionChanges(
+                oldDescription, foundFile.description()
+            );
+            DescriptionConflictChanges conflicts = this.conflictService.checkDescriptionChangesConflicts(
+                oldDescription, headChanges, newChanges
+            );
+            if (conflicts.isEmpty())
+            {
+                commitData = CommitDescription.builder()
+                    .files(
+                        singletonList(
+                            CommitFileItem.of(
+                                fileId,
+                                FileMetadataChanges.empty(),
+                                newChanges,
+                                List.of()
+                            )
+                        )
+                    )
+                    .build();
+            } else
+            {
+                throw new IllegalStateException("FIXME");
+            }
         }
+        Long commitId = commitChanges(
+            project.projectId(),
+            projectCommitId,
+            architector.email(),
+            "File " + fileId.id() + " description was updated.",
+            commitData
+        );
+        if (commitId == null)
+        {
+            return false;
+        }
+        foundFile.updateDescription(newDescription);
+        project.updateCurrentCommitId(commitId);
+        this.projectRepository.saveAndFlush(project);
+        return true;
     }
 
     public boolean deleteFile(@Nonnull DeleteFileCommand command)
@@ -215,8 +345,6 @@ public class FileManagementService
     {
         Project project = findProject(projectId, architector);
         File newFile = constructFile(FileId.nextId(), newFileData);
-        project.addFile(newFile);
-        this.projectRepository.saveAndFlush(project);
         CommitDescription commitData = CommitDescription.builder()
             .files(
                 singletonList(
@@ -233,6 +361,7 @@ public class FileManagementService
             .build();
         Long commitId = commitChanges(
             project.projectId(),
+            project.currentCommitId(),
             architector.email(),
             commitMessage,
             commitData);
@@ -240,55 +369,10 @@ public class FileManagementService
         {
             return null;
         }
+        project.addFile(newFile);
+        this.projectRepository.saveAndFlush(project);
         project.updateCurrentCommitId(commitId);
         return newFile;
-    }
-
-    private boolean updateFile(@Nonnull ProjectId projectId,
-                               @Nonnull FileId fileId,
-                               @Nonnull Architector architector,
-                               @Nonnull String commitMessage,
-                               @Nonnull FileData newFileData)
-    {
-        Project project = findProject(projectId, architector);
-        File oldFile = project.files().stream()
-            .filter(file -> fileId.equals(file.fileId()))
-            .findFirst()
-            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
-        File newFile = constructFile(fileId, newFileData);
-        if (!oldFile.schema().equals(newFile.schema()))
-        {
-            throw new IllegalStateException("File schema version must not be updated.");
-        }
-        List<CommitItem> commitItems = FileDiffCalculator.calculateDiff(
-            oldFile.content(), newFile.content()
-        );
-        FileMetadataChanges fileMetadataChanges = FileDiffCalculator.defineMetadataChanges(
-            oldFile.metadata(), newFile.metadata()
-        );
-        FileDescriptionChanges fileDescriptionChanges = FileDiffCalculator.defineDescriptionChanges(
-            oldFile.description(), newFile.description()
-        );
-        CommitDescription commitData = CommitDescription.builder()
-            .files(
-                singletonList(
-                    CommitFileItem.of(
-                        oldFile.fileId(),
-                        fileMetadataChanges,
-                        fileDescriptionChanges,
-                        commitItems
-                    )
-                )
-            )
-            .build();
-        updateFileContent(project, oldFile.fileId(), newFile);
-        Long commitId = commitChanges(project.projectId(), architector.email(), commitMessage, commitData);
-        if (commitId == null)
-        {
-            return false;
-        }
-        project.updateCurrentCommitId(commitId);
-        return true;
     }
 
     private boolean deleteFile(@Nonnull ProjectId projectId,
@@ -314,6 +398,7 @@ public class FileManagementService
             .build();
         Long commitId = commitChanges(
             project.projectId(),
+            project.currentCommitId(),
             architector.email(),
             "File " + fileId.id() + " was deleted from project.",
             commitData
@@ -326,14 +411,6 @@ public class FileManagementService
         return true;
     }
 
-    private void updateFileContent(@Nonnull Project project,
-                                   @Nonnull FileId fileId,
-                                   @Nonnull File newFile)
-    {
-        project.updateFile(fileId, newFile.content());
-        this.projectRepository.saveAndFlush(project);
-    }
-
     @Nonnull
     private Project findProject(@Nonnull ProjectId projectId, @Nonnull Architector architector)
     {
@@ -342,37 +419,43 @@ public class FileManagementService
         if (!project.canBeUpdated(architector))
         {
             throw new AccessRightsNotFoundException();
-        }
-        else {
+        } else
+        {
             return project;
         }
     }
 
     @Nonnull
-    private File fetchFile(@Nonnull ProjectId projectId, @Nonnull FileId fileId, @Nonnull Architector architector)
+    private FileProjection fetchFile(@Nonnull ProjectId projectId,
+                                     @Nonnull FileId fileId,
+                                     @Nullable Long commitId)
     {
-        Project project = findProject(projectId, architector);
-        return project.files().stream()
+        Projection projection = projectionConstructService.makeProjection(projectId, commitId);
+        return projection.files().stream()
             .filter(file -> fileId.equals(file.fileId()))
             .findFirst()
             .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
     }
 
+    @Nonnull
+    private File findFile(@Nonnull Project project, @Nonnull FileId fileId)
+    {
+        return project.files().stream()
+            .filter(file -> fileId.equals(file.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(project.projectId(), fileId));
+    }
+
     // TODO move to commit service
     @Nullable
     private Long commitChanges(@Nonnull ProjectId projectId,
-                                  @Nonnull String author,
-                                  @Nonnull String commitMessage,
-                                  @Nonnull CommitDescription commitData)
+                               @Nullable Long headCommitId,
+                               @Nonnull String author,
+                               @Nonnull String commitMessage,
+                               @Nonnull CommitDescription commitData)
     {
-        // FIXME get next id from db
-        Long parentId = this.commitRepository.findByProjectIdOrderById(projectId)
-            .stream()
-            .map(Commit::id)
-            .max(Long::compareTo)
-            .orElse(null);
         Commit newCommit = Commit.builder()
-            .parentId(parentId)
+            .parentId(headCommitId)
             .projectId(projectId)
             .message(commitMessage)
             .author(author)

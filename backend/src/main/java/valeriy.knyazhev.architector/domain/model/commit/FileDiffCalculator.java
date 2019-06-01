@@ -79,7 +79,7 @@ public final class FileDiffCalculator
         }
         if (newMetadata == null)
         {
-            return FileMetadataChanges.builder().build();
+            return FileMetadataChanges.empty();
         }
         return FileMetadataChanges.builder()
             .name(
@@ -124,7 +124,7 @@ public final class FileDiffCalculator
         }
         if (newDescription == null)
         {
-            return FileDescriptionChanges.builder().build();
+            return FileDescriptionChanges.empty();
         }
         return FileDescriptionChanges.builder()
             .descriptions(

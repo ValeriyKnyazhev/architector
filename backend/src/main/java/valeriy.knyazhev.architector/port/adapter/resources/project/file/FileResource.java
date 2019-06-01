@@ -15,7 +15,10 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.*;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUrlRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileContentRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileDescriptionRequest;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileMetadataRequest;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
@@ -119,9 +122,9 @@ public class FileResource
                                                 @RequestBody UpdateFileContentRequest request,
                                                 @Nonnull Architector architector)
     {
-        boolean updated = this.managementService.updateFile(
+        boolean updated = this.managementService.updateFileContent(
             new UpdateFileContentCommand(
-                qProjectId, qFileId, architector, request.content(), request.commitMessage()
+                qProjectId, qFileId, architector, request.content(), request.commitMessage(), request.headCommitId()
             )
         );
         return updated
@@ -150,6 +153,7 @@ public class FileResource
                 .architector(architector)
                 .descriptions(request.descriptions())
                 .implementationLevel(request.implementationLevel())
+                .headCommitId(request.headCommitId())
                 .build()
         );
         return ResponseEntity.ok()
@@ -178,6 +182,7 @@ public class FileResource
                 .preprocessorVersion(request.preprocessorVersion())
                 .originatingSystem(request.originatingSystem())
                 .authorization(request.authorization())
+                .headCommitId(request.headCommitId())
                 .build()
         );
         return ResponseEntity.ok()
