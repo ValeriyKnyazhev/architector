@@ -186,7 +186,7 @@ public class ResolveChangesConflictService
                 project.projectId(),
                 projectCommitId,
                 architector.email(),
-                "File " + fileId.id() + " metadata was updated.",
+                "File " + fileId.id() + " metadata conflict was resolved.",
                 commitData
             );
             foundFile.updateMetadata(fixedMetadata);
@@ -270,7 +270,7 @@ public class ResolveChangesConflictService
                 project.projectId(),
                 projectCommitId,
                 architector.email(),
-                "File " + fileId.id() + " description was updated.",
+                "File " + fileId.id() + " description conflict was resolved.",
                 commitData
             );
             foundFile.updateDescription(fixedDescription);
