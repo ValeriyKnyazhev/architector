@@ -168,6 +168,7 @@ public class FileManagementService
     }
 
     public boolean updateFileMetadata(@Nonnull UpdateFileMetadataCommand command)
+        throws FileMetadataConflictException
     {
         Args.notNull(command, "Update file metadata command is required.");
         ProjectId projectId = command.projectId();
@@ -229,7 +230,7 @@ public class FileManagementService
                     .build();
             } else
             {
-                throw new IllegalStateException("FIXME");
+                throw new FileMetadataConflictException(conflicts);
             }
         }
         Long commitId = commitChanges(
@@ -250,6 +251,7 @@ public class FileManagementService
     }
 
     public boolean updateFileDescription(@Nonnull UpdateFileDescriptionCommand command)
+        throws FileDescriptionConflictException
     {
         Args.notNull(command, "Update file description command is required.");
         ProjectId projectId = command.projectId();
@@ -311,7 +313,7 @@ public class FileManagementService
                     .build();
             } else
             {
-                throw new IllegalStateException("FIXME");
+                throw new FileDescriptionConflictException(conflicts);
             }
         }
         Long commitId = commitChanges(

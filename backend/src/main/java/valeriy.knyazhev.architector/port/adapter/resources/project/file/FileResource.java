@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
+import valeriy.knyazhev.architector.application.project.file.FileDescriptionConflictException;
 import valeriy.knyazhev.architector.application.project.file.FileManagementService;
+import valeriy.knyazhev.architector.application.project.file.FileMetadataConflictException;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
@@ -15,6 +17,8 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.conflict.FileDescriptionConflictModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.model.conflict.FileMetadataConflictModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileContentRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileDescriptionRequest;
@@ -76,15 +80,15 @@ public class FileResource
             )
         );
         return newFile != null
-            ? ResponseEntity.ok()
-            .body(
-                new ResponseMessage()
-                    .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
-            )
-            : ResponseEntity.badRequest()
-                .body(
-                    new ResponseMessage().error("Unable to add file to project " + qProjectId + " from source URL.")
-                );
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage()
+                           .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to add file to project " + qProjectId + " from source URL.")
+                   );
     }
 
     @PostMapping(value = "/api/projects/{qProjectId}/files/import",
@@ -102,15 +106,15 @@ public class FileResource
             )
         );
         return newFile != null
-            ? ResponseEntity.ok()
-            .body(
-                new ResponseMessage()
-                    .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
-            )
-            : ResponseEntity.badRequest()
-                .body(
-                    new ResponseMessage().error("Unable to add file to project " + qProjectId + " from upload file.")
-                );
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage()
+                           .info("File " + newFile.fileId().id() + " was added to project " + qProjectId)
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to add file to project " + qProjectId + " from upload file.")
+                   );
 
     }
 
@@ -128,66 +132,118 @@ public class FileResource
             )
         );
         return updated
-            ? ResponseEntity.ok()
-            .body(
-                new ResponseMessage().info("File " + qFileId + " was updated from source URL.")
-            )
-            : ResponseEntity.badRequest()
-                .body(
-                    new ResponseMessage().error("Unable to update file " + qFileId + " from source URL.")
-                );
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage().info("File " + qFileId + " was updated from source URL.")
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to update file " + qFileId + " from source URL.")
+                   );
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/description",
                 consumes = APPLICATION_JSON_UTF8_VALUE,
                 produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
-                                                              @PathVariable String qFileId,
-                                                              @RequestBody UpdateFileDescriptionRequest request,
-                                                              @Nonnull Architector architector)
+    public ResponseEntity<Object> updateFileDescription(@PathVariable String qProjectId,
+                                                        @PathVariable String qFileId,
+                                                        @RequestBody UpdateFileDescriptionRequest request,
+                                                        @Nonnull Architector architector)
     {
-        this.managementService.updateFileDescription(
-            UpdateFileDescriptionCommand.builder()
-                .projectId(qProjectId)
-                .fileId(qFileId)
-                .architector(architector)
-                .descriptions(request.descriptions())
-                .implementationLevel(request.implementationLevel())
-                .headCommitId(request.headCommitId())
-                .build()
-        );
+        try
+        {
+            this.managementService.updateFileDescription(
+                UpdateFileDescriptionCommand.builder()
+                    .projectId(qProjectId)
+                    .fileId(qFileId)
+                    .architector(architector)
+                    .descriptions(request.descriptions())
+                    .implementationLevel(request.implementationLevel())
+                    .headCommitId(request.headCommitId())
+                    .build()
+            );
+        } catch (FileDescriptionConflictException ex)
+        {
+            return ResponseEntity.ok(
+                new FileDescriptionConflictModel(
+                    ex.changes(),
+                    FileDescriptionConflictModel.Links.of(qProjectId, qFileId)
+                )
+            );
+        }
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("File " + qFileId + " description was updated.")
             );
     }
 
+    @PostMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/description/resolve-conflict",
+                 consumes = APPLICATION_JSON_UTF8_VALUE,
+                 produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> resolveDescriptionConflict(@PathVariable String qProjectId,
+                                                             @PathVariable String qFileId,
+                                                             @RequestBody UpdateFileDescriptionRequest request,
+                                                             @Nonnull Architector architector)
+    {
+        // TODO
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("File " + qFileId + " description conflict was resolved.")
+            );
+    }
+
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata",
                 consumes = APPLICATION_JSON_UTF8_VALUE,
                 produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseMessage> updateFileMetadata(@PathVariable String qProjectId,
-                                                              @PathVariable String qFileId,
-                                                              @RequestBody UpdateFileMetadataRequest request,
-                                                              @Nonnull Architector architector)
+    public ResponseEntity<Object> updateFileMetadata(@PathVariable String qProjectId,
+                                                     @PathVariable String qFileId,
+                                                     @RequestBody UpdateFileMetadataRequest request,
+                                                     @Nonnull Architector architector)
     {
-        this.managementService.updateFileMetadata(
-            UpdateFileMetadataCommand.builder()
-                .projectId(qProjectId)
-                .fileId(qFileId)
-                .architector(architector)
-                .name(request.name())
-                .timestamp(request.timestamp())
-                .authors(request.authors())
-                .organizations(request.organizations())
-                .preprocessorVersion(request.preprocessorVersion())
-                .originatingSystem(request.originatingSystem())
-                .authorization(request.authorization())
-                .headCommitId(request.headCommitId())
-                .build()
-        );
+        try
+        {
+            this.managementService.updateFileMetadata(
+                UpdateFileMetadataCommand.builder()
+                    .projectId(qProjectId)
+                    .fileId(qFileId)
+                    .architector(architector)
+                    .name(request.name())
+                    .timestamp(request.timestamp())
+                    .authors(request.authors())
+                    .organizations(request.organizations())
+                    .preprocessorVersion(request.preprocessorVersion())
+                    .originatingSystem(request.originatingSystem())
+                    .authorization(request.authorization())
+                    .headCommitId(request.headCommitId())
+                    .build()
+            );
+        } catch (FileMetadataConflictException ex)
+        {
+            return ResponseEntity.ok(
+                new FileMetadataConflictModel(
+                    ex.changes(),
+                    FileMetadataConflictModel.Links.of(qProjectId, qFileId)
+                )
+            );
+        }
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("File " + qFileId + " metadata was updated.")
+            );
+    }
+
+    @PostMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata/resolve-conflict",
+                 consumes = APPLICATION_JSON_UTF8_VALUE,
+                 produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Object> resolveMetadataConflict(@PathVariable String qProjectId,
+                                                             @PathVariable String qFileId,
+                                                             @RequestBody UpdateFileMetadataRequest request,
+                                                             @Nonnull Architector architector)
+    {
+        // TODO
+        return ResponseEntity.ok()
+            .body(
+                new ResponseMessage().info("File " + qFileId + " metadata conflict was resolved.")
             );
     }
 
@@ -201,14 +257,14 @@ public class FileResource
             new DeleteFileCommand(qProjectId, qFileId, architector)
         );
         return deleted
-            ? ResponseEntity.ok()
-            .body(
-                new ResponseMessage().info("File " + qFileId + " was deleted from project.")
-            )
-            : ResponseEntity.badRequest()
-                .body(
-                    new ResponseMessage().error("Unable to delete file " + qFileId + " from project.")
-                );
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage().info("File " + qFileId + " was deleted from project.")
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to delete file " + qFileId + " from project.")
+                   );
     }
 
     @Nonnull

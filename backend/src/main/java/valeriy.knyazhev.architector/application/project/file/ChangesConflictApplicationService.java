@@ -1,5 +1,7 @@
 package valeriy.knyazhev.architector.application.project.file;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,75 +51,93 @@ public class ChangesConflictApplicationService
         if (headMetadata.name() != null || newMetadata.name() != null)
         {
             conflictsBuilder.name(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldMetadata.name(),
                     headMetadata.name(),
                     newMetadata.name()
                 )
             );
+        } else {
+            conflictsBuilder.name(ConflictChange.oldValue(oldMetadata.name()));
         }
         if (headMetadata.timestamp() != null || newMetadata.timestamp() != null)
         {
             conflictsBuilder.timestamp(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldMetadata.timestamp(),
                     headMetadata.timestamp(),
                     newMetadata.timestamp()
                 )
             );
+        } else {
+            conflictsBuilder.timestamp(ConflictChange.oldValue(oldMetadata.timestamp()));
         }
         if (headMetadata.authors() != null || newMetadata.authors() != null)
         {
             conflictsBuilder.authors(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldMetadata.authors(),
                     headMetadata.authors(),
                     newMetadata.authors()
                 )
             );
+        } else
+        {
+            conflictsBuilder.authors(ConflictChange.oldValue(oldMetadata.authors()));
+
         }
         if (headMetadata.organizations() != null || newMetadata.organizations() != null)
         {
             conflictsBuilder.organizations(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldMetadata.organizations(),
                     headMetadata.organizations(),
                     newMetadata.organizations()
                 )
             );
+        } else
+        {
+            conflictsBuilder.organizations(ConflictChange.oldValue(oldMetadata.organizations()));
         }
         if (headMetadata.preprocessorVersion() != null || newMetadata.preprocessorVersion() != null)
         {
             conflictsBuilder.preprocessorVersion(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldMetadata.preprocessorVersion(),
                     headMetadata.preprocessorVersion(),
                     newMetadata.preprocessorVersion()
                 )
             );
+        } else
+        {
+            conflictsBuilder.preprocessorVersion(ConflictChange.oldValue(oldMetadata.preprocessorVersion()));
         }
         if (headMetadata.originatingSystem() != null || newMetadata.originatingSystem() != null)
         {
             conflictsBuilder.originatingSystem(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldMetadata.originatingSystem(),
                     headMetadata.originatingSystem(),
                     newMetadata.originatingSystem()
                 )
             );
+        } else
+        {
+            conflictsBuilder.originatingSystem(ConflictChange.oldValue(oldMetadata.originatingSystem()));
         }
         if (headMetadata.authorization() != null || newMetadata.authorization() != null)
         {
             conflictsBuilder.authorization(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldMetadata.authorization(),
                     headMetadata.authorization(),
                     newMetadata.authorization()
                 )
             );
+        } else
+        {
+            conflictsBuilder.authorization(ConflictChange.oldValue(oldMetadata.authorization()));
         }
-
-
         return conflictsBuilder.build();
     }
 
@@ -130,22 +150,28 @@ public class ChangesConflictApplicationService
         if (headDescription.descriptions() != null || newDescription.descriptions() != null)
         {
             conflictsBuilder.descriptions(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldDescription.descriptions(),
                     headDescription.descriptions(),
                     newDescription.descriptions()
                 )
             );
+        } else
+        {
+            conflictsBuilder.descriptions(ConflictChange.oldValue(oldDescription.descriptions()));
         }
         if (headDescription.implementationLevel() != null || newDescription.implementationLevel() != null)
         {
             conflictsBuilder.implementationLevel(
-                ConflictChange.of(
+                ConflictChange.withConflict(
                     oldDescription.implementationLevel(),
                     headDescription.implementationLevel(),
                     newDescription.implementationLevel()
                 )
             );
+        } else
+        {
+            conflictsBuilder.implementationLevel(ConflictChange.oldValue(oldDescription.implementationLevel()));
         }
         return conflictsBuilder.build();
     }
@@ -155,38 +181,39 @@ public class ChangesConflictApplicationService
 
     }
 
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class MetadataConflictChanges
     {
 
-        @Nullable
+        @Nonnull
         private ConflictChange name;
 
-        @Nullable
+        @Nonnull
         private ConflictChange timestamp;
 
-        @Nullable
+        @Nonnull
         private ConflictChange authors;
 
-        @Nullable
+        @Nonnull
         private ConflictChange organizations;
 
-        @Nullable
+        @Nonnull
         private ConflictChange preprocessorVersion;
 
-        @Nullable
+        @Nonnull
         private ConflictChange originatingSystem;
 
-        @Nullable
+        @Nonnull
         private ConflictChange authorization;
 
         @Builder
-        private MetadataConflictChanges(@Nullable ConflictChange name,
-                                        @Nullable ConflictChange timestamp,
-                                        @Nullable ConflictChange authors,
-                                        @Nullable ConflictChange organizations,
-                                        @Nullable ConflictChange preprocessorVersion,
-                                        @Nullable ConflictChange originatingSystem,
-                                        @Nullable ConflictChange authorization)
+        private MetadataConflictChanges(@Nonnull ConflictChange name,
+                                        @Nonnull ConflictChange timestamp,
+                                        @Nonnull ConflictChange authors,
+                                        @Nonnull ConflictChange organizations,
+                                        @Nonnull ConflictChange preprocessorVersion,
+                                        @Nonnull ConflictChange originatingSystem,
+                                        @Nonnull ConflictChange authorization)
         {
             this.name = name;
             this.timestamp = timestamp;
@@ -197,39 +224,97 @@ public class ChangesConflictApplicationService
             this.authorization = authorization;
         }
 
+        @JsonIgnore
         public boolean isEmpty()
         {
-            return this.name == null && this.timestamp == null && this.authors == null &&
-                   this.organizations == null && this.preprocessorVersion == null &&
-                   this.originatingSystem == null && this.authorization == null;
+            return !this.name.hasConflict() && !this.timestamp.hasConflict() && !this.authors.hasConflict() &&
+                   !this.organizations.hasConflict() && !this.preprocessorVersion.hasConflict() &&
+                   !this.originatingSystem.hasConflict() && !this.authorization.hasConflict();
+        }
+
+        @Nonnull
+        public ConflictChange name()
+        {
+            return this.name;
+        }
+
+        @Nonnull
+        public ConflictChange timestamp()
+        {
+            return this.timestamp;
+        }
+
+        @Nonnull
+        public ConflictChange authors()
+        {
+            return this.authors;
+        }
+
+        @Nonnull
+        public ConflictChange organizations()
+        {
+            return this.organizations;
+        }
+
+        @Nonnull
+        public ConflictChange preprocessorVersion()
+        {
+            return this.preprocessorVersion;
+        }
+
+        @Nonnull
+        public ConflictChange originatingSystem()
+        {
+            return this.originatingSystem;
+        }
+
+        @Nonnull
+        public ConflictChange authorization()
+        {
+            return this.authorization;
         }
 
     }
 
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class DescriptionConflictChanges
     {
 
-        @Nullable
+        @Nonnull
         private ConflictChange descriptions;
 
-        @Nullable
+        @Nonnull
         private ConflictChange implementationLevel;
 
         @Builder
-        private DescriptionConflictChanges(@Nullable ConflictChange descriptions,
-                                           @Nullable ConflictChange implementationLevel)
+        private DescriptionConflictChanges(@Nonnull ConflictChange descriptions,
+                                           @Nonnull ConflictChange implementationLevel)
         {
             this.descriptions = descriptions;
             this.implementationLevel = implementationLevel;
         }
 
+        @JsonIgnore
         public boolean isEmpty()
         {
-            return this.descriptions == null && this.implementationLevel == null;
+            return !this.descriptions.hasConflict() && !this.implementationLevel.hasConflict();
+        }
+
+        @Nonnull
+        public ConflictChange descriptions()
+        {
+            return this.descriptions;
+        }
+
+        @Nonnull
+        public ConflictChange implementationLevel()
+        {
+            return this.implementationLevel;
         }
 
     }
 
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class ConflictChange
     {
 
@@ -251,25 +336,63 @@ public class ChangesConflictApplicationService
             this.newValue = newValue;
         }
 
-        public static ConflictChange of(@Nonnull String oldValue,
-                                        @Nullable String headValue,
-                                        @Nullable String newValue)
+        public boolean hasConflict()
+        {
+            return this.headValue != null && this.newValue != null;
+        }
+
+        @Nonnull
+        public Object oldValue()
+        {
+            return this.oldValue;
+        }
+
+        @Nullable
+        public Object headValue()
+        {
+            return this.headValue;
+        }
+
+        @Nullable
+        public Object newValue()
+        {
+            return this.newValue;
+        }
+
+        public static ConflictChange withConflict(@Nonnull String oldValue,
+                                                  @Nullable String headValue,
+                                                  @Nullable String newValue)
         {
             return new ConflictChange(oldValue, headValue, newValue);
         }
 
-        public static ConflictChange of(@Nonnull List<String> oldValue,
-                                        @Nullable List<String> headValue,
-                                        @Nullable List<String> newValue)
+        public static ConflictChange withConflict(@Nonnull List<String> oldValue,
+                                                  @Nullable List<String> headValue,
+                                                  @Nullable List<String> newValue)
         {
             return new ConflictChange(oldValue, headValue, newValue);
         }
 
-        public static ConflictChange of(@Nonnull LocalDate oldValue,
-                                        @Nullable LocalDate headValue,
-                                        @Nullable LocalDate newValue)
+        public static ConflictChange withConflict(@Nonnull LocalDate oldValue,
+                                                  @Nullable LocalDate headValue,
+                                                  @Nullable LocalDate newValue)
         {
             return new ConflictChange(oldValue, headValue, newValue);
+        }
+
+        public static ConflictChange oldValue(@Nonnull String oldValue)
+        {
+            return new ConflictChange(oldValue, null, null);
+        }
+
+        public static ConflictChange oldValue(@Nonnull List<String> oldValue)
+        {
+            return new ConflictChange(oldValue, null, null);
+        }
+
+        public static ConflictChange oldValue(@Nonnull LocalDate oldValue)
+        {
+            return new ConflictChange(oldValue, null, null);
         }
 
     }
