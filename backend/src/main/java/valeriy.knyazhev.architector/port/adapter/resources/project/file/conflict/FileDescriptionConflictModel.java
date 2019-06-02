@@ -1,11 +1,8 @@
-package valeriy.knyazhev.architector.port.adapter.resources.project.file.model.conflict;
+package valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.apache.http.util.Args;
-import org.hibernate.boot.Metadata;
-import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService;
-import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.DescriptionConflictChanges;
-import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.MetadataConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.DescriptionConflictChanges;
 
 import javax.annotation.Nonnull;
 
@@ -15,20 +12,25 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = ANY)
-public class FileMetadataConflictModel
+public class FileDescriptionConflictModel
 {
 
 
     @Nonnull
-    private final MetadataConflictChanges conflictData;
+    private final DescriptionConflictChanges conflictData;
+
+    @Nonnull
+    private Long headCommitId;
 
     @Nonnull
     private final Links links;
 
-    public FileMetadataConflictModel(@Nonnull MetadataConflictChanges conflictData,
-                                     @Nonnull Links links)
+    public FileDescriptionConflictModel(@Nonnull DescriptionConflictChanges conflictData,
+                                        @Nonnull Long headCommitId,
+                                        @Nonnull Links links)
     {
         this.conflictData = Args.notNull(conflictData, "Conflict changes data is required.");
+        this.headCommitId = Args.notNull(headCommitId, "Head commit identifier is required.");
         this.links = Args.notNull(links, "Links are required.");
     }
 
@@ -50,7 +52,7 @@ public class FileMetadataConflictModel
             Args.notBlank(projectId, "Project identifier is required.");
             Args.notBlank(fileId, "File identifier is required.");
             return new Links(
-                "/api/projects/" + projectId + "/files/" + fileId + "/metadata/resolve-conflict"
+                "/api/projects/" + projectId + "/files/" + fileId + "/description/resolve-conflict"
 
             );
         }

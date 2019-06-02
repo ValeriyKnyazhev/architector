@@ -7,10 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.commit.ProjectionConstructService;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
-import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.ContentConflictChanges;
-import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.DescriptionConflictChanges;
-import valeriy.knyazhev.architector.application.project.file.ChangesConflictApplicationService.MetadataConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.command.*;
+import valeriy.knyazhev.architector.application.project.file.conflict.*;
+import valeriy.knyazhev.architector.application.project.file.conflict.ResolveChangesConflictService.ContentConflictChanges;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
@@ -47,7 +46,7 @@ public class FileManagementService
 
     private final CommitRepository commitRepository;
 
-    private final ChangesConflictApplicationService conflictService;
+    private final ResolveChangesConflictService conflictService;
 
     @Nullable
     public File addFile(@Nonnull AddFileFromUrlCommand command)
@@ -124,7 +123,7 @@ public class FileManagementService
         } else
         {
             // FIXME get projection by commit id and calc diff
-            FileProjection projection = fetchFile(projectId, fileId, command.headCommitId());
+            FileProjection projection = fetchFileProjection(projectId, fileId, command.headCommitId());
             FileContent oldContent = FileContent.of(projection.items());
             List<CommitItem> headCommitItems = FileDiffCalculator.calculateDiff(oldContent, foundFile.content());
             List<CommitItem> newCommitItems = FileDiffCalculator.calculateDiff(oldContent, newContent);
@@ -157,10 +156,6 @@ public class FileManagementService
             command.commitMessage(),
             commitData
         );
-        if (commitId == null)
-        {
-            return false;
-        }
         project.updateFile(fileId, newContent);
         project.updateCurrentCommitId(commitId);
         this.projectRepository.saveAndFlush(project);
@@ -203,7 +198,7 @@ public class FileManagementService
         } else
         {
             // FIXME get projection by commit id and calc diff
-            FileProjection projection = fetchFile(projectId, fileId, command.headCommitId());
+            FileProjection projection = fetchFileProjection(projectId, fileId, command.headCommitId());
             FileMetadata oldMetadata = projection.metadata();
             FileMetadataChanges headChanges = FileDiffCalculator.defineMetadataChanges(
                 oldMetadata, foundFile.metadata()
@@ -230,7 +225,7 @@ public class FileManagementService
                     .build();
             } else
             {
-                throw new FileMetadataConflictException(conflicts);
+                throw new FileMetadataConflictException(conflicts, projectCommitId);
             }
         }
         Long commitId = commitChanges(
@@ -240,10 +235,6 @@ public class FileManagementService
             "File " + fileId.id() + " metadata was updated.",
             commitData
         );
-        if (commitId == null)
-        {
-            return false;
-        }
         foundFile.updateMetadata(newMetadata);
         project.updateCurrentCommitId(commitId);
         this.projectRepository.saveAndFlush(project);
@@ -286,7 +277,7 @@ public class FileManagementService
         } else
         {
             // FIXME get projection by commit id and calc diff
-            FileProjection projection = fetchFile(projectId, fileId, command.headCommitId());
+            FileProjection projection = fetchFileProjection(projectId, fileId, command.headCommitId());
             FileDescription oldDescription = projection.description();
             FileDescriptionChanges newChanges = FileDiffCalculator.defineDescriptionChanges(
                 oldDescription, newDescription
@@ -313,7 +304,7 @@ public class FileManagementService
                     .build();
             } else
             {
-                throw new FileDescriptionConflictException(conflicts);
+                throw new FileDescriptionConflictException(conflicts, projectCommitId);
             }
         }
         Long commitId = commitChanges(
@@ -323,10 +314,6 @@ public class FileManagementService
             "File " + fileId.id() + " description was updated.",
             commitData
         );
-        if (commitId == null)
-        {
-            return false;
-        }
         foundFile.updateDescription(newDescription);
         project.updateCurrentCommitId(commitId);
         this.projectRepository.saveAndFlush(project);
@@ -366,11 +353,8 @@ public class FileManagementService
             project.currentCommitId(),
             architector.email(),
             commitMessage,
-            commitData);
-        if (commitId == null)
-        {
-            return null;
-        }
+            commitData
+        );
         project.addFile(newFile);
         this.projectRepository.saveAndFlush(project);
         project.updateCurrentCommitId(commitId);
@@ -405,10 +389,6 @@ public class FileManagementService
             "File " + fileId.id() + " was deleted from project.",
             commitData
         );
-        if (commitId == null)
-        {
-            return false;
-        }
         project.updateCurrentCommitId(commitId);
         return true;
     }
@@ -428,18 +408,6 @@ public class FileManagementService
     }
 
     @Nonnull
-    private FileProjection fetchFile(@Nonnull ProjectId projectId,
-                                     @Nonnull FileId fileId,
-                                     @Nullable Long commitId)
-    {
-        Projection projection = projectionConstructService.makeProjection(projectId, commitId);
-        return projection.files().stream()
-            .filter(file -> fileId.equals(file.fileId()))
-            .findFirst()
-            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
-    }
-
-    @Nonnull
     private File findFile(@Nonnull Project project, @Nonnull FileId fileId)
     {
         return project.files().stream()
@@ -448,8 +416,20 @@ public class FileManagementService
             .orElseThrow(() -> new FileNotFoundException(project.projectId(), fileId));
     }
 
+    @Nonnull
+    private FileProjection fetchFileProjection(@Nonnull ProjectId projectId,
+                                               @Nonnull FileId fileId,
+                                               @Nullable Long commitId)
+    {
+        Projection projection = projectionConstructService.makeProjection(projectId, commitId);
+        return projection.files().stream()
+            .filter(file -> fileId.equals(file.fileId()))
+            .findFirst()
+            .orElseThrow(() -> new FileNotFoundException(projectId, fileId));
+    }
+
     // TODO move to commit service
-    @Nullable
+    @Nonnull
     private Long commitChanges(@Nonnull ProjectId projectId,
                                @Nullable Long headCommitId,
                                @Nonnull String author,
