@@ -34,7 +34,7 @@ public class ConflictChange
 
     public boolean hasConflict()
     {
-        return this.headValue != null && this.newValue != null;
+        return this.headValue != null || this.newValue != null;
     }
 
     @Nonnull

@@ -168,28 +168,31 @@ public class ResolveChangesConflictService
         FileMetadataChanges newChanges = FileDiffCalculator.defineMetadataChanges(
             foundFile.metadata(), fixedMetadata
         );
-        CommitDescription commitData = CommitDescription.builder()
-            .files(
-                singletonList(
-                    CommitFileItem.of(
-                        fileId,
-                        newChanges,
-                        FileDescriptionChanges.empty(),
-                        List.of()
+        if (!newChanges.isEmpty())
+        {
+            CommitDescription commitData = CommitDescription.builder()
+                .files(
+                    singletonList(
+                        CommitFileItem.of(
+                            fileId,
+                            newChanges,
+                            FileDescriptionChanges.empty(),
+                            List.of()
+                        )
                     )
                 )
-            )
-            .build();
-        Long commitId = commitChanges(
-            project.projectId(),
-            projectCommitId,
-            architector.email(),
-            "File " + fileId.id() + " metadata was updated.",
-            commitData
-        );
-        foundFile.updateMetadata(fixedMetadata);
-        project.updateCurrentCommitId(commitId);
-        this.projectRepository.saveAndFlush(project);
+                .build();
+            Long commitId = commitChanges(
+                project.projectId(),
+                projectCommitId,
+                architector.email(),
+                "File " + fileId.id() + " metadata was updated.",
+                commitData
+            );
+            foundFile.updateMetadata(fixedMetadata);
+            project.updateCurrentCommitId(commitId);
+            this.projectRepository.saveAndFlush(project);
+        }
         return true;
     }
 
@@ -249,28 +252,31 @@ public class ResolveChangesConflictService
         FileDescriptionChanges newChanges = FileDiffCalculator.defineDescriptionChanges(
             foundFile.description(), fixedDescription
         );
-        CommitDescription commitData = CommitDescription.builder()
-            .files(
-                singletonList(
-                    CommitFileItem.of(
-                        fileId,
-                        FileMetadataChanges.empty(),
-                        newChanges,
-                        List.of()
+        if (!newChanges.isEmpty())
+        {
+            CommitDescription commitData = CommitDescription.builder()
+                .files(
+                    singletonList(
+                        CommitFileItem.of(
+                            fileId,
+                            FileMetadataChanges.empty(),
+                            newChanges,
+                            List.of()
+                        )
                     )
                 )
-            )
-            .build();
-        Long commitId = commitChanges(
-            project.projectId(),
-            projectCommitId,
-            architector.email(),
-            "File " + fileId.id() + " description was updated.",
-            commitData
-        );
-        foundFile.updateDescription(fixedDescription);
-        project.updateCurrentCommitId(commitId);
-        this.projectRepository.saveAndFlush(project);
+                .build();
+            Long commitId = commitChanges(
+                project.projectId(),
+                projectCommitId,
+                architector.email(),
+                "File " + fileId.id() + " description was updated.",
+                commitData
+            );
+            foundFile.updateDescription(fixedDescription);
+            project.updateCurrentCommitId(commitId);
+            this.projectRepository.saveAndFlush(project);
+        }
         return true;
     }
 
