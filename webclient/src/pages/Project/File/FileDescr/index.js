@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import _isEmpty from 'lodash/isEmpty';
-import { Table, Tag, Modal, message, Input, Button, Icon } from 'antd';
+import _omit from 'lodash/omit';
+import { Table, Modal, message, Input, Button, Icon } from 'antd';
+
+const ButtonGroup = Button.Group;
 
 const descriptionColumns = [
   {
@@ -27,15 +30,78 @@ const descriptionColumns = [
 
 export default class FileDescr extends Component {
   state = {
-    visibleEditDescr: false,
+    visibleEditDescription: false,
+    visibleResolveConflict: false,
+    conflictSelectedValues: {
+      descriptions: [],
+      implementationLevel: ''
+    },
+    conflict: {
+      data: {
+        descriptions: {},
+        implementationLevel: {}
+      },
+      resolveLink: '',
+      headCommitId: 0
+    },
     newDescription: this.props.description.descriptions,
     newImplementationLevel: this.props.description.implementationLevel
   };
 
-  handleCancel = state => {
+  applyConflictValue = (tag, value) => {
+    const newData = _omit(this.state.conflict.data, tag);
     this.setState({
-      [state]: false
+      ...this.state,
+      conflict: { ...this.state.conflict, ...{ data: newData } },
+      conflictSelectedValues: { ...this.state.conflictSelectedValues, ...{ [tag]: value } }
     });
+  };
+
+  renderConflict = (title, tag) => {
+    const conflict = this.state.conflict.data[tag];
+    return (
+      <div className={'conflict-' + tag}>
+        <div className={'conflict-' + tag + '-header'}>{title}</div>
+        {conflict ? (
+          <div className={'row conflict-' + tag + '-values'}>
+            <div className="col-xs-3">{conflict.headValue}</div>
+            <div className="col-xs-3">{conflict.oldValue}</div>
+            <div className="col-xs-3">{conflict.newValue}</div>
+            <div className="col-xs-3">
+              <ButtonGroup>
+                {conflict.headValue && (
+                  <Button
+                    type="primary"
+                    icon="left"
+                    onClick={() => {
+                      this.applyConflictValue(tag, conflict.headValue);
+                    }}
+                  />
+                )}
+                <Button
+                  type="primary"
+                  icon="close"
+                  onClick={() => {
+                    this.applyConflictValue(tag, conflict.oldValue);
+                  }}
+                />
+                {conflict.newValue && (
+                  <Button
+                    type="primary"
+                    icon="right"
+                    onClick={() => {
+                      this.applyConflictValue(tag, conflict.newValue);
+                    }}
+                  />
+                )}
+              </ButtonGroup>
+            </div>
+          </div>
+        ) : (
+          <div>{this.state.conflictSelectedValues[tag]}</div>
+        )}
+      </div>
+    );
   };
 
   onChangeValue = (event, valueName) => {
@@ -74,7 +140,7 @@ export default class FileDescr extends Component {
     });
   };
 
-  handleEditDescr = modalVisible => {
+  handleEditDescription = modalVisible => {
     const { newDescription, newImplementationLevel } = this.state;
     const {
       match: {
@@ -87,15 +153,59 @@ export default class FileDescr extends Component {
         implementationLevel: newImplementationLevel,
         headCommitId: this.props.headCommitId
       })
+      .then(({ data }) => {
+        if (data.conflictData) {
+          this.setState(
+            {
+              [modalVisible]: false,
+              visibleResolveConflict: true,
+              conflict: {
+                data: data.conflictData,
+                resolveLink: data.links.resolveConflict,
+                headCommitId: data.headCommitId
+              }
+            },
+            () => {
+              this.props.fetchFileInfo();
+              this.props.fetchFileHistoryChanges();
+              message.success('Description was updated');
+            }
+          );
+        } else {
+          this.setState(
+            {
+              [modalVisible]: false
+            },
+            () => {
+              this.props.fetchFileInfo();
+              this.props.fetchFileHistoryChanges();
+              message.success('Description was updated');
+            }
+          );
+        }
+      });
+  };
+
+  resolveConflict = () => {
+    const {
+      conflict: { resolveLink, headCommitId },
+      conflictSelectedValues
+    } = this.state;
+    axios
+      .post(resolveLink, {
+        descriptions: conflictSelectedValues.descriptions,
+        implementationLevel: conflictSelectedValues.implementationLevel,
+        headCommitId: this.props.headCommitId
+      })
       .then(() => {
         this.setState(
           {
-            [modalVisible]: false
+            visibleResolveConflict: false
           },
           () => {
             this.props.fetchFileInfo();
             this.props.fetchFileHistoryChanges();
-            message.success('Descr was updated');
+            message.success('Description conflict was resolved');
           }
         );
       });
@@ -103,7 +213,13 @@ export default class FileDescr extends Component {
 
   render() {
     const { description, readOnly } = this.props;
-    const { visibleEditDescr, newDescription, newImplementationLevel } = this.state;
+    const {
+      visibleEditDescription,
+      visibleResolveConflict,
+      conflict,
+      newDescription,
+      newImplementationLevel
+    } = this.state;
     const descriptionData = [
       {
         key: '1',
@@ -123,7 +239,7 @@ export default class FileDescr extends Component {
                 style={{ marginLeft: 8, alignContent: 'right' }}
                 onClick={() => {
                   this.setState({
-                    visibleEditDescr: true
+                    visibleEditDescription: true
                   });
                 }}
               >
@@ -141,12 +257,12 @@ export default class FileDescr extends Component {
             pagination={false}
           />
         </div>
-        {visibleEditDescr && (
+        {visibleEditDescription && (
           <Modal
             title="Edit file description"
-            visible={visibleEditDescr}
-            onOk={() => this.handleEditDescr('visibleEditDescr')}
-            onCancel={() => this.handleCancel('visibleEditDescr')}
+            visible={visibleEditDescription}
+            onOk={() => this.handleEditDescription('visibleEditDescription')}
+            onCancel={() => this.handleCancel('visibleEditDescription')}
             okButtonProps={{
               disabled: _isEmpty(newDescription) || _isEmpty(newImplementationLevel)
             }}
@@ -185,6 +301,30 @@ export default class FileDescr extends Component {
               value={newImplementationLevel}
               onChange={e => this.onChangeValue(e, 'newImplementationLevel')}
             />
+          </Modal>
+        )}
+        {visibleResolveConflict && (
+          <Modal
+            title="Resolve file description conflict"
+            visible={visibleResolveConflict}
+            onOk={() => this.resolveConflict()}
+            onCancel={() => this.handleCancel('visibleResolveConflict')}
+            okButtonProps={{
+              disabled: !_isEmpty(conflict.data)
+            }}
+          >
+            <div className="row conflict-headers">
+              <div className="col-xs-3">Head</div>
+              <div className="col-xs-3">Old</div>
+              <div className="col-xs-3">Your version</div>
+              <div className="col-xs-3">Actions</div>
+            </div>
+            {this.renderConflict('Descriptions', 'descriptions', conflict.data.descriptions)}
+            {this.renderConflict(
+              'Implementation Level',
+              'implementationLevel',
+              conflict.data.implementationLevel
+            )}
           </Modal>
         )}
       </div>
