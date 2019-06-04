@@ -102,11 +102,6 @@ export default class FileDescription extends Component {
                 resolveLink: data.links.resolveConflict,
                 headCommitId: data.headCommitId
               }
-            },
-            () => {
-              this.props.fetchFileInfo();
-              this.props.fetchFileHistoryChanges();
-              message.success('Description was updated');
             }
           );
         } else {
@@ -166,7 +161,11 @@ export default class FileDescription extends Component {
     ];
 
     const conflictData = [
-      { title: 'Descriptions', tag: 'descriptions', conflict: conflict.data.descriptions },
+      {
+        title: 'Descriptions',
+        tag: 'descriptions',
+        conflict: conflict.data.descriptions
+      },
       {
         title: 'Implementation Level',
         tag: 'implementationLevel',

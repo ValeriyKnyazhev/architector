@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import _isEmpty from 'lodash/isEmpty';
+import FileStructureConflict from 'components/FileStructureConflict';
 import { Table, Tag, Modal, message, Input, Button, Icon } from 'antd';
 
 const metadataColumns = [
@@ -55,17 +56,37 @@ const metadataColumns = [
     dataIndex: 'preprocessorVersion',
     key: 'preprocessorVersion',
     width: 2
+  },
+  {
+    title: 'Authorization',
+    dataIndex: 'authorization',
+    key: 'authorization',
+    width: 1
   }
 ];
 
 export default class FileMetadata extends Component {
   state = {
     visibleEditMetadata: false,
+    visibleResolveConflict: false,
+    conflict: {
+      data: {
+        name: {},
+        authors: {},
+        organizations: {},
+        originatingSystem: {},
+        preprocessorVersion: {},
+        authorization: {}
+      },
+      resolveLink: '',
+      headCommitId: 0
+    },
+    newName: this.props.metadata.name,
     newAuthors: this.props.metadata.authors,
     newOrganizations: this.props.metadata.organizations,
-    newName: this.props.metadata.name,
     newOriginatingSystem: this.props.metadata.originatingSystem,
-    newPreprocessorVersion: this.props.metadata.preprocessorVersion
+    newPreprocessorVersion: this.props.metadata.preprocessorVersion,
+    newAuthorization: this.props.metadata.authorization
   };
 
   handleCancel = state => {
@@ -116,7 +137,8 @@ export default class FileMetadata extends Component {
       newAuthors,
       newOrganizations,
       newOriginatingSystem,
-      newPreprocessorVersion
+      newPreprocessorVersion,
+      newAuthorization
     } = this.state;
     const {
       match: {
@@ -131,17 +153,58 @@ export default class FileMetadata extends Component {
         organizations: newOrganizations,
         preprocessorVersion: newPreprocessorVersion,
         originatingSystem: newOriginatingSystem,
+        authorization: newAuthorization,
+        headCommitId: this.props.headCommitId
+      })
+      .then(({ data }) => {
+        if (data.conflictData) {
+          this.setState({
+            [modalVisible]: false,
+            visibleResolveConflict: true,
+            conflict: {
+              data: data.conflictData,
+              resolveLink: data.links.resolveConflict,
+              headCommitId: data.headCommitId
+            }
+          });
+        } else {
+          this.setState(
+            {
+              [modalVisible]: false
+            },
+            () => {
+              this.props.fetchFileInfo();
+              this.props.fetchFileHistoryChanges();
+              message.success('Metadata was updated');
+            }
+          );
+        }
+      });
+  };
+
+  resolveConflict = newData => {
+    const {
+      conflict: { resolveLink, headCommitId }
+    } = this.state;
+    axios
+      .post(resolveLink, {
+        name: newData.name,
+        authors: newData.authors,
+        organizations: newData.organizations,
+        preprocessorVersion: newData.preprocessorVersion,
+        originatingSystem: newData.originatingSystem,
+        authorization: newData.authorization,
         headCommitId: this.props.headCommitId
       })
       .then(() => {
         this.setState(
           {
-            [modalVisible]: false
+            visibleResolveConflict: false
           },
           () => {
             this.props.fetchFileInfo();
             this.props.fetchFileHistoryChanges();
-            message.success('Metadata was updated');
+            message.success('Metadata conflict was resolved');
           }
         );
       });
@@ -151,12 +214,16 @@ export default class FileMetadata extends Component {
     const { metadata, readOnly } = this.props;
     const {
       visibleEditMetadata,
+      visibleResolveConflict,
+      conflict,
       newAuthors,
       newOrganizations,
       newName,
       newOriginatingSystem,
-      newPreprocessorVersion
+      newPreprocessorVersion,
+      newAuthorization
     } = this.state;
+
     const metadataData = [
       {
         key: '1',
@@ -164,9 +231,44 @@ export default class FileMetadata extends Component {
         authors: metadata.authors,
         organizations: metadata.organizations,
         originatingSystem: metadata.originatingSystem,
-        preprocessorVersion: metadata.preprocessorVersion
+        preprocessorVersion: metadata.preprocessorVersion,
+        authorization: metadata.authorization
       }
     ];
+
+    const conflictData = [
+      {
+        title: 'Name',
+        tag: 'name',
+        conflict: conflict.data.name
+      },
+      {
+        title: 'Authors',
+        tag: 'authors',
+        conflict: conflict.data.authors
+      },
+      {
+        title: 'Organizations',
+        tag: 'organizations',
+        conflict: conflict.data.organizations
+      },
+      {
+        title: 'Originating System',
+        tag: 'originatingSystem',
+        conflict: conflict.data.originatingSystem
+      },
+      {
+        title: 'Preprocessor Version',
+        tag: 'preprocessorVersion',
+        conflict: conflict.data.preprocessorVersion
+      },
+      {
+        title: 'Authorization',
+        tag: 'authorization',
+        conflict: conflict.data.authorization
+      }
+    ];
+
     return (
       <div className="file__metadata">
         <div className="row file__metadata-header">
@@ -208,7 +310,8 @@ export default class FileMetadata extends Component {
                 _isEmpty(newOrganizations) ||
                 _isEmpty(newName) ||
                 _isEmpty(newOriginatingSystem) ||
-                _isEmpty(newPreprocessorVersion)
+                _isEmpty(newPreprocessorVersion) ||
+                _isEmpty(newAuthorization)
             }}
           >
             <div className="file__input-label">Name:</div>
@@ -286,7 +389,25 @@ export default class FileMetadata extends Component {
               value={newPreprocessorVersion}
               onChange={e => this.onChangeValue(e, 'newPreprocessorVersion')}
             />
+            <div className="file__input-label">Authorization:</div>
+            <Input
+              placeholder="Add Authorization"
+              className="file__multiply-input"
+              value={newAuthorization}
+              onChange={e => this.onChangeValue(e, 'newAuthorization')}
+            />
           </Modal>
+        )}
+        {visibleResolveConflict && (
+          <FileStructureConflict
+            conflictData={conflictData}
+            resolveConflict={this.resolveConflict}
+            cancelChanges={() =>
+              this.setState({
+                visibleResolveConflict: false
+              })
+            }
+          />
         )}
       </div>
     );
