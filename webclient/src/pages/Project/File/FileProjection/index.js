@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Table, Tag, Icon, Spin, Card } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import FileMetadata from 'pages/Project/File/FileMetadata';
-import FileDescr from 'pages/Project/File/FileDescr';
+import FileDescription from 'pages/Project/File/FileDescription';
 import './FileProjection.sass';
 
 export default class FileProjection extends Component {
@@ -82,7 +82,7 @@ export default class FileProjection extends Component {
         </div>
         <div>
           <FileMetadata metadata={metadata} match={this.props.match} readOnly={true} />
-          <FileDescr description={description} match={this.props.match} readOnly={true} />
+          <FileDescription description={description} match={this.props.match} readOnly={true} />
           <div className="file__content">
             <div className="row file__content-header">
               <div

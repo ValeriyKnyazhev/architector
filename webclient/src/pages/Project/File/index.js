@@ -7,7 +7,7 @@ import { Button, Icon, Spin, Table, message, Modal, Input } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import HistoryChanges from 'components/HistoryChanges';
 import FileMetadata from './FileMetadata';
-import FileDescr from './FileDescr';
+import FileDescription from './FileDescription';
 import './File.sass';
 
 const mainInfoColumns = [
@@ -55,8 +55,6 @@ export default class File extends Component {
     content: '',
     contentReadOnly: true,
     updatedContent: '',
-    visibleEditDescr: false,
-    newDescription: ''
   };
 
   async componentDidMount() {
@@ -174,7 +172,6 @@ export default class File extends Component {
       isContentLoaded,
       isContentShow,
       contentReadOnly,
-      visibleEditDescr,
       fileDataLoaded
     } = this.state;
 
@@ -210,7 +207,7 @@ export default class File extends Component {
               match={this.props.match}
               readOnly={readOnly}
             />
-            <FileDescr
+            <FileDescription
               headCommitId={file.currentCommitId}
               description={file.description}
               fetchFileInfo={this.fetchFileInfo}

@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import _isEmpty from 'lodash/isEmpty';
-import _omit from 'lodash/omit';
+import FileStructureConflict from 'components/FileStructureConflict';
 import { Table, Modal, message, Input, Button, Icon } from 'antd';
-
-const ButtonGroup = Button.Group;
 
 const descriptionColumns = [
   {
@@ -28,14 +26,10 @@ const descriptionColumns = [
   }
 ];
 
-export default class FileDescr extends Component {
+export default class FileDescription extends Component {
   state = {
     visibleEditDescription: false,
     visibleResolveConflict: false,
-    conflictSelectedValues: {
-      descriptions: [],
-      implementationLevel: ''
-    },
     conflict: {
       data: {
         descriptions: {},
@@ -46,62 +40,6 @@ export default class FileDescr extends Component {
     },
     newDescription: this.props.description.descriptions,
     newImplementationLevel: this.props.description.implementationLevel
-  };
-
-  applyConflictValue = (tag, value) => {
-    const newData = _omit(this.state.conflict.data, tag);
-    this.setState({
-      ...this.state,
-      conflict: { ...this.state.conflict, ...{ data: newData } },
-      conflictSelectedValues: { ...this.state.conflictSelectedValues, ...{ [tag]: value } }
-    });
-  };
-
-  renderConflict = (title, tag) => {
-    const conflict = this.state.conflict.data[tag];
-    return (
-      <div className={'conflict-' + tag}>
-        <div className={'conflict-' + tag + '-header'}>{title}</div>
-        {conflict ? (
-          <div className={'row conflict-' + tag + '-values'}>
-            <div className="col-xs-3">{conflict.headValue}</div>
-            <div className="col-xs-3">{conflict.oldValue}</div>
-            <div className="col-xs-3">{conflict.newValue}</div>
-            <div className="col-xs-3">
-              <ButtonGroup>
-                {conflict.headValue && (
-                  <Button
-                    type="primary"
-                    icon="left"
-                    onClick={() => {
-                      this.applyConflictValue(tag, conflict.headValue);
-                    }}
-                  />
-                )}
-                <Button
-                  type="primary"
-                  icon="close"
-                  onClick={() => {
-                    this.applyConflictValue(tag, conflict.oldValue);
-                  }}
-                />
-                {conflict.newValue && (
-                  <Button
-                    type="primary"
-                    icon="right"
-                    onClick={() => {
-                      this.applyConflictValue(tag, conflict.newValue);
-                    }}
-                  />
-                )}
-              </ButtonGroup>
-            </div>
-          </div>
-        ) : (
-          <div>{this.state.conflictSelectedValues[tag]}</div>
-        )}
-      </div>
-    );
   };
 
   onChangeValue = (event, valueName) => {
@@ -186,15 +124,14 @@ export default class FileDescr extends Component {
       });
   };
 
-  resolveConflict = () => {
+  resolveConflict = newData => {
     const {
-      conflict: { resolveLink, headCommitId },
-      conflictSelectedValues
+      conflict: { resolveLink, headCommitId }
     } = this.state;
     axios
       .post(resolveLink, {
-        descriptions: conflictSelectedValues.descriptions,
-        implementationLevel: conflictSelectedValues.implementationLevel,
+        descriptions: newData.descriptions,
+        implementationLevel: newData.implementationLevel,
         headCommitId: this.props.headCommitId
       })
       .then(() => {
@@ -225,6 +162,15 @@ export default class FileDescr extends Component {
         key: '1',
         descriptions: description.descriptions,
         implementationLevel: description.implementationLevel
+      }
+    ];
+
+    const conflictData = [
+      { title: 'Descriptions', tag: 'descriptions', conflict: conflict.data.descriptions },
+      {
+        title: 'Implementation Level',
+        tag: 'implementationLevel',
+        conflict: conflict.data.implementationLevel
       }
     ];
 
@@ -304,28 +250,15 @@ export default class FileDescr extends Component {
           </Modal>
         )}
         {visibleResolveConflict && (
-          <Modal
-            title="Resolve file description conflict"
-            visible={visibleResolveConflict}
-            onOk={() => this.resolveConflict()}
-            onCancel={() => this.handleCancel('visibleResolveConflict')}
-            okButtonProps={{
-              disabled: !_isEmpty(conflict.data)
-            }}
-          >
-            <div className="row conflict-headers">
-              <div className="col-xs-3">Head</div>
-              <div className="col-xs-3">Old</div>
-              <div className="col-xs-3">Your version</div>
-              <div className="col-xs-3">Actions</div>
-            </div>
-            {this.renderConflict('Descriptions', 'descriptions', conflict.data.descriptions)}
-            {this.renderConflict(
-              'Implementation Level',
-              'implementationLevel',
-              conflict.data.implementationLevel
-            )}
-          </Modal>
+          <FileStructureConflict
+            conflictData={conflictData}
+            resolveConflict={this.resolveConflict}
+            cancelChanges={() =>
+              this.setState({
+                visibleResolveConflict: false
+              })
+            }
+          />
         )}
       </div>
     );

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Card, Table, Tag } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import FileMetadata from 'pages/Project/File/FileMetadata';
-import FileDescr from 'pages/Project/File/FileDescr';
+import FileDescription from 'pages/Project/File/FileDescription';
 import './ProjectProjection.sass';
 
 export default class ProjectProjection extends Component {
@@ -51,7 +51,7 @@ export default class ProjectProjection extends Component {
           match={this.props.match}
           readOnly={true}
         />
-        <FileDescr
+        <FileDescription
           description={description}
           match={this.props.match}
           readOnly={true}
