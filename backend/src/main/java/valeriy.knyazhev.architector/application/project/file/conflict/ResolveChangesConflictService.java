@@ -160,10 +160,7 @@ public class ResolveChangesConflictService
         {
             throw new IllegalStateException("Project must have some changes.");
         }
-        if (projectCommitId != command.headCommitId())
-        {
-            return false;
-        }
+        // TODO add check projectCommitId and command head commit id
         FileMetadata fixedMetadata = command.fixedMetadata();
         FileMetadataChanges newChanges = FileDiffCalculator.defineMetadataChanges(
             foundFile.metadata(), fixedMetadata
@@ -244,10 +241,7 @@ public class ResolveChangesConflictService
         {
             throw new IllegalStateException("Project must have some changes.");
         }
-        if (projectCommitId != command.headCommitId())
-        {
-            return false;
-        }
+        // TODO add check projectCommitId and command head commit id
         FileDescription fixedDescription = command.fixedDescription();
         FileDescriptionChanges newChanges = FileDiffCalculator.defineDescriptionChanges(
             foundFile.description(), fixedDescription

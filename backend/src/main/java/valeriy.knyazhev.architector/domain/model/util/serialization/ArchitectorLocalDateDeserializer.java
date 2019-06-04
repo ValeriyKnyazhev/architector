@@ -30,7 +30,8 @@ public class ArchitectorLocalDateDeserializer extends StdDeserializer<LocalDate>
     public LocalDate deserialize(JsonParser parser, DeserializationContext context) throws
         IOException
     {
-        return LocalDate.parse(parser.getText(), FORMATTER);
+        String text = parser.getText();
+        return text != null ? LocalDate.parse(text, FORMATTER) : null;
     }
 
 }
