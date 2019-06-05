@@ -81,8 +81,9 @@ export default class FileProjection extends Component {
           <div className="file__header-info start-xs">
             File: {metadata.name} Change: {commitId}
           </div>
+
           <Button
-            className="file__header-download-file end-xs"
+            className="file__header-download-file"
             href={`/api/projects/${projectId}/files/${fileId}/changes/${commitId}/download`}
           >
             <Icon type="download" />

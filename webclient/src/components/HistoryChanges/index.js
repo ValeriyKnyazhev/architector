@@ -103,14 +103,12 @@ const historyTableColumns = props => {
             <Icon type="file" style={{ fontSize: '24px' }} />
           </Link>
           {fileId && (
-            <Link
-              to={{
-                pathname: `api/projects/${projectId}/files/${fileId}/changes/${record.id}/download`
-              }}
+            <Button
+              href={`/api/projects/${projectId}/files/${fileId}/changes/${record.id}/download`}
               style={{ margin: '0 8px' }}
             >
               <Icon type="download" style={{ fontSize: '24px' }} />
-            </Link>
+            </Button>
           )}
         </div>
       )
