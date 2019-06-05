@@ -105,8 +105,9 @@ const historyTableColumns = props => {
           {fileId && (
             <Link
               to={{
-                pathname: `api/projects/${projectId}/files/${fileId}/changes/${record.id}/download`
+                pathname: `/api/projects/${projectId}/files/${fileId}/commits/${record.id}/download`
               }}
+              target="_top"
               style={{ margin: '0 8px' }}
             >
               <Icon type="download" style={{ fontSize: '24px' }} />

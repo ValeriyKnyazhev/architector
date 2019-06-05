@@ -55,7 +55,7 @@ export default class ProjectProjection extends Component {
         style={{ marginTop: 16 }}
         title={metadata.name}
         extra={
-          <a href={`/api/projects/${projectId}/files/${fileId}/changes/${commitId}/download`}>
+          <a href={`/api/projects/${projectId}/files/${fileId}/commits/${commitId}/download`}>
             Download
           </a>
         }
