@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,12 @@ public class CommitFileItem
     private FileId fileId;
 
     @Nonnull
+    private String isoId;
+
+    @Nonnull
+    private String schema;
+
+    @Nonnull
     private FileMetadataChanges metadata;
 
     @Nonnull
@@ -32,11 +39,15 @@ public class CommitFileItem
     private List<CommitItem> items;
 
     private CommitFileItem(@Nonnull FileId fileId,
+                           @Nonnull String isoId,
+                           @Nonnull String schema,
                            @Nonnull FileMetadataChanges metadata,
                            @Nonnull FileDescriptionChanges description,
                            @Nonnull List<CommitItem> items)
     {
         this.fileId = fileId;
+        this.isoId = isoId;
+        this.schema = schema;
         this.metadata = metadata;
         this.description = description;
         this.items = items.stream()
@@ -52,6 +63,18 @@ public class CommitFileItem
     public FileId fileId()
     {
         return this.fileId;
+    }
+
+    @Nonnull
+    public String isoId()
+    {
+        return this.isoId;
+    }
+
+    @Nonnull
+    public String schema()
+    {
+        return this.schema;
     }
 
     @Nonnull
@@ -74,11 +97,13 @@ public class CommitFileItem
 
     @Nonnull
     public static CommitFileItem of(@Nonnull FileId fileId,
+                                    @Nonnull String isoId,
+                                    @Nonnull String schema,
                                     @Nonnull FileMetadataChanges metadata,
                                     @Nonnull FileDescriptionChanges description,
                                     @Nonnull List<CommitItem> items)
     {
-        return new CommitFileItem(fileId, metadata, description, items);
+        return new CommitFileItem(fileId, isoId, schema, metadata, description, items);
     }
 
 }

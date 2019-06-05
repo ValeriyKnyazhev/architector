@@ -36,6 +36,9 @@ public class FileDescriptorModel
     private final ProjectAccessRights accessRights;
 
     @Nonnull
+    private final String isoId;
+
+    @Nonnull
     private final String schema;
 
     @Nonnull
@@ -51,6 +54,7 @@ public class FileDescriptorModel
                                @Nonnull LocalDateTime createdDate,
                                @Nonnull LocalDateTime updatedDate,
                                @Nonnull ProjectAccessRights accessRights,
+                               @Nonnull String isoId,
                                @Nonnull String schema,
                                @Nonnull MetadataModel metadata,
                                @Nonnull DescriptionModel description,
@@ -60,6 +64,7 @@ public class FileDescriptorModel
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
         this.accessRights = accessRights;
+        this.isoId = isoId;
         this.schema = schema;
         this.metadata = metadata;
         this.description = description;

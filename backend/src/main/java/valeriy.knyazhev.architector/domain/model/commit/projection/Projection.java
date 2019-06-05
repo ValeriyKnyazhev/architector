@@ -102,6 +102,12 @@ public class Projection
         private FileId fileId;
 
         @Nonnull
+        private String isoId;
+
+        @Nonnull
+        private String schema;
+
+        @Nonnull
         private FileMetadata metadata;
 
         @Nonnull
@@ -111,11 +117,15 @@ public class Projection
         private List<String> items;
 
         private FileProjection(@Nonnull FileId fileId,
+                               @Nonnull String isoId,
+                               @Nonnull String schema,
                                @Nonnull FileMetadata metadata,
                                @Nonnull FileDescription description,
                                @Nonnull List<String> items)
         {
             this.fileId = Args.notNull(fileId, "File identifier is required.");
+            this.isoId = Args.notNull(isoId, "File ISO id is required.");
+            this.schema = Args.notNull(schema, "File schema is required.");
             this.metadata = Args.notNull(metadata, "File metadata is required.");
             this.description = Args.notNull(description, "File description is required.");
             this.items = Args.notNull(items, "File items are required.");
@@ -125,6 +135,18 @@ public class Projection
         public FileId fileId()
         {
             return this.fileId;
+        }
+
+        @Nonnull
+        public String isoId()
+        {
+            return this.isoId;
+        }
+
+        @Nonnull
+        public String schema()
+        {
+            return this.schema;
         }
 
         @Nonnull
@@ -156,11 +178,13 @@ public class Projection
 
         @Nonnull
         public static FileProjection of(@Nonnull FileId fileId,
+                                        @Nonnull String isoId,
+                                        @Nonnull String schema,
                                         @Nonnull FileMetadata metadata,
                                         @Nonnull FileDescription description,
                                         @Nonnull List<String> items)
         {
-            return new FileProjection(fileId, metadata, description, items);
+            return new FileProjection(fileId, isoId, schema, metadata, description, items);
         }
 
     }

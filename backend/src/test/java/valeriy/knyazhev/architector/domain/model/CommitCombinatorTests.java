@@ -199,7 +199,7 @@ public class CommitCombinatorTests
         CommitDescription data = CommitDescription.builder()
             .files(
                 singletonList(
-                    CommitFileItem.of(fileId, FILE_METADATA, FILE_DESCRIPTION, items)
+                    CommitFileItem.of(fileId, "ISO-10303-21", "IFC4", FILE_METADATA, FILE_DESCRIPTION, items)
                 )
             )
             .build();

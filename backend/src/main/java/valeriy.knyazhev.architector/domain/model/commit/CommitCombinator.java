@@ -73,6 +73,8 @@ public final class CommitCombinator
             projection.addNewFile(
                 FileProjection.of(
                     fileChanges.fileId(),
+                    fileChanges.isoId(),
+                    fileChanges.schema(),
                     combineMetadataChanges(null, fileChanges.metadata()),
                     combineDescriptionChanges(null, fileChanges.description()),
                     items

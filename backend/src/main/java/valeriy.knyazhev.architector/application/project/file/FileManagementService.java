@@ -113,6 +113,8 @@ public class FileManagementService
                     singletonList(
                         CommitFileItem.of(
                             fileId,
+                            foundFile.isoId(),
+                            foundFile.schema(),
                             FileMetadataChanges.empty(),
                             FileDescriptionChanges.empty(),
                             commitItems
@@ -137,6 +139,8 @@ public class FileManagementService
                         singletonList(
                             CommitFileItem.of(
                                 fileId,
+                                projection.isoId(),
+                                projection.schema(),
                                 FileMetadataChanges.empty(),
                                 FileDescriptionChanges.empty(),
                                 newCommitItems
@@ -188,6 +192,8 @@ public class FileManagementService
                     singletonList(
                         CommitFileItem.of(
                             fileId,
+                            foundFile.isoId(),
+                            foundFile.schema(),
                             newChanges,
                             FileDescriptionChanges.empty(),
                             List.of()
@@ -216,6 +222,8 @@ public class FileManagementService
                         singletonList(
                             CommitFileItem.of(
                                 fileId,
+                                projection.isoId(),
+                                projection.schema(),
                                 newChanges,
                                 FileDescriptionChanges.empty(),
                                 List.of()
@@ -267,6 +275,8 @@ public class FileManagementService
                     singletonList(
                         CommitFileItem.of(
                             fileId,
+                            foundFile.isoId(),
+                            foundFile.schema(),
                             FileMetadataChanges.empty(),
                             newChanges,
                             List.of()
@@ -295,6 +305,8 @@ public class FileManagementService
                         singletonList(
                             CommitFileItem.of(
                                 fileId,
+                                projection.isoId(),
+                                projection.schema(),
                                 FileMetadataChanges.empty(),
                                 newChanges,
                                 List.of()
@@ -326,7 +338,7 @@ public class FileManagementService
         return deleteFile(command.projectId(), command.fileId(), command.architector());
     }
 
-    @Nullable
+    @Nonnull
     private File addNewFile(@Nonnull ProjectId projectId,
                             @Nonnull Architector architector,
                             @Nonnull String commitMessage,
@@ -339,6 +351,8 @@ public class FileManagementService
                 singletonList(
                     CommitFileItem.of(
                         newFile.fileId(),
+                        newFile.isoId(),
+                        newFile.schema(),
                         FileDiffCalculator.defineMetadataChanges(null, newFile.metadata()),
                         FileDiffCalculator.defineDescriptionChanges(null, newFile.description()),
                         FileDiffCalculator.calculateDiff(
@@ -373,6 +387,8 @@ public class FileManagementService
                 singletonList(
                     CommitFileItem.of(
                         deleted.fileId(),
+                        deleted.isoId(),
+                        deleted.schema(),
                         FileDiffCalculator.defineMetadataChanges(deleted.metadata(), null),
                         FileDiffCalculator.defineDescriptionChanges(deleted.description(), null),
                         FileDiffCalculator.calculateDiff(
@@ -453,6 +469,7 @@ public class FileManagementService
     {
         return File.constructor()
             .withFileId(fileId)
+            .withIsoId(fileData.isoId())
             .withSchema(fileData.schema())
             .withDescription(fileData.description())
             .withMetadata(fileData.metadata())

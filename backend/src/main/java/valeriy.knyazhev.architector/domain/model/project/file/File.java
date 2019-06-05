@@ -1,7 +1,6 @@
 package valeriy.knyazhev.architector.domain.model.project.file;
 
 import lombok.NoArgsConstructor;
-import org.bimserver.emf.Schema;
 import org.hibernate.annotations.Type;
 
 import javax.annotation.Nonnull;
@@ -38,6 +37,9 @@ public class File
     private LocalDateTime updatedDate;
 
     @Nonnull
+    private String isoId;
+
+    @Nonnull
     private String schema;
 
     @Nonnull
@@ -60,12 +62,14 @@ public class File
     private long concurrencyVersion;
 
     private File(@Nonnull FileId fileId,
+                 @Nonnull String isoId,
                  @Nonnull String schema,
                  @Nonnull FileDescription description,
                  @Nonnull FileMetadata metadata,
                  @Nonnull FileContent content)
     {
         this.fileId = fileId;
+        this.isoId = isoId;
         this.schema = schema;
         this.description = description;
         this.metadata = metadata;
@@ -76,6 +80,12 @@ public class File
     public FileId fileId()
     {
         return this.fileId;
+    }
+
+    @Nonnull
+    public String isoId()
+    {
+        return this.isoId;
     }
 
     @Nonnull
@@ -150,6 +160,8 @@ public class File
 
         private FileId fileId;
 
+        private String isoId;
+
         private String schema;
 
         private FileDescription description;
@@ -166,6 +178,13 @@ public class File
         public FileConstructor withFileId(@Nonnull FileId fileId)
         {
             this.fileId = fileId;
+            return this;
+        }
+
+        @Nonnull
+        public FileConstructor withIsoId(@Nonnull String isoId)
+        {
+            this.isoId = isoId;
             return this;
         }
 
@@ -201,7 +220,7 @@ public class File
         public File construct()
         {
             return new File(
-                this.fileId, this.schema, this.description, this.metadata, this.content
+                this.fileId, this.isoId, this.schema, this.description, this.metadata, this.content
             );
         }
 

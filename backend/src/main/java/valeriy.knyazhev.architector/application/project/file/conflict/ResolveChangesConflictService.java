@@ -172,6 +172,8 @@ public class ResolveChangesConflictService
                     singletonList(
                         CommitFileItem.of(
                             fileId,
+                            foundFile.isoId(),
+                            foundFile.schema(),
                             newChanges,
                             FileDescriptionChanges.empty(),
                             List.of()
@@ -253,6 +255,8 @@ public class ResolveChangesConflictService
                     singletonList(
                         CommitFileItem.of(
                             fileId,
+                            foundFile.isoId(),
+                            foundFile.schema(),
                             FileMetadataChanges.empty(),
                             newChanges,
                             List.of()

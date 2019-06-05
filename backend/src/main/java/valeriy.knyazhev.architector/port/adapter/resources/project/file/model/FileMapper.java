@@ -24,6 +24,7 @@ public final class FileMapper
             file.createdDate(),
             file.updatedDate(),
             accessRights,
+            file.isoId(),
             file.schema(),
             metadata,
             description,

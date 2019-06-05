@@ -43,7 +43,8 @@ public abstract class IFCReader<T>
             boolean isData = false;
             String line = null;
 
-            isoId = readNextLine(reader);
+            line = readNextLine(reader);
+            isoId = line.substring(0, line.length() - 1);
             while ((line = reader.readLine()) != null)
             {
                 if (line.startsWith(ENDSEC_TITLE))
