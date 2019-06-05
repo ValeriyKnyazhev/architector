@@ -1,10 +1,9 @@
-package valeriy.knyazhev.architector.application.project.file.conflict;
+package valeriy.knyazhev.architector.application.project.file.conflict.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

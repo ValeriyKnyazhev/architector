@@ -9,7 +9,12 @@ import valeriy.knyazhev.architector.application.commit.ProjectionConstructServic
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.application.project.file.conflict.*;
-import valeriy.knyazhev.architector.application.project.file.conflict.ResolveChangesConflictService.ContentConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileContentConflictException;
+import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileDescriptionConflictException;
+import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileMetadataConflictException;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
@@ -89,6 +94,7 @@ public class FileManagementService
     }
 
     public boolean updateFileContent(@Nonnull UpdateFileContentCommand command)
+        throws FileContentConflictException
     {
         Args.notNull(command, "Update file content command is required.");
         ProjectId projectId = command.projectId();
@@ -129,11 +135,12 @@ public class FileManagementService
             FileContent oldContent = FileContent.of(projection.items());
             List<CommitItem> headCommitItems = FileDiffCalculator.calculateDiff(oldContent, foundFile.content());
             List<CommitItem> newCommitItems = FileDiffCalculator.calculateDiff(oldContent, newContent);
-            List<ContentConflictChanges> conflicts = this.conflictService.checkContentChangesConflicts(
-                headCommitItems, newCommitItems
+            ContentConflictChanges conflicts = this.conflictService.checkContentChangesConflicts(
+                oldContent.items(), headCommitItems, newCommitItems
             );
             if (conflicts.isEmpty())
             {
+                // FIXME
                 commitData = CommitDescription.builder()
                     .files(
                         singletonList(
@@ -150,7 +157,9 @@ public class FileManagementService
                     .build();
             } else
             {
-                throw new IllegalStateException("FIXME");
+                throw new FileContentConflictException(
+                    oldContent.items(), conflicts.headBlocks(), conflicts.newBlocks(), projectCommitId
+                );
             }
         }
         Long commitId = commitChanges(

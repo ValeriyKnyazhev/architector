@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application.project.file.conflict;
+package valeriy.knyazhev.architector.application.project.file.conflict.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;

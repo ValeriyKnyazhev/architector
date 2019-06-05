@@ -1,6 +1,7 @@
-package valeriy.knyazhev.architector.application.project.file.conflict;
+package valeriy.knyazhev.architector.application.project.file.conflict.exception;
 
 import org.apache.http.util.Args;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
 
 import javax.annotation.Nonnull;
 

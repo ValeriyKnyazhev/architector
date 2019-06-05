@@ -1,8 +1,8 @@
-package valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict;
+package valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.apache.http.util.Args;
-import valeriy.knyazhev.architector.application.project.file.conflict.DescriptionConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
 
 import javax.annotation.Nonnull;
 

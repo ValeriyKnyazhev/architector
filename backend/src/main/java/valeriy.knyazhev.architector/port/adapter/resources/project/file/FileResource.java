@@ -9,11 +9,9 @@ import valeriy.knyazhev.architector.application.project.file.FileManagementServi
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.IFCFileWriter;
 import valeriy.knyazhev.architector.application.project.file.command.*;
-import valeriy.knyazhev.architector.application.project.file.conflict.FileDescriptionConflictException;
-import valeriy.knyazhev.architector.application.project.file.conflict.FileMetadataConflictException;
-import valeriy.knyazhev.architector.application.project.file.conflict.ResolveChangesConflictService;
-import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveDescriptionConflictCommand;
-import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveMetadataConflictCommand;
+import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileContentConflictException;
+import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileDescriptionConflictException;
+import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileMetadataConflictException;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
@@ -21,8 +19,9 @@ import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
 import valeriy.knyazhev.architector.domain.model.project.file.File;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict.FileDescriptionConflictModel;
-import valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict.FileMetadataConflictModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict.model.FileContentConflictModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict.model.FileDescriptionConflictModel;
+import valeriy.knyazhev.architector.port.adapter.resources.project.file.conflict.model.FileMetadataConflictModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.CreateFileFromUrlRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileContentRequest;
 import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.UpdateFileDescriptionRequest;
@@ -31,7 +30,6 @@ import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static org.springframework.http.MediaType.*;
 import static valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileMapper.buildFile;
@@ -47,16 +45,11 @@ public class FileResource
 
     private final FileManagementService managementService;
 
-    private final ResolveChangesConflictService resolveConflictService;
-
     public FileResource(@Nonnull ProjectRepository projectRepository,
-                        @Nonnull FileManagementService managementService,
-                        @Nonnull ResolveChangesConflictService resolveConflictService)
+                        @Nonnull FileManagementService managementService)
     {
         this.projectRepository = Args.notNull(projectRepository, "Project repository is required.");
         this.managementService = Args.notNull(managementService, "File management service is required.");
-        this.resolveConflictService = Args.notNull(resolveConflictService,
-            "Resolve changes conflict service is required.");
     }
 
     @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
@@ -154,19 +147,34 @@ public class FileResource
                                                 @RequestBody UpdateFileContentRequest request,
                                                 @Nonnull Architector architector)
     {
-        boolean updated = this.managementService.updateFileContent(
-            new UpdateFileContentCommand(
-                qProjectId, qFileId, architector, request.content(), request.commitMessage(), request.headCommitId()
-            )
-        );
+        boolean updated = false;
+        try
+        {
+            updated = this.managementService.updateFileContent(
+                new UpdateFileContentCommand(
+                    qProjectId, qFileId, architector, request.content(), request.commitMessage(), request.headCommitId()
+                )
+            );
+        } catch (FileContentConflictException ex)
+        {
+            return ResponseEntity.ok(
+                new FileContentConflictModel(
+                    ex.oldContent(),
+                    ex.headBlocks(),
+                    ex.newBlocks(),
+                    ex.headCommitId(),
+                    FileContentConflictModel.Links.of(qProjectId, qFileId)
+                )
+            );
+        }
         return updated
                ? ResponseEntity.ok()
                    .body(
-                       new ResponseMessage().info("File " + qFileId + " was updated from source URL.")
+                       new ResponseMessage().info("File " + qFileId + " was updated.")
                    )
                : ResponseEntity.badRequest()
                    .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + " from source URL.")
+                       new ResponseMessage().error("Unable to update file " + qFileId + ".")
                    );
     }
 
@@ -204,35 +212,6 @@ public class FileResource
             .body(
                 new ResponseMessage().info("File " + qFileId + " description was updated.")
             );
-    }
-
-    @PostMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/description/resolve-conflict",
-                 consumes = APPLICATION_JSON_UTF8_VALUE,
-                 produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> resolveDescriptionConflict(@PathVariable String qProjectId,
-                                                             @PathVariable String qFileId,
-                                                             @RequestBody UpdateFileDescriptionRequest request,
-                                                             @Nonnull Architector architector)
-    {
-        boolean resolved = this.resolveConflictService.resolveDescriptionChangesConflict(
-            ResolveDescriptionConflictCommand.builder()
-                .projectId(qProjectId)
-                .fileId(qFileId)
-                .architector(architector)
-                .headCommitId(request.headCommitId())
-                .descriptions(request.descriptions())
-                .implementationLevel(request.implementationLevel())
-                .build()
-        );
-        return resolved
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " description conflict was resolved.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Something went wrong: conflict not resolved.")
-                   );
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata",
@@ -274,40 +253,6 @@ public class FileResource
             .body(
                 new ResponseMessage().info("File " + qFileId + " metadata was updated.")
             );
-    }
-
-    @PostMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata/resolve-conflict",
-                 consumes = APPLICATION_JSON_UTF8_VALUE,
-                 produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> resolveMetadataConflict(@PathVariable String qProjectId,
-                                                          @PathVariable String qFileId,
-                                                          @RequestBody UpdateFileMetadataRequest request,
-                                                          @Nonnull Architector architector)
-    {
-        boolean resolved = this.resolveConflictService.resolveMetadataChangesConflict(
-            ResolveMetadataConflictCommand.builder()
-                .projectId(qProjectId)
-                .fileId(qFileId)
-                .architector(architector)
-                .headCommitId(request.headCommitId())
-                .name(request.name())
-                .timestamp(request.timestamp())
-                .authors(request.authors())
-                .organizations(request.organizations())
-                .preprocessorVersion(request.preprocessorVersion())
-                .originatingSystem(request.originatingSystem())
-                .authorization(request.authorization())
-                .build()
-        );
-        return resolved
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " metadata conflict was resolved.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Something went wrong: conflict not resolved.")
-                   );
     }
 
     @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",
