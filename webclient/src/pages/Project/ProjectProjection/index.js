@@ -42,20 +42,26 @@ export default class ProjectProjection extends Component {
   };
 
   renderFileProjection = file => {
-    const { metadata, description, content } = file;
+    const {
+      match: {
+        params: { projectId, commitId }
+      }
+    } = this.props;
+    const { fileId, metadata, description, content } = file;
 
     return (
-      <Card type="inner" style={{ marginTop: 16 }} title={metadata.name}>
-        <FileMetadata
-          metadata={metadata}
-          match={this.props.match}
-          readOnly={true}
-        />
-        <FileDescription
-          description={description}
-          match={this.props.match}
-          readOnly={true}
-        />
+      <Card
+        type="inner"
+        style={{ marginTop: 16 }}
+        title={metadata.name}
+        extra={
+          <a href={`/api/projects/${projectId}/files/${fileId}/changes/${commitId}/download`}>
+            Download
+          </a>
+        }
+      >
+        <FileMetadata metadata={metadata} match={this.props.match} readOnly={true} />
+        <FileDescription description={description} match={this.props.match} readOnly={true} />
         <div className="project__file-content">
           <div className="row project__file-content-header">
             <div

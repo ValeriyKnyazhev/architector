@@ -275,17 +275,27 @@ export default class Project extends Component {
       {
         key: 'action',
         width: 2,
-        render: record =>
-          !readOnly && (
+        render: record => (
+          <div>
             <Button
-              className="project__files-create-file "
-              onClick={() => this.handleDeleteFile(record.identifier)}
-              type="danger"
-              style={{ alignContent: 'right' }}
+              className="project__files-download-file"
+              href={`/api/projects/${projectId}/files/${record.identifier}/download`}
+              style={{ alignContent: 'right', margin: '0 8px' }}
             >
-              <Icon type="delete" />
+              <Icon type="download" />
             </Button>
-          )
+            {!readOnly && (
+              <Button
+                className="project__files-create-file"
+                onClick={() => this.handleDeleteFile(record.identifier)}
+                type="danger"
+                style={{ alignContent: 'right', margin: '0 8px' }}
+              >
+                <Icon type="delete" />
+              </Button>
+            )}
+          </div>
+        )
       }
     ];
     const filesListData = project.files.map((file, index) => {

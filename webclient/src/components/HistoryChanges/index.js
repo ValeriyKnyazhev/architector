@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { withRouter } from "react-router";
-import { Link } from "react-router-dom";
-import { Button, Icon, Table } from "antd";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
+import { Button, Icon, Table } from 'antd';
 
-import "./HistoryChanges.css";
+import './HistoryChanges.css';
 
 const ONE_SECOND = 1000;
 const ONE_MINUTE = ONE_SECOND * 60;
@@ -35,69 +35,88 @@ function renderCommitDate(date) {
   }
 }
 
-const historyTableColumns = props => [
-  {
-    title: 'Author',
-    dataIndex: 'author',
-    key: 'author',
-    width: 2,
-    align: 'left'
-  },
-  {
-    title: 'Id',
-    dataIndex: 'id',
-    key: 'id',
-    width: 1,
-    align: 'center'
-  },
-  {
-    title: 'Parent Id',
-    dataIndex: 'parentId',
-    key: 'parentId',
-    width: 1,
-    align: 'center',
-    render: parentId => <div>{parentId ? parentId : '-'}</div>
-  },
-  {
-    title: 'Message',
-    dataIndex: 'message',
-    key: 'message',
-    width: 6,
-    align: 'left'
-  },
-  {
-    title: 'Date',
-    dataIndex: 'date',
-    key: 'date',
-    width: 2,
-    align: 'center',
-    render: date => <div>{renderCommitDate(date)}</div>
-  },
-  {
-    key: 'action',
-    width: 2,
-    render: record => (
-      <div>
-        <Link
-          to={{
-            pathname: `/projects/${props.match.params.projectId}/changes/${record.id}/diff`
-          }}
-        >
-          <Icon type="diff" style={{ fontSize: '24px' }} />
-        </Link>
-        <Link
-          to={{
-            pathname: props.match.params.fileId
-              ? `/projects/${props.match.params.projectId}/files/${props.match.params.fileId}/changes/${record.id}/content`
-              : `/projects/${props.match.params.projectId}/changes/${record.id}/content`
-          }}
-        >
-          <Icon type="file" style={{ fontSize: '24px' }} />
-        </Link>
-      </div>
-    )
-  }
-];
+const historyTableColumns = props => {
+  const {
+    match: {
+      params: { projectId, fileId }
+    }
+  } = props;
+  return [
+    {
+      title: 'Author',
+      dataIndex: 'author',
+      key: 'author',
+      width: 2,
+      align: 'left'
+    },
+    {
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
+      width: 1,
+      align: 'center'
+    },
+    {
+      title: 'Parent Id',
+      dataIndex: 'parentId',
+      key: 'parentId',
+      width: 1,
+      align: 'center',
+      render: parentId => <div>{parentId ? parentId : '-'}</div>
+    },
+    {
+      title: 'Message',
+      dataIndex: 'message',
+      key: 'message',
+      width: 6,
+      align: 'left'
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      width: 2,
+      align: 'center',
+      render: date => <div>{renderCommitDate(date)}</div>
+    },
+    {
+      key: 'action',
+      width: 2,
+      render: record => (
+        <div>
+          <Link
+            to={{
+              pathname: `/projects/${projectId}/changes/${record.id}/diff`
+            }}
+            style={{ margin: '0 8px' }}
+          >
+            <Icon type="diff" style={{ fontSize: '24px' }} />
+          </Link>
+          <Link
+            to={{
+              pathname: fileId
+                ? `/projects/${projectId}/files/${fileId}/changes/${record.id}/content`
+                : `/projects/${projectId}/changes/${record.id}/content`
+            }}
+            style={{ margin: '0 8px' }}
+          >
+            <Icon type="file" style={{ fontSize: '24px' }} />
+          </Link>
+          {fileId && (
+            <Link
+              to={{
+                pathname: `api/projects/${projectId}/files/${fileId}/changes/${record.id}/download`
+              }}
+              style={{ margin: '0 8px' }}
+            >
+              <Icon type="download" style={{ fontSize: '24px' }} />
+            </Link>
+          )}
+        </div>
+      )
+    }
+  ];
+};
 
 class HistoryChanges extends Component {
   state = {

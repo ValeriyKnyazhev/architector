@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Table, Tag, Icon, Spin, Card } from 'antd';
+import { Table, Tag, Icon, Spin, Card, Button } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import FileMetadata from 'pages/Project/File/FileMetadata';
 import FileDescription from 'pages/Project/File/FileDescription';
@@ -46,7 +46,7 @@ export default class FileProjection extends Component {
   render() {
     const {
       match: {
-        params: { commitId }
+        params: { projectId, fileId, commitId }
       }
     } = this.props;
     const {
@@ -77,8 +77,16 @@ export default class FileProjection extends Component {
         <div>
           <h2>File projection</h2>
         </div>
-        <div className="start-xs">
-          File: {metadata.name} Change: {commitId}
+        <div className="row file__header">
+          <div className="file__header-info start-xs">
+            File: {metadata.name} Change: {commitId}
+          </div>
+          <Button
+            className="file__header-download-file end-xs"
+            href={`/api/projects/${projectId}/files/${fileId}/changes/${commitId}/download`}
+          >
+            <Icon type="download" />
+          </Button>
         </div>
         <div>
           <FileMetadata metadata={metadata} match={this.props.match} readOnly={true} />
