@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.commit.ProjectionConstructService;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.command.*;
-import valeriy.knyazhev.architector.application.project.file.conflict.*;
+import valeriy.knyazhev.architector.application.project.file.conflict.ResolveChangesConflictService;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges;
