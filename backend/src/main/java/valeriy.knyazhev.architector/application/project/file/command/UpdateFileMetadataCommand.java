@@ -8,6 +8,7 @@ import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class UpdateFileMetadataCommand
     private String name;
 
     @Nonnull
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 
     @Nonnull
     private List<String> authors;
@@ -52,7 +53,7 @@ public class UpdateFileMetadataCommand
     @Builder
     private UpdateFileMetadataCommand(@Nonnull String projectId, @Nonnull String fileId,
                                       @Nonnull Architector architector, @Nonnull String name,
-                                      @Nonnull LocalDate timestamp, @Nonnull List<String> authors,
+                                      @Nonnull LocalDateTime timestamp, @Nonnull List<String> authors,
                                       @Nonnull List<String> organizations, @Nonnull String preprocessorVersion,
                                       @Nonnull String originatingSystem, @Nonnull String authorization,
                                       @Nonnull Long headCommitId)

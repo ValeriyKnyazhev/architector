@@ -9,6 +9,7 @@ import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
@@ -35,7 +36,7 @@ public final class FileInfoExtractor
     public static FileMetadata extractMetadata(@Nonnull IfcHeader header)
     {
 
-        LocalDate date = header.getTimeStamp().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime date = header.getTimeStamp().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         return FileMetadata.builder()
             .name(header.getFilename())
             .timestamp(date)

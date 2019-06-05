@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,9 +24,9 @@ public class FileMetadataChanges
 
     private String name;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate timestamp;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime timestamp;
 
     private List<String> authors;
 
@@ -36,7 +39,7 @@ public class FileMetadataChanges
     private String authorization;
 
     @Builder
-    private FileMetadataChanges(String name, LocalDate timestamp, List<String> authors,
+    private FileMetadataChanges(String name, LocalDateTime timestamp, List<String> authors,
                                 List<String> organizations, String preprocessorVersion,
                                 String originatingSystem, String authorization)
     {
@@ -73,13 +76,13 @@ public class FileMetadataChanges
         return this.name != null ? this.name : oldValue;
     }
 
-    public LocalDate timestamp()
+    public LocalDateTime timestamp()
     {
         return this.timestamp;
     }
 
     @Nonnull
-    public LocalDate newTimestamp(@Nonnull LocalDate oldValue)
+    public LocalDateTime newTimestamp(@Nonnull LocalDateTime oldValue)
     {
         return this.timestamp != null ? this.timestamp : oldValue;
     }

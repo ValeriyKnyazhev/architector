@@ -3,6 +3,7 @@ package valeriy.knyazhev.architector.util;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class FileMetadataObjectFactory
     {
         private String name = "Big Ben";
 
-        private LocalDate timestamp = LocalDate.of(1859, 5, 31);
+        private LocalDateTime timestamp = LocalDateTime.of(1859, 5, 31, 12, 0);
 
         private List<String> authors = Collections.singletonList("Augustus Pugin");
 
@@ -39,7 +40,7 @@ public class FileMetadataObjectFactory
             return this;
         }
 
-        public FileMetadataBuilder withTimestamp(LocalDate timestamp)
+        public FileMetadataBuilder withTimestamp(LocalDateTime timestamp)
         {
             this.timestamp = timestamp;
             return this;

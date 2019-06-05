@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateSerializer;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
@@ -23,8 +25,8 @@ public class MetadataModel
     private String name;
 
     @Nonnull
-    @JsonSerialize(using = ArchitectorLocalDateSerializer.class)
-    private LocalDate timestamp;
+    @JsonSerialize(using = ArchitectorLocalDateTimeSerializer.class)
+    private LocalDateTime timestamp;
 
     @Nonnull
     private List<String> authors;
@@ -43,7 +45,7 @@ public class MetadataModel
 
     @Builder
     private MetadataModel(@Nonnull String name,
-                          @Nonnull LocalDate timestamp,
+                          @Nonnull LocalDateTime timestamp,
                           @Nonnull List<String> authors,
                           @Nonnull List<String> organizations,
                           @Nonnull String preprocessorVersion,

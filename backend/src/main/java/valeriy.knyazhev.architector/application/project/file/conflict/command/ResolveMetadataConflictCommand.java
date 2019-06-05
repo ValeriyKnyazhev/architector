@@ -8,6 +8,7 @@ import valeriy.knyazhev.architector.domain.model.user.Architector;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -34,7 +35,7 @@ public class ResolveMetadataConflictCommand
     private String name;
 
     @Nonnull
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 
     @Nonnull
     private List<String> authors;
@@ -57,7 +58,7 @@ public class ResolveMetadataConflictCommand
                                           @Nonnull Architector architector,
                                           @Nonnull Long headCommitId,
                                           @Nonnull String name,
-                                          @Nonnull LocalDate timestamp,
+                                          @Nonnull LocalDateTime timestamp,
                                           @Nonnull List<String> authors,
                                           @Nonnull List<String> organizations,
                                           @Nonnull String preprocessorVersion,

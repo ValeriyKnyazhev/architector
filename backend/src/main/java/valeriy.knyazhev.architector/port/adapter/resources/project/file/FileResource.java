@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.FileManagementService;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
+import valeriy.knyazhev.architector.application.project.file.IFCFileWriter;
 import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.application.project.file.conflict.FileDescriptionConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.FileMetadataConflictException;
@@ -29,9 +30,10 @@ import valeriy.knyazhev.architector.port.adapter.resources.project.file.request.
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static org.springframework.http.MediaType.*;
 import static valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileMapper.buildFile;
 
 /**
@@ -71,6 +73,24 @@ public class FileResource
         return ResponseEntity.ok(
             buildFile(foundFile, project.accessRights(architector), project.currentCommitId())
         );
+    }
+
+    @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/download",
+                produces = APPLICATION_OCTET_STREAM_VALUE)
+    public @ResponseBody byte[] downloadFile(@PathVariable String qProjectId,
+                                             @PathVariable String qFileId,
+                                             @Nonnull Architector architector,
+                                             HttpServletResponse response)
+    {
+        Args.notNull(qProjectId, "Project identifier is required.");
+        Args.notNull(qFileId, "File identifier is required.");
+        Project project = findProject(ProjectId.of(qProjectId), architector);
+        File foundFile = fetchFile(project, FileId.of(qFileId));
+        response.setHeader(
+            "Content-Disposition",
+            "attachment; filename=\"" + foundFile.metadata().name() + ".ifc\""
+        );
+        return IFCFileWriter.write(foundFile);
     }
 
     @PostMapping(value = "/api/projects/{qProjectId}/files/source",

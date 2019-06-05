@@ -14,6 +14,7 @@ import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -184,8 +185,8 @@ public final class FileDiffCalculator
     }
 
     @Nullable
-    private static LocalDate defineChanges(@Nonnull LocalDate oldValue,
-                                           @Nonnull LocalDate newValue)
+    private static LocalDateTime defineChanges(@Nonnull LocalDateTime oldValue,
+                                           @Nonnull LocalDateTime newValue)
     {
         return oldValue.equals(newValue) ? null : newValue;
     }

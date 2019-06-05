@@ -3,9 +3,11 @@ package valeriy.knyazhev.architector.port.adapter.resources.project.file.request
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.http.util.Args;
 import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateDeserializer;
+import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeDeserializer;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -18,8 +20,8 @@ public class UpdateFileMetadataRequest
     private String name;
 
     @Nonnull
-    @JsonDeserialize(using = ArchitectorLocalDateDeserializer.class)
-    private LocalDate timestamp;
+    @JsonDeserialize(using = ArchitectorLocalDateTimeDeserializer.class)
+    private LocalDateTime timestamp;
 
     @Nonnull
     private List<String> authors;
@@ -44,7 +46,7 @@ public class UpdateFileMetadataRequest
         this.name = Args.notNull(name, "Name is required.");
     }
 
-    public void setTimestamp(@Nonnull LocalDate timestamp)
+    public void setTimestamp(@Nonnull LocalDateTime timestamp)
     {
         this.timestamp = Args.notNull(timestamp, "Timestamp is required.");
     }
@@ -86,7 +88,7 @@ public class UpdateFileMetadataRequest
     }
 
     @Nonnull
-    public LocalDate timestamp()
+    public LocalDateTime timestamp()
     {
         return this.timestamp;
     }

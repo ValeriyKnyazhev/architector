@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -69,9 +70,9 @@ public class ConflictChange
         return new ConflictChange(oldValue, headValue, newValue);
     }
 
-    public static ConflictChange withConflict(@Nonnull LocalDate oldValue,
-                                              @Nullable LocalDate headValue,
-                                              @Nullable LocalDate newValue)
+    public static ConflictChange withConflict(@Nonnull LocalDateTime oldValue,
+                                              @Nullable LocalDateTime headValue,
+                                              @Nullable LocalDateTime newValue)
     {
         return new ConflictChange(oldValue, headValue, newValue);
     }
@@ -86,7 +87,7 @@ public class ConflictChange
         return new ConflictChange(oldValue, null, null);
     }
 
-    public static ConflictChange oldValue(@Nonnull LocalDate oldValue)
+    public static ConflictChange oldValue(@Nonnull LocalDateTime oldValue)
     {
         return new ConflictChange(oldValue, null, null);
     }
