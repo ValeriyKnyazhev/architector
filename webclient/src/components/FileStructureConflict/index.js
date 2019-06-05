@@ -32,7 +32,6 @@ class FileStructureConflict extends Component {
           ...{ [tag]: _omit(conflicts[tag], 'headValue') }
         }
       : _omit(conflicts, tag);
-    console.log(newData)
     this.setState({
       ...this.state,
       conflicts: newData,
@@ -179,9 +178,6 @@ class FileStructureConflict extends Component {
   render() {
     const { resolveConflict, cancelChanges } = this.props;
     const { conflicts, selectedFields } = this.state;
-
-    console.log('Conflicts', conflicts);
-    console.log('Selected', selectedFields);
 
     return (
       <Modal
