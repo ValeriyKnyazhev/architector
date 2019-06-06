@@ -1,11 +1,15 @@
 package valeriy.knyazhev.architector.domain.model.project.file;
 
 import lombok.NoArgsConstructor;
+import org.apache.http.util.Args;
 import org.hibernate.annotations.Type;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
@@ -20,6 +24,9 @@ import static lombok.AccessLevel.PROTECTED;
 public class File
 {
 
+    private final static List<String> ALLOWED_SCHEMAS = Stream.of(IFCSchema.values())
+        .map(Enum::name)
+        .collect(Collectors.toList());
 
     @Id
     @GeneratedValue(strategy = TABLE)
@@ -70,6 +77,7 @@ public class File
     {
         this.fileId = fileId;
         this.isoId = isoId;
+        Args.check(ALLOWED_SCHEMAS.contains(schema), "Schema must be equals one of " + ALLOWED_SCHEMAS.toString());
         this.schema = schema;
         this.description = description;
         this.metadata = metadata;
