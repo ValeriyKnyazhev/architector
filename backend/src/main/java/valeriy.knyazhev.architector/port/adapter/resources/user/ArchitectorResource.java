@@ -44,7 +44,7 @@ public class ArchitectorResource
         this.jwtTokenProvider = Args.notNull(jwtTokenProvider, "Jwt token provider is required.");
     }
 
-    @PostMapping("api/token")
+    @PostMapping("/api/token")
     public ResponseEntity login(@RequestBody AuthenticationRequest data)
     {
         try

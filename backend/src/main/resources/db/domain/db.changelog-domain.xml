@@ -2,5 +2,8 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
-    <include relativeToChangelogFile="true" file="domain/db.changelog-domain.xml"/>
+  <include relativeToChangelogFile="true" file="2019-06-07--01-service-user-model.xml"/>
+  <include relativeToChangelogFile="true" file="2019-06-07--02-project-model.xml"/>
+  <include relativeToChangelogFile="true" file="2019-06-07--03-file-model.xml"/>
+  <include relativeToChangelogFile="true" file="2019-06-07--04-commit-model.xml"/>
 </databaseChangeLog>

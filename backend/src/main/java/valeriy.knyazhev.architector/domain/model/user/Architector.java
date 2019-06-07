@@ -16,7 +16,8 @@ public class Architector
 {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "architectorIdGenerator")
+    @SequenceGenerator(name = "architectorIdGenerator", sequenceName = "architector_id_seq", allocationSize = 1)
     private Long id;
 
     @Nonnull
@@ -25,6 +26,11 @@ public class Architector
     @Nonnull
     private String password;
 
+    @JoinTable(
+        name = "architector_role_relations",
+        joinColumns = @JoinColumn(name = "architector_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     @ManyToMany
     @Nonnull
     private Set<Role> roles;

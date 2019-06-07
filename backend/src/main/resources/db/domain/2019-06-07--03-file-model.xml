@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="2019-06-07--03-file-model-01" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание таблицы для сущности File.</comment>
+        <createTable tableName="files">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="files_pk"/>
+            </column>
+            <column name="file_id" type="varchar(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="files_file_id_uniq"/>
+            </column>
+            <column name="project_id" type="bigserial">
+                <constraints nullable="false" foreignKeyName="fk_files_project_id"
+                             referencedTableName="projects" referencedColumnNames="id"/>
+            </column>
+            <column name="concurrency_version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="iso_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schema" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metadata" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_order" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2019-06-07--03-file-model-02" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание последовательности для генерации ключей сущности File.</comment>
+        <createSequence sequenceName="file_id_seq" startValue="1" incrementBy="1"/>
+    </changeSet>
+</databaseChangeLog>

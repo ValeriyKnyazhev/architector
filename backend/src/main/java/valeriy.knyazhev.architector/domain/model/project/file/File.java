@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
 
 /**
@@ -29,7 +28,8 @@ public class File
         .collect(Collectors.toList());
 
     @Id
-    @GeneratedValue(strategy = TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fileIdGenerator")
+    @SequenceGenerator(name = "fileIdGenerator", sequenceName = "file_id_seq", allocationSize = 1)
     private long id;
 
     @AttributeOverride(name = "id", column = @Column(name = "file_id", nullable = false, updatable = false))
