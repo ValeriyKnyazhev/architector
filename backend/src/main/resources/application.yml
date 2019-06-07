@@ -13,6 +13,18 @@ spring.datasource:
   username: architector
   password: architector
 
+spring.session:
+  store-type: jdbc
+  jdbc:
+    table-name: spring_session
+
+server.servlet.session:
+  timeout: 600
+  cookie:
+    http-only: true
+    secure: true
+    max-age: 600
+
 security.jwt.token:
   secret-key: |
     MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDmvEOnDmyYWL5crOUutktaX1SL
