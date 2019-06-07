@@ -23,8 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import valeriy.knyazhev.architector.application.user.JwtConfigurer;
-import valeriy.knyazhev.architector.application.user.JwtTokenProvider;
+import valeriy.knyazhev.architector.application.security.JwtConfigurer;
+import valeriy.knyazhev.architector.application.security.JwtTokenProvider;
 import valeriy.knyazhev.architector.domain.model.user.ArchitectorRepository;
 import valeriy.knyazhev.architector.port.adapter.util.ArchitectorResolver;
 
@@ -126,7 +126,7 @@ public class ArchitectorSpringApplication
             http.csrf().disable();
             http.authorizeRequests().antMatchers(HttpMethod.POST, "/signup").anonymous();
             http.authorizeRequests().antMatchers("/login", "/logout").permitAll();
-            http.authorizeRequests().antMatchers("/token").permitAll();
+            http.authorizeRequests().antMatchers("/api/token").permitAll();
             http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN");
             http.authorizeRequests().anyRequest().authenticated();
             http.formLogin()

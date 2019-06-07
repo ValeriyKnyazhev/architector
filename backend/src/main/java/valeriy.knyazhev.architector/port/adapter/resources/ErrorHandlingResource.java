@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import valeriy.knyazhev.architector.application.commit.CommitNotFoundException;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
+import valeriy.knyazhev.architector.application.security.InvalidTokenException;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.NothingToCommitException;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;

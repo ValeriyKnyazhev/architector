@@ -8,7 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import valeriy.knyazhev.architector.application.user.ArchitectorApplicationService;
-import valeriy.knyazhev.architector.application.user.JwtTokenProvider;
+import valeriy.knyazhev.architector.application.security.JwtTokenProvider;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
 import valeriy.knyazhev.architector.domain.model.user.Role;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
@@ -44,7 +44,7 @@ public class ArchitectorResource
         this.jwtTokenProvider = Args.notNull(jwtTokenProvider, "Jwt token provider is required.");
     }
 
-    @PostMapping("/token")
+    @PostMapping("api/token")
     public ResponseEntity login(@RequestBody AuthenticationRequest data)
     {
         try

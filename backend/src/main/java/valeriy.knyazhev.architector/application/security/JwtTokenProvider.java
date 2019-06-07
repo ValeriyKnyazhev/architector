@@ -1,18 +1,14 @@
-package valeriy.knyazhev.architector.application.user;
+package valeriy.knyazhev.architector.application.security;
 
 import io.jsonwebtoken.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.security.auth.message.AuthException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -24,23 +20,17 @@ import java.util.List;
 public class JwtTokenProvider
 {
 
-    //    @Value("${security.jwt.token.secret-key:secret}")
-    private String secretKey = "secret";
+    @Value("${security.jwt.token.secret-key:secret}")
+    private String secretKey;
 
-//    @Value("${security.jwt.token.expire-length:3600000}")
-    private long validityInMilliseconds = 3600000; // 1h
+    @Value("${security.jwt.token.expire-length:3600000}")
+    private long validityInMilliseconds;
 
     private UserDetailsService userDetailsService;
 
     public JwtTokenProvider(UserDetailsService userDetailsService)
     {
         this.userDetailsService = userDetailsService;
-    }
-
-    @PostConstruct
-    protected void init()
-    {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
     public String createToken(String username, List<String> roles)
@@ -86,7 +76,7 @@ public class JwtTokenProvider
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e)
         {
-            throw new IllegalStateException("Expired or invalid JWT token");
+            throw new InvalidTokenException("Expired or invalid JWT token");
         }
     }
 }

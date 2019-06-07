@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application.user;
+package valeriy.knyazhev.architector.application.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

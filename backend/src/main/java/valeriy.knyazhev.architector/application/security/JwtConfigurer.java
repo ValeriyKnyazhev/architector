@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.application.user;
+package valeriy.knyazhev.architector.application.security;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

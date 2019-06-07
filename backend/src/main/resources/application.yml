@@ -11,3 +11,11 @@ spring.datasource:
   url: jdbc:postgresql://localhost:5432/architector
   username: architector
   password: architector
+
+security.jwt.token:
+  secret-key: |
+    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDmvEOnDmyYWL5crOUutktaX1SL
+    fgOklZpYGljihwSQJrqCvcU3Av0KDymggVSYlEc7+LjbePsa7vPSvCpszL6yNIPQ
+    UTt/yhJ9Jfur1e3PVcpeelO4UPeZFzYHo9t+WMuToWLq/NL3NnW90ECZgIxahFPl
+    6EbfMx3DZLBbFJqFHwIDAQAB
+  expire-length: 7200000
