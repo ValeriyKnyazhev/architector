@@ -1,11 +1,12 @@
 server.port: 8080
 
 spring.jpa:
-  hibernate:
-    ddl-auto: create-drop
+  hibernate.ddl-auto: validate
   properties.hibernate:
     dialect: org.hibernate.dialect.PostgreSQL95Dialect
     temp.use_jdbc_metadata_defaults: false
+
+spring.liquibase.change-log: classpath:/db/db.changelog-master.xml
 
 spring.datasource:
   url: jdbc:postgresql://localhost:5432/architector
