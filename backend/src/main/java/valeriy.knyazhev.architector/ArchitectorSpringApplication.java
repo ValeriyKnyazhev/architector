@@ -23,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import valeriy.knyazhev.architector.application.user.JwtConfigurer;
+import valeriy.knyazhev.architector.application.user.JwtTokenProvider;
 import valeriy.knyazhev.architector.domain.model.user.ArchitectorRepository;
 import valeriy.knyazhev.architector.port.adapter.util.ArchitectorResolver;
 
@@ -89,6 +91,12 @@ public class ArchitectorSpringApplication
         }
 
         @Bean
+        public JwtTokenProvider jwtTokenProvider()
+        {
+            return new JwtTokenProvider(this.userDetailsService);
+        }
+
+        @Bean
         public PasswordEncoder passwordEncoder()
         {
             return new BCryptPasswordEncoder();
@@ -96,27 +104,29 @@ public class ArchitectorSpringApplication
 
         @Override
         @Bean
-        public AuthenticationManager authenticationManagerBean() throws
-            Exception
+        public AuthenticationManager authenticationManagerBean()
+            throws Exception
         {
             return super.authenticationManagerBean();
         }
 
         @Override
-        public void configure(AuthenticationManagerBuilder auth) throws
-            Exception
+        public void configure(AuthenticationManagerBuilder auth)
+            throws Exception
         {
             auth.userDetailsService(this.userDetailsService)
                 .passwordEncoder(passwordEncoder());
         }
 
         @Override
-        protected void configure(HttpSecurity http) throws
-            Exception
+        protected void configure(HttpSecurity http)
+            throws Exception
         {
+            http.apply(new JwtConfigurer(jwtTokenProvider()));
             http.csrf().disable();
             http.authorizeRequests().antMatchers(HttpMethod.POST, "/signup").anonymous();
             http.authorizeRequests().antMatchers("/login", "/logout").permitAll();
+            http.authorizeRequests().antMatchers("/token").permitAll();
             http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN");
             http.authorizeRequests().anyRequest().authenticated();
             http.formLogin()
