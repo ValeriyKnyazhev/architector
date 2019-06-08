@@ -84,18 +84,19 @@ class FileStructureConflict extends Component {
 
   renderConflict = (title, tag, conflict) => {
     const selectedField = this.state.selectedFields[tag];
-    return conflict ? (
-      <div className={'conflict-' + tag}>
+    return conflict && (conflict.headValue || conflict.newValue) ? (
+      <div className={'conflict conflict-' + tag}>
         <div className={'conflict-' + tag + '-header'}>{title}</div>
         <div className={'row conflict-' + tag + '-value'}>
-          <div className="col-xs-3">{conflict.headValue}</div>
-          <div className="col-xs-1">
+          <div className="col-xs-2">{conflict.headValue}</div>
+          <div className="col-xs-2">
             {conflict.headValue && (
               <ButtonGroup>
                 <Button
                   type="primary"
                   size="small"
                   icon="close"
+                  shape="circle"
                   onClick={() => {
                     this.removeHeadConflictValue(tag);
                   }}
@@ -104,6 +105,7 @@ class FileStructureConflict extends Component {
                   type="primary"
                   size="small"
                   icon="right"
+                  shape="circle"
                   onClick={() => {
                     this.applyHeadConflictValue(tag, conflict.headValue);
                   }}
@@ -112,13 +114,14 @@ class FileStructureConflict extends Component {
             )}
           </div>
           <div className="col-xs-4">{selectedField}</div>
-          <div className="col-xs-1">
+          <div className="col-xs-2">
             {conflict.newValue && (
               <ButtonGroup>
                 <Button
                   type="primary"
                   size="small"
                   icon="left"
+                  shape="circle"
                   onClick={() => {
                     this.applyNewDataConflictValue(tag, conflict.newValue);
                   }}
@@ -127,6 +130,7 @@ class FileStructureConflict extends Component {
                   type="primary"
                   size="small"
                   icon="close"
+                  shape="circle"
                   onClick={() => {
                     this.removeNewDataConflictValue(tag);
                   }}
@@ -134,7 +138,7 @@ class FileStructureConflict extends Component {
               </ButtonGroup>
             )}
           </div>
-          <div className="col-xs-3">{conflict.newValue}</div>
+          <div className="col-xs-2">{conflict.newValue}</div>
         </div>
       </div>
     ) : (
@@ -179,6 +183,7 @@ class FileStructureConflict extends Component {
     const { resolveConflict, cancelChanges } = this.props;
     const { conflicts, selectedFields } = this.state;
 
+    console.log(Object.values(conflicts));
     return (
       <Modal
         title="Resolve file description conflict"
@@ -187,7 +192,7 @@ class FileStructureConflict extends Component {
         onOk={() => resolveConflict(selectedFields)}
         onCancel={() => cancelChanges()}
         okButtonProps={{
-          disabled: !_isEmpty(conflicts)
+          disabled: Object.values(conflicts).some(value => value.headValue || value.newValue)
         }}
       >
         <div className="row conflict-headers">
