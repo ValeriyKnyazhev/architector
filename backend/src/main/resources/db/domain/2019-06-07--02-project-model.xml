@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="2019-06-07--02-project-model-01" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание таблицы для сущности Project.</comment>
+        <createTable tableName="projects">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="projects_pk"/>
+            </column>
+            <column name="project_id" type="varchar(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="projects_project_id_uniq"/>
+            </column>
+            <column name="concurrency_version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="current_commit_id" type="bigint"/>
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2019-06-07--02-project-model-02" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание последовательности для генерации ключей сущности Project.</comment>
+        <createSequence sequenceName="project_id_seq" startValue="1" incrementBy="1"/>
+    </changeSet>
+    <changeSet id="2019-06-07--02-project-model-03" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание таблицы для связи Project и Architector с READ правами.</comment>
+        <createTable tableName="project_read_access_rights">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="project_read_access_rights_pk"/>
+            </column>
+            <column name="project_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_project_read_access_rights_project_id"
+                             referencedTableName="projects" referencedColumnNames="id"/>
+            </column>
+            <column name="architector_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_project_read_access_rights_architector_id"
+                             referencedTableName="architectors" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2019-06-07--02-project-model-04" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание таблицы для связи Project и Architector с WRITE правами.</comment>
+        <createTable tableName="project_write_access_rights">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="project_write_access_rights_pk"/>
+            </column>
+            <column name="project_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_project_write_access_rights_project_id"
+                             referencedTableName="projects" referencedColumnNames="id"/>
+            </column>
+            <column name="architector_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_project_write_access_rights_architector_id"
+                             referencedTableName="architectors" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2019-06-07--02-project-model-05" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание индекса для выборки сущностей Project по идентификатору.</comment>
+        <createIndex tableName="projects" indexName="projects_id_idx">
+            <column name="project_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="2019-06-07--02-project-model-06" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание индекса для выборки сущностей Project по name.</comment>
+        <createIndex tableName="projects" indexName="projects_name_idx">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -87,16 +87,19 @@ public class ResolveChangesConflictServiceTests
     }
 
     @Test
-    public void shouldConflictsIfBlocksAreIntersected()
+    public void shouldConflictsIfDeletedBlocksAreIntersected()
     {
         // given
         List<String> content = generateContent();
         List<CommitItem> headItems = List.of(
-            CommitItem.addItem("new1", 3),
-            CommitItem.addItem("new2", 3),
-            CommitItem.deleteItem("5", 4)
+            CommitItem.deleteItem("4", 3),
+            CommitItem.deleteItem("5", 4),
+            CommitItem.deleteItem("6", 5)
         );
-        List<CommitItem> newItems = List.of(CommitItem.addItem("new3", 3));
+        List<CommitItem> newItems = List.of(
+            CommitItem.deleteItem("4", 3),
+            CommitItem.deleteItem("6", 5)
+        );
 
         // when
         ContentConflictChanges changes = this.resolveConflictService.checkContentChangesConflicts(
@@ -107,6 +110,8 @@ public class ResolveChangesConflictServiceTests
         assertThat(changes.isEmpty()).isFalse();
         List<ContentChangesBlock> headBlocks = changes.headBlocks();
         List<ContentChangesBlock> newBlocks = changes.newBlocks();
+        assertThat(headBlocks).size().isEqualTo(1);
+        assertThat(newBlocks).size().isEqualTo(2);
     }
 
     private static List<String> generateContent()

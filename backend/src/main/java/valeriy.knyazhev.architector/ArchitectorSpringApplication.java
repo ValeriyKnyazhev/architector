@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,22 +17,30 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
+import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import valeriy.knyazhev.architector.application.security.JwtConfigurer;
+import valeriy.knyazhev.architector.application.security.JwtTokenProvider;
 import valeriy.knyazhev.architector.domain.model.user.ArchitectorRepository;
 import valeriy.knyazhev.architector.port.adapter.util.ArchitectorResolver;
 
 import javax.annotation.Nonnull;
+import javax.sql.DataSource;
 import java.util.List;
 
 /**
  * @author valeriy.knyazhev@yandex.ru
  */
+@EnableTransactionManagement
 @SpringBootApplication
 public class ArchitectorSpringApplication
 {
@@ -89,6 +98,12 @@ public class ArchitectorSpringApplication
         }
 
         @Bean
+        public JwtTokenProvider jwtTokenProvider()
+        {
+            return new JwtTokenProvider(this.userDetailsService);
+        }
+
+        @Bean
         public PasswordEncoder passwordEncoder()
         {
             return new BCryptPasswordEncoder();
@@ -96,27 +111,29 @@ public class ArchitectorSpringApplication
 
         @Override
         @Bean
-        public AuthenticationManager authenticationManagerBean() throws
-            Exception
+        public AuthenticationManager authenticationManagerBean()
+            throws Exception
         {
             return super.authenticationManagerBean();
         }
 
         @Override
-        public void configure(AuthenticationManagerBuilder auth) throws
-            Exception
+        public void configure(AuthenticationManagerBuilder auth)
+            throws Exception
         {
             auth.userDetailsService(this.userDetailsService)
                 .passwordEncoder(passwordEncoder());
         }
 
         @Override
-        protected void configure(HttpSecurity http) throws
-            Exception
+        protected void configure(HttpSecurity http)
+            throws Exception
         {
+            http.apply(new JwtConfigurer(jwtTokenProvider()));
             http.csrf().disable();
             http.authorizeRequests().antMatchers(HttpMethod.POST, "/signup").anonymous();
             http.authorizeRequests().antMatchers("/login", "/logout").permitAll();
+            http.authorizeRequests().antMatchers("/api/token").permitAll();
             http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN");
             http.authorizeRequests().anyRequest().authenticated();
             http.formLogin()
@@ -128,6 +145,18 @@ public class ArchitectorSpringApplication
                 .deleteCookies("JSESSIONID")
                 .permitAll();
             http.httpBasic();
+        }
+
+    }
+
+    @Configuration
+    @EnableJdbcHttpSession(maxInactiveIntervalInSeconds = 60)
+    public class DatabaseConfig
+    {
+
+        @Bean
+        public PlatformTransactionManager transactionManager(@Nonnull DataSource dataSource) {
+            return new DataSourceTransactionManager(dataSource);
         }
 
     }

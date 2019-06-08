@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  <changeSet id="2019-06-07--01-spring-session-01" author="valeriy.knyazhev@yandex.ru">
+    <comment>Создание таблиц для хранения HTTP session пользователей.</comment>
+    <sqlFile path="classpath:db/scripts/spring-session-schema-2.1.1.sql" dbms="postgresql"/>
+  </changeSet>
+</databaseChangeLog>

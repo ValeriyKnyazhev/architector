@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.singletonList;
-import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
 import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.*;
 
@@ -34,7 +33,8 @@ public class Project
 {
 
     @Id
-    @GeneratedValue(strategy = TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "projectIdGenerator")
+    @SequenceGenerator(name = "projectIdGenerator", sequenceName = "project_id_seq", allocationSize = 1)
     private long id;
 
     @AttributeOverride(name = "id", column = @Column(name = "project_id", nullable = false, updatable = false))
@@ -65,7 +65,7 @@ public class Project
 
     @ManyToMany
     @JoinTable(
-        name = "architector_project_read_access_rights",
+        name = "project_read_access_rights",
         joinColumns = @JoinColumn(name = "project_id"),
         inverseJoinColumns = @JoinColumn(name = "architector_id")
     )
@@ -73,7 +73,7 @@ public class Project
 
     @ManyToMany
     @JoinTable(
-        name = "architector_project_write_access_rights",
+        name = "project_write_access_rights",
         joinColumns = @JoinColumn(name = "project_id"),
         inverseJoinColumns = @JoinColumn(name = "architector_id")
     )

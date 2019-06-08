@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveContentConflictCommand;
+import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveDescriptionConflictCommand;
+import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveMetadataConflictCommand;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ConflictChange;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges.ContentChangesBlock;
-import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveDescriptionConflictCommand;
-import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveMetadataConflictCommand;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
@@ -385,19 +385,20 @@ public class ResolveChangesConflictService
     {
         List<ContentChangesBlock> changesBlocks = new LinkedList<>();
         CommitItem firstItem = items.get(0);
+        boolean isInit = true;
         int startIndex = firstItem.position();
         int lastIndex = startIndex;
         List<CommitItem> lastItems = new LinkedList<>();
         for (CommitItem item : items)
         {
-            if (!isPreviousBlock(lastIndex, item))
+            if (!isInit && !isPreviousBlock(lastIndex, item))
             {
                 changesBlocks.add(new ContentChangesBlock(startIndex, lastIndex, lastItems));
                 lastItems = new LinkedList<>();
                 startIndex = item.position();
-
             }
-            lastIndex = startIndex;
+            isInit = false;
+            lastIndex = item.position();
             lastItems.add(item);
         }
         changesBlocks.add(new ContentChangesBlock(startIndex, lastIndex, lastItems));

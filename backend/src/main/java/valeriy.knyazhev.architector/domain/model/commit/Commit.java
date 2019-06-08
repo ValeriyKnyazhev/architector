@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static javax.persistence.GenerationType.TABLE;
 import static lombok.AccessLevel.PROTECTED;
 
 /**
@@ -27,7 +26,8 @@ public class Commit
 {
 
     @Id
-    @GeneratedValue(strategy = TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "commitIdGenerator")
+    @SequenceGenerator(name = "commitIdGenerator", sequenceName = "commit_id_seq", allocationSize = 1)
     private long id;
 
     @Nullable

@@ -83,8 +83,8 @@ export default class FileProjection extends Component {
           </div>
 
           <Button
-            className="file__header-download-file"
-            href={`/api/projects/${projectId}/files/${fileId}/changes/${commitId}/download`}
+            className="file__header-download-file end-xs"
+            href={`/api/projects/${projectId}/files/${fileId}/commits/${commitId}/download`}
           >
             <Icon type="download" />
           </Button>

@@ -13,11 +13,11 @@ services:
     - ./postgres-db-architector:/var/lib/postgresql/data
 
   service:
-    image: valeriyknyazhev/architector:2
+    image: valeriyknyazhev/architector:3
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/architector
     deploy:
-      replicas: 1
+      replicas: 2
     ports:
     - 80:8080
     depends_on:

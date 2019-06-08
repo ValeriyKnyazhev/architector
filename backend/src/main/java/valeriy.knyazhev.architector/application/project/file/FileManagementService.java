@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import valeriy.knyazhev.architector.application.commit.ProjectionConstructService;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.command.*;
-import valeriy.knyazhev.architector.application.project.file.conflict.*;
+import valeriy.knyazhev.architector.application.project.file.conflict.ResolveChangesConflictService;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges;
@@ -31,8 +31,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -140,7 +142,12 @@ public class FileManagementService
             );
             if (conflicts.isEmpty())
             {
-                // FIXME
+                List<CommitItem> mergedCommitItems = Stream.concat(headCommitItems.stream(), newCommitItems.stream())
+                    .sorted(CommitItem::compareTo)
+                    .collect(toList());
+                List<String> mergedContent = ContentMerger.applyChanges(oldContent.items(), mergedCommitItems);
+                List<CommitItem> diffItems = FileDiffCalculator
+                    .calculateDiff(foundFile.content(), FileContent.of(mergedContent));
                 commitData = CommitDescription.builder()
                     .files(
                         singletonList(
@@ -150,7 +157,7 @@ public class FileManagementService
                                 projection.schema(),
                                 FileMetadataChanges.empty(),
                                 FileDescriptionChanges.empty(),
-                                newCommitItems
+                                diffItems
                             )
                         )
                     )

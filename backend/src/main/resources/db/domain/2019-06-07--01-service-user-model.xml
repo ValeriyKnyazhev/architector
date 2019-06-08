@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="2019-06-07--01-service-user-model-01" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание таблицы для сущности Architector.</comment>
+        <createTable tableName="architectors">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="architectors_pk"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2019-06-07--01-service-user-model-02" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание последовательности для генерации ключей сущности Architector.</comment>
+        <createSequence sequenceName="architector_id_seq" startValue="3" incrementBy="1"/>
+    </changeSet>
+    <changeSet id="2019-06-07--01-service-user-model-03" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание таблицы для сущности Role.</comment>
+        <createTable tableName="architector_roles">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="architector_roles_pk"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2019-06-07--01-service-user-model-04" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание последовательности для генерации ключей сущности Role.</comment>
+        <createSequence sequenceName="architector_role_id_seq" startValue="3" incrementBy="1"/>
+    </changeSet>
+    <changeSet id="2019-06-07--01-service-user-model-05" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание таблицы для связи Architector и Role.</comment>
+        <createTable tableName="architector_role_relations">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="architector_role_relations_pk"/>
+            </column>
+            <column name="architector_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_architector_role_relations_architector_id"
+                             referencedTableName="architectors" referencedColumnNames="id"/>
+            </column>
+            <column name="role_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_architector_role_relations_role_id"
+                             referencedTableName="architector_roles" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2019-06-07--01-service-user-model-06" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание пользователей и ролей по умолчанию</comment>
+        <sqlFile path="classpath:db/scripts/default-users.sql" dbms="postgresql"/>
+    </changeSet>
+    <changeSet id="2019-06-07--01-service-user-model-07" author="valeriy.knyazhev@yandex.ru">
+        <comment>Создание индекса для выборки сущностей Architector по email.</comment>
+        <createIndex tableName="architectors" indexName="architectors_email_udx" unique="true">
+            <column name="email"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
