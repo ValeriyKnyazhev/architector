@@ -183,7 +183,6 @@ class FileStructureConflict extends Component {
     const { resolveConflict, cancelChanges } = this.props;
     const { conflicts, selectedFields } = this.state;
 
-    console.log(Object.values(conflicts));
     return (
       <Modal
         title="Resolve file description conflict"
