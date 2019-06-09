@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictBlock;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictBlock.ContentChangesBlock;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
-import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges.ContentChangesBlock;
 import valeriy.knyazhev.architector.domain.model.commit.CommitItem;
 import valeriy.knyazhev.architector.domain.model.commit.CommitRepository;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -108,8 +109,11 @@ public class ResolveChangesConflictServiceTests
 
         // then
         assertThat(changes.isEmpty()).isFalse();
-        List<ContentChangesBlock> headBlocks = changes.headBlocks();
-        List<ContentChangesBlock> newBlocks = changes.newBlocks();
+        List<ContentConflictBlock> conflictBlocks = changes.conflictBlocks();
+        assertThat(conflictBlocks).size().isEqualTo(1);
+        ContentConflictBlock conflictBlock = conflictBlocks.get(0);
+        List<ContentChangesBlock> headBlocks = conflictBlock.headBlocks();
+        List<ContentChangesBlock> newBlocks = conflictBlock.newBlocks();
         assertThat(headBlocks).size().isEqualTo(1);
         assertThat(newBlocks).size().isEqualTo(2);
     }

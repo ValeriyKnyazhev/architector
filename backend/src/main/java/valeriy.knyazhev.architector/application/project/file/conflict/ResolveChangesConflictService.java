@@ -377,6 +377,7 @@ public class ResolveChangesConflictService
         this.commitRepository.saveAndFlush(newCommit);
         return newCommit.id();
     }
+
     @Nonnull
     private static List<ContentChangesBlock> defineChangesBlocks(@Nonnull List<CommitItem> items)
     {
@@ -411,10 +412,114 @@ public class ResolveChangesConflictService
     }
 
     @Nonnull
-    private List<ContentConflictBlock> defineConflictBlocks(List<ContentChangesBlock> headChangesBlocks,
-                                                            List<ContentChangesBlock> newChangesBlocks)
+    private static List<ContentConflictBlock> defineConflictBlocks(List<ContentChangesBlock> headChangesBlocks,
+                                                                   List<ContentChangesBlock> newChangesBlocks)
     {
-        return List.of();
+        if (!areIntersected(headChangesBlocks, newChangesBlocks))
+        {
+            return List.of();
+        }
+        List<ContentConflictBlock> conflictBlocks = new LinkedList<>();
+        List<ContentChangesBlock> headBlocks = new LinkedList<>();
+        List<ContentChangesBlock> newBlocks = new LinkedList<>();
+        int startConflictIndex;
+        int endConflictIndex;
+        int headBlockIndex = 0, newBlockIndex = 0;
+        if (isFirstBlockNext(headChangesBlocks.get(headBlockIndex), newChangesBlocks.get(newBlockIndex)))
+        {
+            ContentChangesBlock initBlock = headChangesBlocks.get(headBlockIndex);
+            startConflictIndex = initBlock.startIndex();
+            endConflictIndex = initBlock.endIndex();
+            headBlockIndex++;
+            headBlocks.add(initBlock);
+        } else
+        {
+            ContentChangesBlock initBlock = newChangesBlocks.get(newBlockIndex);
+            startConflictIndex = initBlock.startIndex();
+            endConflictIndex = initBlock.endIndex();
+            newBlockIndex++;
+            newBlocks.add(initBlock);
+        }
+        while (headBlockIndex < headChangesBlocks.size() && newBlockIndex < newChangesBlocks.size())
+        {
+            ContentChangesBlock nextHeadBlock = headChangesBlocks.get(headBlockIndex);
+            ContentChangesBlock nextNewBlock = newChangesBlocks.get(newBlockIndex);
+            boolean isHeadBlock;
+            ContentChangesBlock nextBlock = null;
+            if (isFirstBlockNext(nextHeadBlock, nextNewBlock))
+            {
+                nextBlock = nextHeadBlock;
+                headBlockIndex++;
+                isHeadBlock = true;
+            } else
+            {
+                nextBlock = nextNewBlock;
+                newBlockIndex++;
+                isHeadBlock = false;
+            }
+            if (areIntersected(startConflictIndex, endConflictIndex, nextBlock.startIndex(), nextBlock.endIndex()))
+            {
+                if (isHeadBlock)
+                {
+                    headBlocks.add(nextBlock);
+                } else
+                {
+                    newBlocks.add(nextBlock);
+                }
+                endConflictIndex = Math.max(endConflictIndex, nextBlock.endIndex());
+            } else
+            {
+                conflictBlocks.add(
+                    new ContentConflictBlock(startConflictIndex, endConflictIndex, headBlocks, newBlocks)
+                );
+                headBlocks = new LinkedList<>();
+                newBlocks = new LinkedList<>();
+                if (isHeadBlock)
+                {
+                    headBlocks.add(nextBlock);
+                } else
+                {
+                    newBlocks.add(nextBlock);
+                }
+                startConflictIndex = nextBlock.startIndex();
+                endConflictIndex = nextBlock.endIndex();
+            }
+        }
+        conflictBlocks.add(
+            new ContentConflictBlock(startConflictIndex, endConflictIndex, headBlocks, newBlocks)
+        );
+        while (headBlockIndex < headChangesBlocks.size())
+        {
+            ContentChangesBlock nextBlock = headChangesBlocks.get(headBlockIndex++);
+            conflictBlocks.add(
+                new ContentConflictBlock(
+                    nextBlock.startIndex(), nextBlock.endIndex(), List.of(nextBlock), List.of()
+                )
+            );
+        }
+        while (newBlockIndex < newChangesBlocks.size())
+        {
+            ContentChangesBlock nextBlock = newChangesBlocks.get(newBlockIndex++);
+            conflictBlocks.add(
+                new ContentConflictBlock(
+                    nextBlock.startIndex(), nextBlock.endIndex(), List.of(), List.of(nextBlock)
+                )
+            );
+        }
+        return conflictBlocks;
+    }
+
+    private static boolean isFirstBlockNext(@Nonnull ContentChangesBlock firstBlock,
+                                            @Nonnull ContentChangesBlock secondBlock)
+    {
+        int diff = firstBlock.startIndex() - secondBlock.startIndex();
+        if (diff == 0)
+        {
+            return firstBlock.endIndex() <= secondBlock.endIndex();
+        } else
+        {
+            return diff < 0;
+        }
     }
 
     private static boolean areIntersected(@Nonnull List<ContentChangesBlock> headChangesBlocks,
@@ -427,8 +532,12 @@ public class ResolveChangesConflictService
             // TODO
             ContentChangesBlock headBlock = headChangesBlocks.get(headIndex);
             ContentChangesBlock newBlock = newChangesBlocks.get(headIndex);
-            if (headBlock.endIndex() >= newBlock.startIndex() && headBlock.startIndex() <= newBlock.startIndex() ||
-                newBlock.endIndex() >= headBlock.startIndex() && newBlock.startIndex() <= headBlock.startIndex())
+            if (
+                areIntersected(
+                    headBlock.startIndex(), headBlock.endIndex(),
+                    newBlock.startIndex(), newBlock.endIndex()
+                )
+            )
             {
                 return true;
             }
@@ -441,6 +550,17 @@ public class ResolveChangesConflictService
             }
         }
         return false;
+    }
+
+    private static boolean areIntersected(int firstStartIndex, int firstEndIndex,
+                                          int secondStartIndex, int secondEndIndex)
+    {
+        return (
+                   firstEndIndex >= secondStartIndex && firstStartIndex <= secondStartIndex
+               ) ||
+               (
+                   secondEndIndex >= firstStartIndex && secondStartIndex <= firstStartIndex
+               );
     }
 
 }

@@ -36,6 +36,28 @@ public class ContentConflictBlock
         this.newBlocks = Args.notNull(newBlocks, "New changes blocks are required.");
     }
 
+    public int startIndex()
+    {
+        return this.startIndex;
+    }
+
+    public int endIndex()
+    {
+        return this.endIndex;
+    }
+
+    @Nonnull
+    public List<ContentChangesBlock> headBlocks()
+    {
+        return this.headBlocks;
+    }
+
+    @Nonnull
+    public List<ContentChangesBlock> newBlocks()
+    {
+        return this.newBlocks;
+    }
+
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class ContentChangesBlock
     {
