@@ -160,8 +160,7 @@ public class FileResource
             return ResponseEntity.ok(
                 new FileContentConflictModel(
                     ex.oldContent(),
-                    ex.headBlocks(),
-                    ex.newBlocks(),
+                    ex.conflictBlocks(),
                     ex.headCommitId(),
                     FileContentConflictModel.Links.of(qProjectId, qFileId)
                 )

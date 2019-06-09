@@ -2,6 +2,7 @@ package valeriy.knyazhev.architector.port.adapter.resources.project.file.conflic
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.apache.http.util.Args;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictBlock;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
 
@@ -22,10 +23,7 @@ public class FileContentConflictModel
     private List<String> oldContent;
 
     @Nonnull
-    private List<ContentConflictChanges.ContentChangesBlock> headBlocks;
-
-    @Nonnull
-    private List<ContentConflictChanges.ContentChangesBlock> newBlocks;
+    private List<ContentConflictBlock> conflictBlocks;
 
     @Nonnull
     private Long headCommitId;
@@ -34,14 +32,12 @@ public class FileContentConflictModel
     private final Links links;
 
     public FileContentConflictModel(@Nonnull List<String> oldContent,
-                                    @Nonnull List<ContentConflictChanges.ContentChangesBlock> headBlocks,
-                                    @Nonnull List<ContentConflictChanges.ContentChangesBlock> newBlocks,
+                                    @Nonnull List<ContentConflictBlock> conflictBlocks,
                                     @Nonnull Long headCommitId,
                                     @Nonnull Links links)
     {
         this.oldContent = Args.notNull(oldContent, "File content is required.");
-        this.headBlocks = Args.notNull(headBlocks, "Head changes blocks are required.");
-        this.newBlocks = Args.notNull(newBlocks, "New changes blocks are required.");
+        this.conflictBlocks = Args.notNull(conflictBlocks, "Conflict changes blocks are required.");
         this.headCommitId = Args.notNull(headCommitId, "Head commit identifier is required.");
         this.links = Args.notNull(links, "Links are required.");
     }

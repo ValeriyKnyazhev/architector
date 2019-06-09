@@ -1,7 +1,7 @@
 package valeriy.knyazhev.architector.application.project.file.conflict.exception;
 
 import org.apache.http.util.Args;
-import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges.ContentChangesBlock;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictBlock;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -16,23 +16,18 @@ public class FileContentConflictException extends Exception
     private List<String> oldContent;
 
     @Nonnull
-    private List<ContentChangesBlock> headBlocks;
-
-    @Nonnull
-    private List<ContentChangesBlock> newBlocks;
+    private List<ContentConflictBlock> conflictBlocks;
 
     @Nonnull
     private Long headCommitId;
 
     public FileContentConflictException(@Nonnull List<String> oldContent,
-                                        @Nonnull List<ContentChangesBlock> headBlocks,
-                                        @Nonnull List<ContentChangesBlock> newBlocks,
+                                        @Nonnull List<ContentConflictBlock> conflictBlocks,
                                         @Nonnull Long headCommitId)
     {
         super("File content changes conflict.");
         this.oldContent = Args.notNull(oldContent, "File content is required.");
-        this.headBlocks = Args.notNull(headBlocks, "Head changes blocks are required.");
-        this.newBlocks = Args.notNull(newBlocks, "New changes blocks are required.");
+        this.conflictBlocks = Args.notNull(conflictBlocks, "Conflict changes blocks are required.");
         this.headCommitId = Args.notNull(headCommitId, "Head commit identifier is required.");
     }
 
@@ -43,17 +38,10 @@ public class FileContentConflictException extends Exception
     }
 
     @Nonnull
-    public List<ContentChangesBlock> headBlocks()
+    public List<ContentConflictBlock> conflictBlocks()
     {
-        return this.headBlocks;
+        return this.conflictBlocks;
     }
-
-    @Nonnull
-    public List<ContentChangesBlock> newBlocks()
-    {
-        return this.newBlocks;
-    }
-
 
     public long headCommitId()
     {

@@ -16,80 +16,32 @@ public class ContentConflictChanges
 {
 
     @Nonnull
-    private List<ContentChangesBlock> headBlocks;
+    private List<ContentConflictBlock> conflictBlocks;
 
-    @Nonnull
-    private List<ContentChangesBlock> newBlocks;
-
-
-    private ContentConflictChanges(@Nonnull List<ContentChangesBlock> headBlocks,
-                                   @Nonnull List<ContentChangesBlock> newBlocks)
+    private ContentConflictChanges(@Nonnull List<ContentConflictBlock> conflictBlocks)
     {
-        this.headBlocks = Args.notNull(headBlocks, "Head changes blocks are required.");
-        this.newBlocks = Args.notNull(newBlocks, "New changes blocks are required.");
+        this.conflictBlocks = Args.notNull(conflictBlocks, "Conflict changes blocks are required.");
     }
 
     public boolean isEmpty()
     {
-        return this.headBlocks.isEmpty() || this.newBlocks.isEmpty();
+        return this.conflictBlocks.isEmpty();
     }
 
     @Nonnull
-    public List<ContentChangesBlock> headBlocks()
+    public List<ContentConflictBlock> conflictBlocks()
     {
-        return this.headBlocks;
+        return this.conflictBlocks;
     }
 
-    @Nonnull
-    public List<ContentChangesBlock> newBlocks()
+    public static ContentConflictChanges of(@Nonnull List<ContentConflictBlock> conflictBlocks)
     {
-        return this.newBlocks;
-    }
-
-    public static ContentConflictChanges of(@Nonnull List<ContentChangesBlock> headBlocks,
-                                            @Nonnull List<ContentChangesBlock> newBlocks)
-    {
-        return new ContentConflictChanges(headBlocks, newBlocks);
+        return new ContentConflictChanges(conflictBlocks);
     }
 
     public static ContentConflictChanges empty()
     {
-        return new ContentConflictChanges(List.of(), List.of());
-    }
-
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-    public static class ContentChangesBlock
-    {
-
-        private final int startIndex;
-
-        private final int endIndex;
-
-        private final List<CommitItem> items;
-
-        public ContentChangesBlock(int startIndex, int endIndex, @Nonnull List<CommitItem> items)
-        {
-            this.startIndex = startIndex;
-            this.endIndex = endIndex;
-            this.items = new ArrayList<>(items);
-        }
-
-        public int startIndex()
-        {
-            return this.startIndex;
-        }
-
-        public int endIndex()
-        {
-            return this.endIndex;
-        }
-
-        @Nonnull
-        public List<CommitItem> items()
-        {
-            return this.items;
-        }
-
+        return new ContentConflictChanges(List.of());
     }
 
 }

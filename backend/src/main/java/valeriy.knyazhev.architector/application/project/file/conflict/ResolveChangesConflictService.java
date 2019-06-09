@@ -9,12 +9,9 @@ import valeriy.knyazhev.architector.application.project.file.FileNotFoundExcepti
 import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveContentConflictCommand;
 import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveDescriptionConflictCommand;
 import valeriy.knyazhev.architector.application.project.file.conflict.command.ResolveMetadataConflictCommand;
-import valeriy.knyazhev.architector.application.project.file.conflict.data.ConflictChange;
-import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
-import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges.ContentChangesBlock;
-import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.*;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictBlock.ContentChangesBlock;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges.DescriptionConflictChangesBuilder;
-import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges.MetadataConflictChangesBuilder;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
@@ -55,9 +52,8 @@ public class ResolveChangesConflictService
         }
         List<ContentChangesBlock> headChangesBlocks = defineChangesBlocks(headItems);
         List<ContentChangesBlock> newChangesBlocks = defineChangesBlocks(newItems);
-        return areIntersected(headChangesBlocks, newChangesBlocks)
-               ? ContentConflictChanges.of(headChangesBlocks, newChangesBlocks)
-               : ContentConflictChanges.empty();
+        List<ContentConflictBlock> conflictBlocks = defineConflictBlocks(headChangesBlocks, newChangesBlocks);
+        return conflictBlocks.isEmpty() ? ContentConflictChanges.empty() : ContentConflictChanges.of(conflictBlocks);
     }
 
     public boolean resolveContentChangesConflict(@Nonnull ResolveContentConflictCommand command)
@@ -381,7 +377,6 @@ public class ResolveChangesConflictService
         this.commitRepository.saveAndFlush(newCommit);
         return newCommit.id();
     }
-
     @Nonnull
     private static List<ContentChangesBlock> defineChangesBlocks(@Nonnull List<CommitItem> items)
     {
@@ -413,6 +408,13 @@ public class ResolveChangesConflictService
         return nextItem.type() == ChangeType.ADDITION
                ? previousIndex == nextItem.position()
                : previousIndex + 1 == nextItem.position();
+    }
+
+    @Nonnull
+    private List<ContentConflictBlock> defineConflictBlocks(List<ContentChangesBlock> headChangesBlocks,
+                                                            List<ContentChangesBlock> newChangesBlocks)
+    {
+        return List.of();
     }
 
     private static boolean areIntersected(@Nonnull List<ContentChangesBlock> headChangesBlocks,

@@ -165,7 +165,7 @@ public class FileManagementService
             } else
             {
                 throw new FileContentConflictException(
-                    oldContent.items(), conflicts.headBlocks(), conflicts.newBlocks(), projectCommitId
+                    oldContent.items(), conflicts.conflictBlocks(), projectCommitId
                 );
             }
         }
