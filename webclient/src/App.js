@@ -9,6 +9,7 @@ import ProjectProjection from './pages/Project/ProjectProjection';
 import FileChangesHistory from './pages/Project/File/FileChangesHistory';
 import FileProjection from './pages/Project/File/FileProjection';
 import Navigation from './components/Navigation';
+import CodeResolveConflict from './components/CodeResolveConflict';
 import './App.css';
 
 class App extends Component {
@@ -43,6 +44,7 @@ class App extends Component {
                 component={FileProjection}
               />
               <Route exact path="/projects/:projectId/changes/:commitId/diff" component={Commit} />
+              <Route exact path="/conflict" component={CodeResolveConflict} />
               <Redirect exact from="/" to="/projects" />
             </Switch>
           </div>

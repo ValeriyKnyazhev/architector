@@ -54,7 +54,7 @@ export default class File extends Component {
     historyChanges: [],
     content: '',
     contentReadOnly: true,
-    updatedContent: '',
+    updatedContent: ''
   };
 
   async componentDidMount() {
@@ -146,10 +146,17 @@ export default class File extends Component {
         content: this.state.updatedContent,
         headCommitId: currentCommitId
       })
-      .then(() => {
-        this.fetchFileInfo();
-        this.fetchFileHistoryChanges();
-        this.onEditContent();
+      .then(response => {
+        if (response.data.conflictBlocks) {
+          this.props.history.push({
+            pathname: '/conflict',
+            state: { conflictData: response.data }
+          });
+        } else {
+          this.fetchFileInfo();
+          this.fetchFileHistoryChanges();
+          this.onEditContent();
+        }
       });
   };
 
