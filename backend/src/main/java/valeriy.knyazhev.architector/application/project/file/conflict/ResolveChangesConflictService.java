@@ -13,7 +13,9 @@ import valeriy.knyazhev.architector.application.project.file.conflict.data.Confl
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.ContentConflictChanges.ContentChangesBlock;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.DescriptionConflictChanges.DescriptionConflictChangesBuilder;
 import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges;
+import valeriy.knyazhev.architector.application.project.file.conflict.data.MetadataConflictChanges.MetadataConflictChangesBuilder;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.project.Project;
@@ -111,7 +113,7 @@ public class ResolveChangesConflictService
                                                                  @Nonnull FileMetadataChanges headMetadata,
                                                                  @Nonnull FileMetadataChanges newMetadata)
     {
-        var conflictsBuilder = MetadataConflictChanges.builder();
+        MetadataConflictChangesBuilder conflictsBuilder = MetadataConflictChanges.builder();
         if (headMetadata.name() != null || newMetadata.name() != null)
         {
             conflictsBuilder.name(
@@ -260,7 +262,7 @@ public class ResolveChangesConflictService
                                                                        @Nonnull FileDescriptionChanges headDescription,
                                                                        @Nonnull FileDescriptionChanges newDescription)
     {
-        var conflictsBuilder = DescriptionConflictChanges.builder();
+        DescriptionConflictChangesBuilder conflictsBuilder = DescriptionConflictChanges.builder();
         if (headDescription.descriptions() != null || newDescription.descriptions() != null)
         {
             conflictsBuilder.descriptions(

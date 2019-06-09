@@ -1,6 +1,8 @@
-apply plugin: "java"
-apply plugin: "org.springframework.boot"
-apply plugin: "io.spring.dependency-management"
+plugins{
+	id "java"
+	id "org.springframework.boot"
+	id "io.spring.dependency-management"
+}
 
 dependencyManagement {
 	imports {
@@ -44,3 +46,15 @@ dependencies {
 	testCompile "org.springframework.security:spring-security-test"
 
 }
+
+test {
+	jvmArgs += ["-Dliquibase.enabled=false", "-Dspring.jpa.hibernate.ddl-auto=create"]
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+	}
+}
+
+test.finalizedBy jacocoTestReport
