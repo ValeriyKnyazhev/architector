@@ -59,7 +59,7 @@ public class ContentConflictBlock
     }
 
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-    public static class ContentChangesBlock
+    public static class ContentChangesBlock implements Comparable<ContentChangesBlock>
     {
 
         private final int startIndex;
@@ -91,6 +91,11 @@ public class ContentConflictBlock
             return this.items;
         }
 
+        @Override public int compareTo(@Nonnull ContentChangesBlock o)
+        {
+            int diff = Integer.compare(this.startIndex, o.startIndex);
+            return diff == 0 ? Integer.compare(this.endIndex, o.endIndex) : diff;
+        }
     }
 
 }

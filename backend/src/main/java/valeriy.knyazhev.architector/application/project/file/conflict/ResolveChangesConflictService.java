@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 
@@ -400,7 +401,9 @@ public class ResolveChangesConflictService
             lastItems.add(item);
         }
         changesBlocks.add(new ContentChangesBlock(startIndex, lastIndex, lastItems));
-        return changesBlocks;
+        return changesBlocks.stream()
+            .sorted()
+            .collect(Collectors.toList());
     }
 
     private static boolean isPreviousBlock(int previousIndex,
@@ -440,22 +443,36 @@ public class ResolveChangesConflictService
             newBlockIndex++;
             newBlocks.add(initBlock);
         }
-        while (headBlockIndex < headChangesBlocks.size() && newBlockIndex < newChangesBlocks.size())
+        while (headBlockIndex < headChangesBlocks.size() || newBlockIndex < newChangesBlocks.size())
         {
-            ContentChangesBlock nextHeadBlock = headChangesBlocks.get(headBlockIndex);
-            ContentChangesBlock nextNewBlock = newChangesBlocks.get(newBlockIndex);
             boolean isHeadBlock;
             ContentChangesBlock nextBlock = null;
-            if (isFirstBlockNext(nextHeadBlock, nextNewBlock))
+            if (headBlockIndex < headChangesBlocks.size() && newBlockIndex < newChangesBlocks.size())
             {
-                nextBlock = nextHeadBlock;
-                headBlockIndex++;
-                isHeadBlock = true;
-            } else
-            {
-                nextBlock = nextNewBlock;
-                newBlockIndex++;
-                isHeadBlock = false;
+                ContentChangesBlock nextHeadBlock = headChangesBlocks.get(headBlockIndex);
+                ContentChangesBlock nextNewBlock = newChangesBlocks.get(newBlockIndex);
+                if (isFirstBlockNext(nextHeadBlock, nextNewBlock))
+                {
+                    nextBlock = nextHeadBlock;
+                    headBlockIndex++;
+                    isHeadBlock = true;
+                } else
+                {
+                    nextBlock = nextNewBlock;
+                    newBlockIndex++;
+                    isHeadBlock = false;
+                }
+            } else {
+                if (headBlockIndex < headChangesBlocks.size())
+                {
+                    nextBlock = headChangesBlocks.get(headBlockIndex++);
+                    isHeadBlock = true;
+                } else
+                {
+                    newChangesBlocks.size();
+                    nextBlock = newChangesBlocks.get(newBlockIndex++);
+                    isHeadBlock = false;
+                }
             }
             if (areIntersected(startConflictIndex, endConflictIndex, nextBlock.startIndex(), nextBlock.endIndex()))
             {
@@ -488,24 +505,6 @@ public class ResolveChangesConflictService
         conflictBlocks.add(
             new ContentConflictBlock(startConflictIndex, endConflictIndex, headBlocks, newBlocks)
         );
-        while (headBlockIndex < headChangesBlocks.size())
-        {
-            ContentChangesBlock nextBlock = headChangesBlocks.get(headBlockIndex++);
-            conflictBlocks.add(
-                new ContentConflictBlock(
-                    nextBlock.startIndex(), nextBlock.endIndex(), List.of(nextBlock), List.of()
-                )
-            );
-        }
-        while (newBlockIndex < newChangesBlocks.size())
-        {
-            ContentChangesBlock nextBlock = newChangesBlocks.get(newBlockIndex++);
-            conflictBlocks.add(
-                new ContentConflictBlock(
-                    nextBlock.startIndex(), nextBlock.endIndex(), List.of(), List.of(nextBlock)
-                )
-            );
-        }
         return conflictBlocks;
     }
 
