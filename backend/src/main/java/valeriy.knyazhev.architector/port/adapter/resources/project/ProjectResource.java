@@ -119,8 +119,8 @@ public class ProjectResource
             );
         } else
         {
-            throw new IllegalArgumentException(
-                "Unable to find " + request.accessRights() + " type of access rights for projects."
+            return ResponseEntity.badRequest().body(
+                new ResponseMessage().error("Incorrect access rights type.")
             );
         }
         return ResponseEntity.ok()
