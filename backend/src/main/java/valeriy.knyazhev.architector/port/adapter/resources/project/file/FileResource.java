@@ -169,11 +169,11 @@ public class FileResource
         return updated
                ? ResponseEntity.ok()
                    .body(
-                       new ResponseMessage().info("File " + qFileId + " was updated.")
+                       new ResponseMessage().info("File " + qFileId + " content was updated.")
                    )
                : ResponseEntity.badRequest()
                    .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + ".")
+                       new ResponseMessage().error("Unable to update file " + qFileId + " content.")
                    );
     }
 
@@ -185,9 +185,10 @@ public class FileResource
                                                         @RequestBody UpdateFileDescriptionRequest request,
                                                         @Nonnull Architector architector)
     {
+        boolean updated = false;
         try
         {
-            this.managementService.updateFileDescription(
+            updated = this.managementService.updateFileDescription(
                 UpdateFileDescriptionCommand.builder()
                     .projectId(qProjectId)
                     .fileId(qFileId)
@@ -207,10 +208,15 @@ public class FileResource
                 )
             );
         }
-        return ResponseEntity.ok()
-            .body(
-                new ResponseMessage().info("File " + qFileId + " description was updated.")
-            );
+        return updated
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage().info("File " + qFileId + " description was updated.")
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to update file " + qFileId + " description.")
+                   );
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/metadata",
@@ -221,9 +227,10 @@ public class FileResource
                                                      @RequestBody UpdateFileMetadataRequest request,
                                                      @Nonnull Architector architector)
     {
+        boolean updated = false;
         try
         {
-            this.managementService.updateFileMetadata(
+            updated = this.managementService.updateFileMetadata(
                 UpdateFileMetadataCommand.builder()
                     .projectId(qProjectId)
                     .fileId(qFileId)
@@ -248,10 +255,15 @@ public class FileResource
                 )
             );
         }
-        return ResponseEntity.ok()
-            .body(
-                new ResponseMessage().info("File " + qFileId + " metadata was updated.")
-            );
+        return updated
+               ? ResponseEntity.ok()
+                   .body(
+                       new ResponseMessage().info("File " + qFileId + " metadata was updated.")
+                   )
+               : ResponseEntity.badRequest()
+                   .body(
+                       new ResponseMessage().error("Unable to update file " + qFileId + " metadata.")
+                   );
     }
 
     @DeleteMapping(value = "/api/projects/{qProjectId}/files/{qFileId}",

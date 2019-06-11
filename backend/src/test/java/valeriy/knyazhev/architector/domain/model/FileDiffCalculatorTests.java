@@ -35,8 +35,8 @@ public class FileDiffCalculatorTests
     {
         // given
         List<String> content = generateContent(asList("1", "2"));
-        FileContent oldFile = sampleFile(content);
-        FileContent newFile = sampleFile(content);
+        FileContent oldFile = sampleFileContent(content);
+        FileContent newFile = sampleFileContent(content);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -51,8 +51,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(singletonList("1"));
         List<String> newContent = generateContent(asList("1", "2"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -73,8 +73,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(asList("1", "2"));
         List<String> newContent = generateContent(Collections.singletonList("1"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -95,8 +95,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(singletonList("2"));
         List<String> newContent = generateContent(asList("1", "2"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -117,8 +117,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(asList("1", "2"));
         List<String> newContent = generateContent(Collections.singletonList("2"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -139,8 +139,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(asList("1", "4"));
         List<String> newContent = generateContent(asList("1", "2", "3", "4"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -165,8 +165,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3", "4"));
         List<String> newContent = generateContent(asList("1", "4"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -191,8 +191,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3", "4", "5", "8", "9"));
         List<String> newContent = generateContent(asList("0", "1", "2", "5", "6", "7", "8"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -251,8 +251,8 @@ public class FileDiffCalculatorTests
         // given
         List<String> oldContent = generateContent(asList("1", "2", "3"));
         List<String> newContent = generateContent(asList("1", "2 new", "3"));
-        FileContent oldFile = sampleFile(oldContent);
-        FileContent newFile = sampleFile(newContent);
+        FileContent oldFile = sampleFileContent(oldContent);
+        FileContent newFile = sampleFileContent(newContent);
 
         // when
         List<CommitItem> diff = FileDiffCalculator.calculateDiff(oldFile, newFile);
@@ -277,7 +277,7 @@ public class FileDiffCalculatorTests
         softly.assertAll();
     }
 
-    private static FileContent sampleFile(List<String> content)
+    private static FileContent sampleFileContent(List<String> content)
     {
         return FileContent.of(content);
     }

@@ -13,11 +13,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static lombok.AccessLevel.PROTECTED;
 import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.*;
@@ -356,8 +354,9 @@ public class Project
         @Nonnull
         public Project construct()
         {
+            List<File> files = Optional.ofNullable(this.file).map(List::of).orElse(emptyList());
             return new Project(
-                this.projectId, this.projectName, this.author, this.description, singletonList(this.file)
+                this.projectId, this.projectName, this.author, this.description, files
             );
         }
 
