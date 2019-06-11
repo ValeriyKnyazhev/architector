@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Button, Modal } from 'antd';
 import _isEmpty from 'lodash/isEmpty';
 import cn from 'classnames';
@@ -23,16 +23,76 @@ export default class CodeResolveConflict extends PureComponent {
     } = this.props;
 
     if (state.conflictData) {
+      const conflictData = {
+        ...state.conflictData,
+        conflictBlocks: state.conflictData.conflictBlocks.map((block, index) => ({
+          ...block,
+          selectedBlocks: state.conflictData.oldContent.slice(
+            block.startIndex === 0 ? 0 : block.startIndex - 1,
+            block.endIndex === 0 ? block.endIndex : block.endIndex
+          ),
+          id: index
+        }))
+      };
       this.setState({
-        conflictData: state.conflictData
+        conflictData: conflictData
       });
     }
   }
 
-  resolveCommit = async () => {
-    await axios.post(this.state.links.resolveConflict, {
-      headCommitId: this.state.headCommitId
+  resolveConflict = async () => {
+    // TO_DO добавить решение конфликта
+    // await axios.post(this.state.links.resolveConflict, {
+    //   headCommitId: this.state.headCommitId
+    // });
+  };
+
+  removeHeadConflictValue = (id, removedBlock) => {
+    const { conflictData } = this.state;
+
+    const newConflictData = {
+      ...conflictData,
+      conflictBlocks: conflictData.conflictBlocks.map(block => {
+        if (block.id === id) {
+          return { ...block, headBlocks: block.headBlocks };
+        } else return block;
+      })
+    };
+
+    this.setState({
+      conflictData: newConflictData
     });
+  };
+
+  removeNewDataConflictValue = removedBlock => {
+    const { conflictData } = this.state;
+
+    const newConflictData = {
+      ...conflictData,
+      conflictBlocks: conflictData.conflictBlocks.map(block => {
+        if (block.id === removedBlock.id) {
+          return { ...block, newBlocks: [] };
+        } else return block;
+      })
+    };
+
+    this.setState({
+      conflictData: newConflictData
+    });
+  };
+
+  applyNewDataConflictValue = applyBlock => {
+    const { conflictData } = this.state;
+
+    const newConflictData = {
+      ...conflictData,
+      conflictBlocks: conflictData.conflictBlocks.map(block => {
+        if (block.id === applyBlock.id) {
+          return { ...block, newBlocks: [] };
+        } else return block;
+      }),
+      selectedBlocks: applyBlock
+    };
   };
 
   render() {
@@ -42,7 +102,6 @@ export default class CodeResolveConflict extends PureComponent {
       <div className="container">
         <div>
           <h2>PLEASE RESOLVE CONFLICT</h2>
-
           {conflictBlocks.map(block => (
             <div className="row" style={{ margin: '16px 0' }}>
               <div className="col-xs-4">
@@ -52,43 +111,40 @@ export default class CodeResolveConflict extends PureComponent {
                     return (
                       <div>
                         {head.items.map(item => (
-                          <div className={rowClass(item.type)}>{item.value}</div>
+                          <div className="d-flex">
+                            <div className={rowClass(item.type)}>{item.value}</div>
+                            <div style={{ minWidth: '50px', marginLeft: 8 }}>
+                              <ButtonGroup>
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  icon="close"
+                                  shape="circle"
+                                  onClick={() => {
+                                    this.removeHeadConflictValue(block.id, item);
+                                  }}
+                                />
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  icon="right"
+                                  shape="circle"
+                                  onClick={() => {
+                                    this.applyHeadConflictValue(block.id, item);
+                                  }}
+                                />
+                              </ButtonGroup>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     );
                   })}
-                  <div style={{ minWidth: '50px', marginLeft: 8 }}>
-                    {block.headBlocks.length > 0 && (
-                      <ButtonGroup>
-                        <Button
-                          type="primary"
-                          size="small"
-                          icon="close"
-                          shape="circle"
-                          onClick={() => {
-                            //this.removeHeadConflictValue();
-                          }}
-                        />
-                        <Button
-                          type="primary"
-                          size="small"
-                          icon="right"
-                          shape="circle"
-                          onClick={() => {
-                            //this.applyHeadConflictValue();
-                          }}
-                        />
-                      </ButtonGroup>
-                    )}
-                  </div>
                 </div>
               </div>
               <div className="col-xs-4">
                 <h3>Old content</h3>
-                {oldContent.slice(
-                  block.startIndex - 1 > 0 ? block.startIndex - 1 : 0,
-                  block.endIndex === 0 ? block.endIndex + 1 : block.endIndex
-                )}
+                {block.selectedBlocks}
               </div>
               <div className="col-xs-4">
                 <h3>New blocks</h3>
@@ -102,7 +158,7 @@ export default class CodeResolveConflict extends PureComponent {
                           icon="left"
                           shape="circle"
                           onClick={() => {
-                            //this.applyNewDataConflictValue();
+                            this.applyNewDataConflictValue(block);
                           }}
                         />
                         <Button
@@ -111,7 +167,7 @@ export default class CodeResolveConflict extends PureComponent {
                           icon="close"
                           shape="circle"
                           onClick={() => {
-                            //this.removeNewDataConflictValue();
+                            this.removeNewDataConflictValue(block);
                           }}
                         />
                       </ButtonGroup>
@@ -130,6 +186,10 @@ export default class CodeResolveConflict extends PureComponent {
               </div>
             </div>
           ))}
+          <Button type="primary" onClick={() => this.resolveConflict}>
+            {' '}
+            RESOLVE{' '}
+          </Button>
         </div>
       </div>
     );
