@@ -37,12 +37,14 @@ import static valeriy.knyazhev.architector.port.adapter.resources.project.reques
 public class ProjectResourceTests
 {
 
-    @Autowired
-    protected MockMvc mockMvc;
     @MockBean
     private ProjectManagementService managementService;
+
     @MockBean
     private ProjectQueryService queryService;
+
+    @Autowired
+    protected MockMvc mockMvc;
 
     @Test
     @WithMockUser("tony.stark@architector.ru")
