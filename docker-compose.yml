@@ -16,6 +16,7 @@ services:
     image: valeriyknyazhev/architector:3
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/architector
+      SPRING_PROFILES_ACTIVE: production
     deploy:
       replicas: 2
     ports:

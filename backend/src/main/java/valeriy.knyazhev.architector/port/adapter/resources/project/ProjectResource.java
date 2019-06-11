@@ -46,14 +46,13 @@ public class ProjectResource
         this.queryService = Args.notNull(queryService, "Query service is required.");
     }
 
-    @PostMapping(value = "/api/projects/",
+    @PostMapping(value = "/api/projects",
                  consumes = APPLICATION_JSON_UTF8_VALUE,
                  produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request,
-                                                @Nonnull Architector architector)
+    public ResponseEntity<Object> createProject(CreateProjectRequest request)
     {
         ProjectId projectId = this.managementService.createProject(
-            new CreateProjectCommand(request.name(), architector.email(), request.description()));
+            new CreateProjectCommand(request.name(), "", request.description()));
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("Project " + projectId.id() + " was created.")

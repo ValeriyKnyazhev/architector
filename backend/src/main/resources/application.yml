@@ -1,22 +1,16 @@
 server.port: 8080
 
-spring.jpa:
-  hibernate.ddl-auto: validate
-  properties.hibernate:
-    dialect: org.hibernate.dialect.PostgreSQL95Dialect
-    temp.use_jdbc_metadata_defaults: false
-
-spring.liquibase.change-log: classpath:/db/db.changelog-master.xml
-
-spring.datasource:
-  url: jdbc:postgresql://localhost:5432/architector
-  username: architector
-  password: architector
-
-spring.session:
-  store-type: jdbc
-  jdbc:
-    table-name: spring_session
+spring:
+  jpa:
+    hibernate.ddl-auto: validate
+    properties.hibernate:
+      dialect: org.hibernate.dialect.PostgreSQL95Dialect
+      temp.use_jdbc_metadata_defaults: false
+  liquibase.change-log: classpath:/db/db.changelog-master.xml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/architector
+    username: architector
+    password: architector
 
 server.servlet.session:
   timeout: 600
@@ -32,3 +26,12 @@ security.jwt.token:
     UTt/yhJ9Jfur1e3PVcpeelO4UPeZFzYHo9t+WMuToWLq/NL3NnW90ECZgIxahFPl
     6EbfMx3DZLBbFJqFHwIDAQAB
   expire-length: 7200000
+
+---
+
+spring:
+  profiles: production
+  session:
+    store-type: jdbc
+    jdbc:
+      table-name: spring_session

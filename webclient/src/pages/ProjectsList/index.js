@@ -76,7 +76,7 @@ export default class Projects extends Component {
       confirmLoading: true
     });
     axios
-      .post('/api/projects/', {
+      .post('/api/projects', {
         name: newProjectData.name,
         description: newProjectData.description
       })
