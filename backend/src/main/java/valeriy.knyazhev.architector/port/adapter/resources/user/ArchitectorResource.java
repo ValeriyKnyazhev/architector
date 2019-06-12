@@ -45,12 +45,12 @@ public class ArchitectorResource
     }
 
     @PostMapping("/api/token")
-    public ResponseEntity login(@RequestBody AuthenticationRequest data)
+    public ResponseEntity<Object> login(@RequestBody AuthenticationRequest data)
     {
         try
         {
-            String email = data.getEmail();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, data.getPassword()));
+            String email = data.email();
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, data.password()));
             List<String> authorities = this.applicationService.findByEmail(email)
                 .roles()
                 .stream()
