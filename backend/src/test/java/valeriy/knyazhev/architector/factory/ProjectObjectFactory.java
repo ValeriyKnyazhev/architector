@@ -13,6 +13,11 @@ import java.util.List;
 public final class ProjectObjectFactory
 {
 
+    private ProjectObjectFactory()
+    {
+        // nop
+    }
+
     public static Project emptyProject(String author)
     {
         return Project.constructor()
@@ -77,11 +82,6 @@ public final class ProjectObjectFactory
             .originatingSystem("system")
             .authorization("authorization")
             .build();
-    }
-
-    private ProjectObjectFactory()
-    {
-        // nop
     }
 
 }

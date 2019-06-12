@@ -67,6 +67,11 @@ public class Commit
         this.data = data;
     }
 
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
     public long id()
     {
         return this.id;

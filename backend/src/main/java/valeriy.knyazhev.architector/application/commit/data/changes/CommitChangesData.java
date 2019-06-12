@@ -34,4 +34,22 @@ public class CommitChangesData
         this.changedFiles = Args.notNull(files, "Changed files are required.");
     }
 
+    @Nonnull
+    public String name()
+    {
+        return this.name;
+    }
+
+    @Nonnull
+    public String description()
+    {
+        return this.description;
+    }
+
+    @Nonnull
+    public List<FileChangesData> changedFiles()
+    {
+        return this.changedFiles;
+    }
+
 }
