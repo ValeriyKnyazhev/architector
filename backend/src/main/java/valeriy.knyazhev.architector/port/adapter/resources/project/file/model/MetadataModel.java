@@ -2,13 +2,10 @@ package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Builder;
 import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
-import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateSerializer;
 import valeriy.knyazhev.architector.domain.model.util.serialization.ArchitectorLocalDateTimeSerializer;
 
 import javax.annotation.Nonnull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -13,7 +13,7 @@ services:
     - ./postgres-db-architector:/var/lib/postgresql/data
 
   service:
-    image: valeriyknyazhev/architector:3
+    image: valeriyknyazhev/architector:4
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/architector
       SPRING_PROFILES_ACTIVE: production

@@ -49,10 +49,12 @@ public class ProjectResource
     @PostMapping(value = "/api/projects",
                  consumes = APPLICATION_JSON_UTF8_VALUE,
                  produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> createProject(CreateProjectRequest request)
+    public ResponseEntity<Object> createProject(@RequestBody @Valid CreateProjectRequest request,
+                                                @Nonnull Architector architector)
     {
         ProjectId projectId = this.managementService.createProject(
-            new CreateProjectCommand(request.name(), "", request.description()));
+            new CreateProjectCommand(request.name(), architector.email(), request.description())
+        );
         return ResponseEntity.ok()
             .body(
                 new ResponseMessage().info("Project " + projectId.id() + " was created.")

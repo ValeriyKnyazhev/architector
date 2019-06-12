@@ -1,7 +1,6 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.file.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.Builder;
 import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
 
 import javax.annotation.Nonnull;
