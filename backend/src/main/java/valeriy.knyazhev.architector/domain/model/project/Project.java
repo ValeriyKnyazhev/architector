@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static lombok.AccessLevel.PROTECTED;
 import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.*;
 
@@ -67,7 +66,7 @@ public class Project
         joinColumns = @JoinColumn(name = "project_id"),
         inverseJoinColumns = @JoinColumn(name = "architector_id")
     )
-    private Set<Architector> readAccessRights;
+    private Set<Architector> readAccessRights = Set.of();
 
     @ManyToMany
     @JoinTable(
@@ -75,7 +74,7 @@ public class Project
         joinColumns = @JoinColumn(name = "project_id"),
         inverseJoinColumns = @JoinColumn(name = "architector_id")
     )
-    private Set<Architector> writeAccessRights;
+    private Set<Architector> writeAccessRights = Set.of();
 
     @Nullable
     private Long currentCommitId;
@@ -189,13 +188,11 @@ public class Project
         {
             return WRITE;
         }
-        if (this.writeAccessRights.stream()
-            .anyMatch(architector::equals))
+        if (this.writeAccessRights.stream().anyMatch(architector::equals))
         {
             return WRITE;
         }
-        if (this.readAccessRights.stream()
-            .anyMatch(architector::equals))
+        if (this.readAccessRights.stream().anyMatch(architector::equals))
         {
             return READ;
         }

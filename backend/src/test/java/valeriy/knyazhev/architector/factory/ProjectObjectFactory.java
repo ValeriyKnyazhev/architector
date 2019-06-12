@@ -13,23 +13,23 @@ import java.util.List;
 public final class ProjectObjectFactory
 {
 
-    public static Project emptyProject()
+    public static Project emptyProject(String author)
     {
         return Project.constructor()
             .projectId(ProjectId.nextId())
             .withName("Project")
             .withDescription("Description")
-            .withAuthor("author")
+            .withAuthor(author)
             .construct();
     }
 
-    public static Project projectWithFiles()
+    public static Project projectWithFiles(String author)
     {
         return Project.constructor()
             .projectId(ProjectId.nextId())
             .withName("Project")
             .withDescription("Description")
-            .withAuthor("author")
+            .withAuthor(author)
             .withFile(createFile(FileId.nextId()))
             .construct();
     }

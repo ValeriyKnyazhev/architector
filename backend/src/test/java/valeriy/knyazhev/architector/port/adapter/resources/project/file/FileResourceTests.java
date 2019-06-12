@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,6 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class FileResourceTests
 {
 
+    private static final String USER_EMAIL = "tony.stark@architector.ru";
+
     @MockBean
     private ProjectRepository projectRepository;
 
@@ -54,6 +57,7 @@ public class FileResourceTests
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldAddFileBySourceUrl()
         throws Exception
     {
@@ -73,6 +77,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotAddFileBySourceUrl()
         throws Exception
     {
@@ -92,6 +97,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldAddFileByUploadFile()
         throws Exception
     {
@@ -111,6 +117,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotAddFileByUploadFile()
         throws Exception
     {
@@ -130,11 +137,12 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldReturnFile()
         throws Exception
     {
         // given
-        Project project = ProjectObjectFactory.projectWithFiles();
+        Project project = ProjectObjectFactory.projectWithFiles(USER_EMAIL);
         ProjectId projectId = project.projectId();
         long commitId = 2L;
         project.updateCurrentCommitId(commitId);
@@ -164,6 +172,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotFoundFileIfProjectNotFound()
         throws Exception
     {
@@ -180,11 +189,12 @@ public class FileResourceTests
     }
 
     @Test
-    public void shouldNotFoundFile()
+    @WithMockUser(USER_EMAIL)
+    public void shouldNotFoundFileIfNotExist()
         throws Exception
     {
         // given
-        Project project = ProjectObjectFactory.emptyProject();
+        Project project = ProjectObjectFactory.emptyProject(USER_EMAIL);
         ProjectId projectId = project.projectId();
         FileId fileId = FileId.nextId();
         when(this.projectRepository.findByProjectId((eq(projectId)))).thenReturn(Optional.of(project));
@@ -197,6 +207,25 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
+    public void shouldNotFoundFileIfForbidden()
+        throws Exception
+    {
+        // given
+        Project project = ProjectObjectFactory.emptyProject("incorrect.user@architector.ru");
+        ProjectId projectId = project.projectId();
+        FileId fileId = FileId.nextId();
+        when(this.projectRepository.findByProjectId((eq(projectId)))).thenReturn(Optional.of(project));
+
+        // expect
+        this.mockMvc.perform(get("/api/projects/{projectId}/files/{fileId}", projectId.id(), fileId.id())
+            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.error").exists());
+    }
+
+    @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldUpdateFileContent()
         throws Exception
     {
@@ -222,6 +251,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotUpdateFileContent()
         throws Exception
     {
@@ -247,6 +277,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldResolveFileContentConflict()
         throws Exception
     {
@@ -276,6 +307,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldUpdateFileDescription()
         throws Exception
     {
@@ -303,6 +335,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotUpdateFileDescription()
         throws Exception
     {
@@ -330,6 +363,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldResolveFileDescriptionConflict()
         throws Exception
     {
@@ -363,6 +397,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldUpdateFileMetadata()
         throws Exception
     {
@@ -400,6 +435,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotUpdateFileMetadata()
         throws Exception
     {
@@ -437,6 +473,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldResolveFileMetadataConflict()
         throws Exception
     {
@@ -480,6 +517,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldDeleteFile()
         throws Exception
     {
@@ -497,6 +535,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotDeleteFile()
         throws Exception
     {
@@ -514,11 +553,12 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldDownloadFile()
         throws Exception
     {
         // given
-        Project project = ProjectObjectFactory.projectWithFiles();
+        Project project = ProjectObjectFactory.projectWithFiles(USER_EMAIL);
         ProjectId projectId = project.projectId();
         FileId fileId = project.files().get(0).fileId();
         when(this.projectRepository.findByProjectId((eq(projectId)))).thenReturn(Optional.of(project));
@@ -532,6 +572,7 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotDownloadFileIfProjectNotFound()
         throws Exception
     {
@@ -548,11 +589,12 @@ public class FileResourceTests
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     public void shouldNotDownloadFileIfFileNotFound()
         throws Exception
     {
         // given
-        Project project = ProjectObjectFactory.emptyProject();
+        Project project = ProjectObjectFactory.emptyProject(USER_EMAIL);
         ProjectId projectId = project.projectId();
         FileId fileId = FileId.nextId();
         when(this.projectRepository.findByProjectId((eq(projectId)))).thenReturn(Optional.of(project));

@@ -8,6 +8,8 @@ import valeriy.knyazhev.architector.application.commit.CommitNotFoundException;
 import valeriy.knyazhev.architector.application.project.ProjectNotFoundException;
 import valeriy.knyazhev.architector.application.project.file.FileNotFoundException;
 import valeriy.knyazhev.architector.application.security.InvalidTokenException;
+import valeriy.knyazhev.architector.application.user.ArchitectorAlreadyExistException;
+import valeriy.knyazhev.architector.application.user.ArchitectorNotFoundException;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.NothingToCommitException;
 import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
@@ -35,6 +37,22 @@ public class ErrorHandlingResource
         ResponseMessage responseMessage = new ResponseMessage()
             .error(ex.getMessage());
         return ResponseEntity.status(NOT_FOUND).body(responseMessage);
+    }
+
+    @ExceptionHandler(ArchitectorNotFoundException.class)
+    public ResponseEntity<ResponseMessage> catchArchitectorNotFoundException(ArchitectorNotFoundException ex)
+    {
+        ResponseMessage responseMessage = new ResponseMessage()
+            .error(ex.getMessage());
+        return ResponseEntity.status(NOT_FOUND).body(responseMessage);
+    }
+
+    @ExceptionHandler(ArchitectorAlreadyExistException.class)
+    public ResponseEntity<ResponseMessage> catchArchitectorAlreadyExistException(ArchitectorAlreadyExistException ex)
+    {
+        ResponseMessage responseMessage = new ResponseMessage()
+            .error(ex.getMessage());
+        return ResponseEntity.status(BAD_REQUEST).body(responseMessage);
     }
 
     @ExceptionHandler(CommitNotFoundException.class)
