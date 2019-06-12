@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import valeriy.knyazhev.architector.application.project.AccessGrantedInfo;
 import valeriy.knyazhev.architector.application.project.ProjectData;
 import valeriy.knyazhev.architector.application.project.ProjectManagementService;
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
@@ -37,14 +38,14 @@ import static valeriy.knyazhev.architector.port.adapter.resources.project.reques
 public class ProjectResourceTests
 {
 
+    @Autowired
+    protected MockMvc mockMvc;
+
     @MockBean
     private ProjectManagementService managementService;
 
     @MockBean
     private ProjectQueryService queryService;
-
-    @Autowired
-    protected MockMvc mockMvc;
 
     @Test
     @WithMockUser("tony.stark@architector.ru")
@@ -62,7 +63,7 @@ public class ProjectResourceTests
             .thenReturn(ProjectId.nextId());
 
         // expect
-        this.mockMvc.perform(post("/api/projects/")
+        this.mockMvc.perform(post("/api/projects")
             .content(command)
             .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(status().isOk())
@@ -95,19 +96,53 @@ public class ProjectResourceTests
 
     @Test
     @WithMockUser("tony.stark@architector.ru")
-    public void shouldReturnProject()
+    public void shouldReturnOwnerProject()
         throws Exception
     {
         // given
         ProjectId projectId = ProjectId.nextId();
         when(this.queryService.findById(eq(projectId.id()), any(Architector.class)))
-            .thenReturn(sampleProject(projectId));
+            .thenReturn(sampleProject(projectId, new AccessGrantedInfo(List.of(), List.of())));
 
         // expect
         this.mockMvc.perform(get("/api/projects/{projectId}", projectId.id())
             .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.projectId").value(projectId.id()))
+            .andExpect(jsonPath("$.author").isString())
+            .andExpect(jsonPath("$.createdDate").isString())
+            .andExpect(jsonPath("$.updatedDate").isString())
+            .andExpect(jsonPath("$.accessRights").isString())
+            .andExpect(jsonPath("$.projectName").isString())
+            .andExpect(jsonPath("$.description").isString())
+            .andExpect(jsonPath("$.accessGrantedInfo").exists())
+            .andExpect(jsonPath("$.accessGrantedInfo.readAccess").isArray())
+            .andExpect(jsonPath("$.accessGrantedInfo.writeAccess").isArray())
+            .andExpect(jsonPath("$.files").exists());
+    }
+
+    @Test
+    @WithMockUser("tony.stark@architector.ru")
+    public void shouldReturnForeignProject()
+        throws Exception
+    {
+        // given
+        ProjectId projectId = ProjectId.nextId();
+        when(this.queryService.findById(eq(projectId.id()), any(Architector.class)))
+            .thenReturn(sampleProject(projectId, null));
+
+        // expect
+        this.mockMvc.perform(get("/api/projects/{projectId}", projectId.id())
+            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.projectId").value(projectId.id()))
+            .andExpect(jsonPath("$.author").isString())
+            .andExpect(jsonPath("$.createdDate").isString())
+            .andExpect(jsonPath("$.updatedDate").isString())
+            .andExpect(jsonPath("$.accessRights").isString())
+            .andExpect(jsonPath("$.projectName").isString())
+            .andExpect(jsonPath("$.description").isString())
+            .andExpect(jsonPath("$.accessGrantedInfo").doesNotExist())
             .andExpect(jsonPath("$.files").exists());
     }
 
@@ -135,7 +170,7 @@ public class ProjectResourceTests
     {
         // given
         when(this.queryService.findProjects(any(Architector.class)))
-            .thenReturn(List.of(sampleProject(ProjectId.nextId())));
+            .thenReturn(List.of(sampleProject(ProjectId.nextId(), null)));
 
         // expect
         this.mockMvc.perform(get("/api/projects")
@@ -237,7 +272,7 @@ public class ProjectResourceTests
             .takeAwayAccessRights(any(Architector.class), any(TakeAwayAccessRightsCommand.class));
     }
 
-    private static ProjectData sampleProject(ProjectId projectId)
+    private static ProjectData sampleProject(ProjectId projectId, AccessGrantedInfo accessGrantedInfo)
     {
         LocalDateTime now = LocalDateTime.now();
         return ProjectData.builder()
@@ -248,6 +283,7 @@ public class ProjectResourceTests
             .createdDate(now)
             .updatedDate(now)
             .accessRights(ProjectAccessRights.OWNER)
+            .accessGrantedInfo(accessGrantedInfo)
             .files(List.of())
             .build();
     }

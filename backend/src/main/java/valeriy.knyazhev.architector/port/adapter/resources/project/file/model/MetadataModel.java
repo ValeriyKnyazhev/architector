@@ -43,7 +43,6 @@ public class MetadataModel
     @Nonnull
     private String authorization;
 
-    @Builder
     private MetadataModel(@Nonnull String name,
                           @Nonnull LocalDateTime timestamp,
                           @Nonnull List<String> authors,

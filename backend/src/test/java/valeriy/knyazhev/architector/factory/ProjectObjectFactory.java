@@ -39,10 +39,36 @@ public final class ProjectObjectFactory
         return createFile(FileId.nextId());
     }
 
+    public static FileDescription sampleDescription()
+    {
+        return createDescription();
+    }
+
+    public static FileMetadata sampleMetadata()
+    {
+        return createMetadata();
+    }
+
     private static File createFile(FileId fileId)
     {
-        FileDescription description = FileDescription.of(List.of(), "");
-        FileMetadata metadata = FileMetadata.builder()
+        return File.constructor()
+            .withFileId(fileId)
+            .withIsoId("ISO-10303-21")
+            .withSchema("IFC4")
+            .withDescription(createDescription())
+            .withMetadata(createMetadata())
+            .withContent(FileContent.of(List.of()))
+            .construct();
+    }
+
+    private static FileDescription createDescription()
+    {
+        return FileDescription.of(List.of(), "");
+    }
+
+    private static FileMetadata createMetadata()
+    {
+        return FileMetadata.builder()
             .name("name")
             .authors(List.of("author"))
             .organizations(List.of("organization"))
@@ -51,14 +77,6 @@ public final class ProjectObjectFactory
             .originatingSystem("system")
             .authorization("authorization")
             .build();
-        return File.constructor()
-            .withFileId(fileId)
-            .withIsoId("ISO-10303-21")
-            .withSchema("IFC4")
-            .withDescription(description)
-            .withMetadata(metadata)
-            .withContent(FileContent.of(List.of()))
-            .construct();
     }
 
     private ProjectObjectFactory()

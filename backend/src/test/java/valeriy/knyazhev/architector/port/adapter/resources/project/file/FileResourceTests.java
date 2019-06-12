@@ -136,6 +136,8 @@ public class FileResourceTests
         // given
         Project project = ProjectObjectFactory.projectWithFiles();
         ProjectId projectId = project.projectId();
+        long commitId = 2L;
+        project.updateCurrentCommitId(commitId);
         FileId fileId = project.files().get(0).fileId();
         when(this.projectRepository.findByProjectId((eq(projectId)))).thenReturn(Optional.of(project));
 
@@ -144,7 +146,21 @@ public class FileResourceTests
             .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.fileId").isString())
-            .andExpect(jsonPath("$.schema").isString());
+            .andExpect(jsonPath("$.schema").isString())
+            .andExpect(jsonPath("$.isoId").isString())
+            .andExpect(jsonPath("$.accessRights").isString())
+            .andExpect(jsonPath("$.metadata").exists())
+            .andExpect(jsonPath("$.metadata.name").isString())
+            .andExpect(jsonPath("$.metadata.authors").isArray())
+            .andExpect(jsonPath("$.metadata.organizations").isArray())
+            .andExpect(jsonPath("$.metadata.timestamp").isString())
+            .andExpect(jsonPath("$.metadata.preprocessorVersion").isString())
+            .andExpect(jsonPath("$.metadata.originatingSystem").isString())
+            .andExpect(jsonPath("$.metadata.authorization").isString())
+            .andExpect(jsonPath("$.description").exists())
+            .andExpect(jsonPath("$.description.descriptions").isArray())
+            .andExpect(jsonPath("$.description.implementationLevel").isString())
+            .andExpect(jsonPath("$.currentCommitId").value(commitId));
     }
 
     @Test

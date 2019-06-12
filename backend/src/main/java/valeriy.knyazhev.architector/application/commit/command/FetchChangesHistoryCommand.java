@@ -56,12 +56,8 @@ public class FetchChangesHistoryCommand
         }
         List<Commit> filteredCommits = commitsStream.collect(Collectors.toList());
         return this.fileId == null
-               ? new ProjectHistoryData(
-            this.projectId.id(), filteredCommits
-        )
-               : new FileHistoryData(
-                   this.fileId.id(), filteredCommits
-               );
+               ? new ProjectHistoryData(this.projectId.id(), filteredCommits)
+               : new FileHistoryData(this.fileId.id(), filteredCommits);
     }
 
     private static boolean commitRelatedToFile(@Nonnull Commit commit, @Nonnull FileId fileId)

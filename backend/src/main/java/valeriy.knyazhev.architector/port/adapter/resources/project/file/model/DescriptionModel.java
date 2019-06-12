@@ -22,7 +22,6 @@ public class DescriptionModel
     @Nonnull
     private String implementationLevel;
 
-    @Builder
     private DescriptionModel(@Nonnull List<String> descriptions,
                              @Nonnull String implementationLevel)
     {
