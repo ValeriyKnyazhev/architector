@@ -33,22 +33,22 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @RestController
-public class CommitsResource
+public class CommitResource
 {
 
     private final CommitQueryService commitQueryService;
 
     private final ChangesApplicationService changesApplicationService;
 
-    public CommitsResource(@Nonnull CommitQueryService commitQueryService,
-                           @Nonnull ChangesApplicationService changesApplicationService)
+    public CommitResource(@Nonnull CommitQueryService commitQueryService,
+                          @Nonnull ChangesApplicationService changesApplicationService)
     {
         this.commitQueryService = Args.notNull(commitQueryService, "Commit query service is required.");
         this.changesApplicationService = Args.notNull(changesApplicationService,
             "Changes application service is required.");
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/commits",
+    @GetMapping(value = "/api/projects/{qProjectId}/commits",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectChanges(@PathVariable String qProjectId)
     {
@@ -60,7 +60,7 @@ public class CommitsResource
         return ResponseEntity.ok(projectHistory);
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/files/{qFileId}/commits",
+    @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/commits",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchFileChanges(@PathVariable String qProjectId,
                                                    @PathVariable String qFileId)
@@ -74,7 +74,7 @@ public class CommitsResource
         return ResponseEntity.ok(fileHistory);
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/commits/{commitId}/content",
+    @GetMapping(value = "/api/projects/{qProjectId}/commits/{commitId}/content",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchProjectContentByCommit(@PathVariable String qProjectId,
                                                               @PathVariable long commitId)
@@ -89,13 +89,13 @@ public class CommitsResource
                 projection.description(),
                 projection.files().stream()
                     .filter(file -> !file.items().isEmpty())
-                    .map(CommitsResource::constructFileContent)
+                    .map(CommitResource::constructFileContent)
                     .collect(toList())
             )
         );
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/files/{qFileId}/commits/{commitId}/content",
+    @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/commits/{commitId}/content",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchFileContentByCommit(
         @PathVariable String qProjectId,
@@ -110,7 +110,7 @@ public class CommitsResource
         );
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/files/{qFileId}/commits/{commitId}/download",
+    @GetMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/commits/{commitId}/download",
                 produces = APPLICATION_OCTET_STREAM_VALUE)
     public @ResponseBody byte[] downloadFile(@PathVariable String qProjectId,
                                              @PathVariable String qFileId,
@@ -129,7 +129,7 @@ public class CommitsResource
         return IFCFileWriter.write(projection);
     }
 
-    @GetMapping(value = "api/projects/{qProjectId}/commits/{commitId}/changes",
+    @GetMapping(value = "/api/projects/{qProjectId}/commits/{commitId}/changes",
                 produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> fetchCommitChanges(@PathVariable String qProjectId,
                                                      @PathVariable long commitId)
