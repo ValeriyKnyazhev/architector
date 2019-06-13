@@ -147,15 +147,24 @@ BIM позволяет решать эти проблемы: на передни
 \item Разрабатывается независимым сообществом.
 \item Наличие иерархии и взаимосвязей между компонентами архитектурно-строительной модели.
 \item Возможность конвертации в/из других форматов данных.
-\end{enumerate}
+\end{enumerate} 
 
-Пример данных:
-TODO описание
+\textit{Пример данных:}
 \begin{figure}[H]
-\center{\includegraphics[width=1.0\textwidth]{dendogramm.png}}
-\caption{Дендограмма.}
+\center{\includegraphics[width=1.0\textwidth]{ifc-data.png}}
+\caption{Формат данных IFC}
 \label{user-stories}
 \end{figure}
+\begin{enumerate}
+\item ISO-10303-21 -- спецификация языка описания BIM моделей.
+\item HEADER -- блок описания файла.
+\begin{enumerate}
+\item FILE\_DESCRIPTION -- описание опций создания контента.
+\item FILE\_NAME -- информация о создании файла, организации, а также об используемом программном обеспечении.
+\item FILE\_SCHEMA -- версия сехмы данных IFC.
+\end{enumerate}
+\item DATA -- блок описания BIM представления объекта.
+\end{enumerate}
 
 \newpage
 \section{Пользовательские истории}
