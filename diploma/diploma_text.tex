@@ -746,6 +746,150 @@ BIM позволяет решать эти проблемы: на передни
 
 \newpage
 \section{Описание алгоритмов}
+В данном разделе описаны основные алгоритмы нашей системы поддержки и сопровождения проектов по стандарту BIM.
+
+\subsection{Вычисление списка изменений контента} 
+При каждом редактировании контента файлов, которые содержат в себе описание BIM представления объекта, нам требуется вычислять список изменений, которые были применены к данным. \\
+В данной работе для вычисления списка изменений используется алгоритм Майера. \\
+TODO описание
+
+\newpage
+\subsection{Получение детализированного описания изменения} 
+\textbf{Дано:} \\
+Старый контент файла, список изменений контента. \\
+\textbf{Ожидаемый результат:} \\
+Список блоков контента, которые содержат в себе как измененные элементы данных, так и те, которые не изменялись. Дополнительный контент требуется для лучшего понимания пользователем, в какой части проекта были эти изменения. \\
+Получение детализированного описания изменения проекта сводится к получение детализации по каждому файлу проекта.
+
+\subsubsection{Получение детализации изменения для одного файла}
+
+\begin{figure}[H]
+\center{\includegraphics[width=0.9\textwidth]{detalized-changes.png}}
+\caption{Детализация изменения контента.}
+\label{user-stories}
+\end{figure}
+Если контент файла отсутствует, значит в текущем изменени проекта этот файл добавлен, что должно трактоваться как один блок с добавлением всего контента. Если же удалось построить контент файла предыдущей версии, значит нам требуется распределить список изменений на непересекающиеся между собой блоки, а после добавить в эти блоки недостающие сведения уже из старого контента.
+
+\newpage
+\subsubsection{Разбиение списка изменений на непересекающиеся блоки}
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\KwData{ list of changes \\ 
+params = \{ $offsetSize$\} } 
+\KwResult{ disjoint blocks of changes }
+
+\SetKwFunction{FMain}{main}
+\SetKwFunction{FIsNewBlock}{isNewBlock}
+
+\SetKwProg{Fn}{Function}{:}{}
+
+\Fn{\FMain{$changes$, $offsetSize$}}{
+
+	\textbf{disjointBlocks} := [ ], \textbf{blockChanges} := [ ]
+
+	\textbf{lastPosition} := changes[0].position
+
+	\For{ (change : changes) }{
+
+		\eIf{(isNewBlock(change, \textbf{lastPosition}, offsetSize))}
+		{
+			\textbf{blockChanges}.add(change)
+		}{
+			\textbf{newBlock} := new Block(\textbf{blockChanges})
+		
+			\textbf{blockChanges }:= []
+		
+			\textbf{disjointBlocks}.add(\textbf{newBlock})
+		}
+		\textbf{lastPosition} := change.position
+	}
+	\KwRet\ \textbf{disjointBlocks}
+}
+
+\Fn{\FIsNewBlock{$change$, $lastPosition$, $offsetSize$}}{
+
+	\textbf{leftOperand} := $change$.position - $offsetSize$
+	
+	\textbf{rightOperand} := $lastPosition$ + $offsetSize$
+	
+	\If{($change.type$ == DELETION)}
+	{
+		\textbf{rightOperand} $++$
+	}
+	
+	\eIf{(\textbf{leftOperand}$>$ \textbf{rightOperand})}
+	{
+		\KwRet\ true
+	}{
+		\KwRet\ false
+	}
+	
+}
+\caption{Разбиение на непересекающиеся блоки изменений.}
+\label{DEFINE_DISJOINT_BLOCKS}
+\end{algorithm}
+\textit{где $offset\_size$ -- максимальное допустимое расстояние между элементами контента, которое позволяея определить,относятся ли два последовательных элемента к одному блоку изменений.}
+
+
+\newpage
+\subsubsection{Объединение блоков изменений с контентом}
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\KwData{ list of disjoint blocks of changes, content \\ 
+params = \{ $offsetSize$\} } 
+\KwResult{ disjoint blocks of changes with content}
+
+\SetKwFunction{FMain}{main}
+\SetKwFunction{FEnrichContent}{enrichContent}
+
+\SetKwProg{Fn}{Function}{:}{}
+
+\Fn{\FMain{$disjointBlocks$, $content$, $offsetSize$}}{
+
+	\textbf{blocks} := [ ]
+
+	\For{ (block : disjointBlocks) }{
+
+		\textbf{contentChanges} = []
+		
+		\textbf{lastIndex} = block.changes[0].position
+		
+		enrichContent(\textbf{contentChanges}, content, \textbf{lastIndex} - offsetSize + 1, \textbf{lastIndex}))
+		
+		\For{ (change : block.changes) }{
+		
+			\textbf{contentChanges}.add(change)
+			
+			\If{(change.position $>$ \textbf{lastPosition} + 1)}
+			{
+				enrichContent(\textbf{contentChanges}, content, \textbf{lastIndex} + 1, change.position))
+			}
+			
+			\textbf{lastPosition} := change.position
+		
+		}
+		enrichContent(\textbf{contentChanges}, content, \textbf{lastIndex}, \textbf{lastIndex}+offsetSize))
+	}
+	\KwRet\ \textbf{blocks}
+}
+
+\Fn{\FEnrichContent{$contentChanges$, $content$, $start$, $end$}}{
+	\For{$index \gets start$ to $end$}{
+		\textbf{type} = UNMODIFIED
+		
+		\textbf{newChange} := new Change(type, $content$[index], index)
+		
+		$contentChanges$.add(\textbf{newChange})
+	}
+}
+\caption{Объединение блоков изменений с контентом.}
+\label{ENRICH_BLOCKS_WITH_CONTENT}
+\end{algorithm}
+
+\newpage
+\subsection{Нахождение конфликтных ситуаций} 
 
 
 \newpage
