@@ -8,6 +8,10 @@
   display: flex;
 }
 
+.s-between {
+  justify-content: space-between;
+}
+
 .around {
   margin-right: 16px;
 }

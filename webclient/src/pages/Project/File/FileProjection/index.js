@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Table, Tag, Icon, Spin, Card, Button } from 'antd';
+import { Icon, Spin, Button } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import FileMetadata from 'pages/Project/File/FileMetadata';
 import FileDescription from 'pages/Project/File/FileDescription';

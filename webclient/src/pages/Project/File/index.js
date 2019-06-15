@@ -3,7 +3,7 @@ import axios from 'axios';
 import debounce from 'lodash/debounce';
 import { Link } from 'react-router-dom';
 import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Spin, Table, message, Modal, Input } from 'antd';
+import { Button, Icon, Spin, Table } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import HistoryChanges from 'components/HistoryChanges';
 import FileMetadata from './FileMetadata';
@@ -150,7 +150,7 @@ export default class File extends Component {
         if (response.data.conflictBlocks) {
           this.props.history.push({
             pathname: '/conflict',
-            state: { conflictData: response.data }
+            state: { conflictData: response.data, projectId: projectId, file: fileId }
           });
         } else {
           this.fetchFileInfo();

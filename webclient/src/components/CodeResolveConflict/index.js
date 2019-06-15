@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import axios from 'axios';
 import { Button } from 'antd';
 import _isEmpty from 'lodash/isEmpty';
+import debounce from 'lodash/debounce';
+import CodeEditor from 'components/CodeEditor';
 import cn from 'classnames';
 import './CodeResolveConflict.sass';
 
@@ -9,9 +11,9 @@ const ButtonGroup = Button.Group;
 
 const rowClass = type =>
   cn({
-    commit__row: true,
-    'commit__row--add': type === 'ADDITION',
-    'commit__row--delete': type === 'DELETION'
+    'code-conflict__row': true,
+    'code-conflict__row--add': type === 'ADDITION',
+    'code-conflict__row--delete': type === 'DELETION'
   });
 
 export default class CodeResolveConflict extends PureComponent {
@@ -46,6 +48,23 @@ export default class CodeResolveConflict extends PureComponent {
       });
     }
   }
+
+  onUpdateContent = (contentState, blockId) => {
+    const { conflictData } = this.state;
+    const newConflictData = {
+      ...conflictData,
+      conflictBlocks: conflictData.conflictBlocks.map(block => {
+        if (block.id === blockId) {
+          return { ...block, content: String(contentState) };
+        }
+        return block;
+      })
+    };
+
+    this.setState({
+      conflictData: newConflictData
+    });
+  };
 
   resolveConflict = async () => {
     const {
@@ -84,6 +103,12 @@ export default class CodeResolveConflict extends PureComponent {
     await axios.post(links.resolveConflict, {
       headCommitId: headCommitId,
       content: resultContent
+    });
+
+    this.props.history.push({
+      pathname: `/projects/${this.props.location.state.projectId}/files/${
+        this.props.location.state.fileId
+      }`
     });
   };
 
@@ -226,97 +251,117 @@ export default class CodeResolveConflict extends PureComponent {
       <div className="container">
         <div>
           <h2>PLEASE RESOLVE CONFLICT</h2>
-          {conflictBlocks.map(block => (
-            <div className="row" style={{ margin: '16px 0' }}>
-              <div className="col-xs-4">
-                <h3>Head</h3>
-                <div className="d-flex">
-                  {block.headBlocks.map((head, index) => {
-                    return (
-                      <div>
-                        {head.items.map(item => (
-                          <div className="d-flex">
-                            <div className={rowClass(item.type)}>{item.value}</div>
-                            <div style={{ minWidth: '50px', marginLeft: 8 }}>
-                              <ButtonGroup>
-                                <Button
-                                  type="primary"
-                                  size="small"
-                                  icon="close"
-                                  shape="circle"
-                                  onClick={() => {
-                                    this.removeHeadConflictValue(block.id, index);
-                                  }}
-                                />
-                                <Button
-                                  type="primary"
-                                  size="small"
-                                  icon="right"
-                                  shape="circle"
-                                  onClick={() => {
-                                    this.applyHeadConflictValue(block.id, index);
-                                  }}
-                                />
-                              </ButtonGroup>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="col-xs-4">
-                <h3>Old content</h3>
-                {block.content}
-              </div>
-              <div className="col-xs-4">
-                <h3>New blocks</h3>
-                <div className="d-flex end-xs">
-                  {block.newBlocks.map((newBlock, index) => {
-                    return (
-                      <div>
-                        {newBlock.items.map(item => (
-                          <div className="d-flex">
-                            <div style={{ minWidth: '50px', marginRight: 8 }}>
-                              <ButtonGroup>
-                                <Button
-                                  type="primary"
-                                  size="small"
-                                  icon="left"
-                                  shape="circle"
-                                  onClick={() => {
-                                    this.applyNewDataConflictValue(block.id, index);
-                                  }}
-                                />
-                                <Button
-                                  type="primary"
-                                  size="small"
-                                  icon="close"
-                                  shape="circle"
-                                  onClick={() => {
-                                    this.removeNewDataConflictValue(block.id, index);
-                                  }}
-                                />
-                              </ButtonGroup>
-                            </div>
-                            <div className={rowClass(item.type)}>{item.value}</div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+          <div className="row">
+            <div className="col-xs-4">
+              <h3>Head</h3>
             </div>
-          ))}
+            <div className="col-xs-4">
+              <h3>Old content</h3>
+            </div>
+            <div className="col-xs-4">
+              <h3>New blocks</h3>
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            {conflictBlocks.map(block => (
+              <div className="row code-conflict__border" style={{ padding: '16px 0' }}>
+                <div className="col-xs-4">
+                  <div className="start-xs">
+                    {block.headBlocks.map((head, index) => {
+                      return (
+                        <div className="d-flex s-between">
+                          <div>
+                            {head.items.map(item => (
+                              <div>
+                                <div className={rowClass(item.type)}>{item.value}</div>
+                              </div>
+                            ))}
+                          </div>
+                          <div style={{ minWidth: '50px', marginLeft: 8 }}>
+                            <ButtonGroup>
+                              <Button
+                                type="primary"
+                                size="small"
+                                icon="close"
+                                shape="circle"
+                                onClick={() => {
+                                  this.removeHeadConflictValue(block.id, index);
+                                }}
+                              />
+                              <Button
+                                type="primary"
+                                size="small"
+                                icon="right"
+                                shape="circle"
+                                onClick={() => {
+                                  this.applyHeadConflictValue(block.id, index);
+                                }}
+                              />
+                            </ButtonGroup>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="col-xs-4">
+                  <CodeEditor
+                    content={block.content}
+                    readOnly={block.conflictResolved ? false : true}
+                    conflictResolved={block.conflictResolved}
+                    onUpdateContent={contentState =>
+                      block.conflictResolved && this.onUpdateContent(contentState, block.id)
+                    }
+                  />
+                </div>
+                <div className="col-xs-4">
+                  <div className="end-xs">
+                    {block.newBlocks.map((newBlock, index) => {
+                      return (
+                        <div className="d-flex s-between">
+                          <div style={{ minWidth: '50px', marginRight: 8 }}>
+                            <ButtonGroup>
+                              <Button
+                                type="primary"
+                                size="small"
+                                icon="left"
+                                shape="circle"
+                                onClick={() => {
+                                  this.applyNewDataConflictValue(block.id, index);
+                                }}
+                              />
+                              <Button
+                                type="primary"
+                                size="small"
+                                icon="close"
+                                shape="circle"
+                                onClick={() => {
+                                  this.removeNewDataConflictValue(block.id, index);
+                                }}
+                              />
+                            </ButtonGroup>
+                          </div>
+                          <div>
+                            {newBlock.items.map(item => (
+                              <div>
+                                <div className={rowClass(item.type)}>{item.value}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
           <Button
             type="primary"
             disabled={conflictBlocks.some(block => !block.conflictResolved)}
             onClick={() => this.resolveConflict()}
           >
-            {' '}
-            RESOLVE{' '}
+            RESOLVE
           </Button>
         </div>
       </div>

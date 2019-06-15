@@ -1,12 +1,13 @@
-import React, { PureComponent } from "react";
-import { ContentState, Editor, EditorState } from "draft-js";
-import "./CodeEditor.css";
+import React, { PureComponent } from 'react';
+import { ContentState, Editor, EditorState } from 'draft-js';
+import './CodeEditor.css';
 
 export default class CodeEditor extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      editorState: EditorState.createWithContent(ContentState.createFromText(this.props.content))
+      editorState: EditorState.createWithContent(ContentState.createFromText(props.content)),
+      conflictResolved: true
     };
     this.onChange = editorState => {
       const contentState = editorState.getCurrentContent().getPlainText();
@@ -25,6 +26,15 @@ export default class CodeEditor extends PureComponent {
 
   componentDidMount() {
     this.focusEditor();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.conflictResolved && prevState.conflictResolved) {
+      this.setState({
+        editorState: EditorState.createWithContent(ContentState.createFromText(this.props.content)),
+        conflictResolved: false
+      });
+    }
   }
 
   render() {
