@@ -1,16 +1,17 @@
-import React, { PureComponent } from "react";
-import { Button } from "antd";
-import _isEmpty from "lodash/isEmpty";
-import cn from "classnames";
-import "./CodeResolveConflict.sass";
+import React, { PureComponent } from 'react';
+import axios from 'axios';
+import { Button } from 'antd';
+import _isEmpty from 'lodash/isEmpty';
+import cn from 'classnames';
+import './CodeResolveConflict.sass';
 
 const ButtonGroup = Button.Group;
 
 const rowClass = type =>
   cn({
     commit__row: true,
-    "commit__row--add": type === "ADDITION",
-    "commit__row--delete": type === "DELETION"
+    'commit__row--add': type === 'ADDITION',
+    'commit__row--delete': type === 'DELETION'
   });
 
 export default class CodeResolveConflict extends PureComponent {
@@ -33,98 +34,70 @@ export default class CodeResolveConflict extends PureComponent {
             ...block,
             conflictResolved: false,
             selectedData: contentItems,
-            content: contentItems.join("\n"),
+            content: contentItems.join('\n'),
             appliedItems: [],
             id: index
           };
         })
       };
       this.setState({
-        conflictData: conflictData
+        conflictData: conflictData,
+        links: state.links
       });
     }
   }
 
   resolveConflict = async () => {
-    const { conflictData } = this.state;
+    const {
+      conflictData: { oldContent, conflictBlocks, links, headCommitId }
+    } = this.state;
 
-    // await axios.post(this.state.links.resolveConflict, {
-    //   headCommitId: this.state.headCommitId
-    // });
+    var startIndex = 1;
+    var resultContent = '';
+    var isInit = true;
+
+    for (var index = 0; index < conflictBlocks.length; index++) {
+      const currentBlock = conflictBlocks[index];
+      const endIndex = currentBlock.startIndex - 1;
+
+      if (startIndex <= endIndex) {
+        if (isInit === false) {
+          resultContent += '\n';
+        }
+        resultContent += oldContent.slice(startIndex - 1, endIndex).join('\n');
+        isInit = false;
+      }
+
+      if (!_isEmpty(currentBlock.content)) {
+        if (isInit === false) {
+          resultContent += '\n';
+        }
+        resultContent += currentBlock.content;
+        isInit = false;
+      }
+
+      startIndex = currentBlock.endIndex + 1;
+    }
+
+    resultContent += '\n' + oldContent.slice(startIndex - 1, oldContent.length).join('\n');
+
+    await axios.post(links.resolveConflict, {
+      headCommitId: headCommitId,
+      content: resultContent
+    });
   };
 
   removeHeadConflictValue = (blockId, removedItemIndex) => {
     const { conflictData } = this.state;
-var resolvedConflicts = false;
+    var conflictResolved = false;
 
     const newConflictData = {
       ...conflictData,
       conflictBlocks: conflictData.conflictBlocks.map(block => {
         if (block.id === blockId) {
           const resultBlocks = [];
-          resolvedConflicts = _isEmpty(resultBlocks) && _isEmpty(block.newBlocks)
-          return { ...block, headBlocks: resultBlocks, resolvedConflicts };
-        } else return block;
-      })
-    };
-
-    this.setState({
-      conflictData: newConflictData
-    }, () => this.checkBlockConflicts(resolvedConflicts, blockId));
-  };
-
-  removeNewDataConflictValue = (blockId, removedItemIndex) => {
-    const { conflictData } = this.state;
-var resolvedConflicts = false;
-
-    const newConflictData = {
-      ...conflictData,
-      conflictBlocks: conflictData.conflictBlocks.map(block => {
-        if (block.id === blockId) {
-          const resultBlocks = [];
-          resolvedConflicts = _isEmpty(resultBlocks) && _isEmpty(block.headBlocks)
-          return { ...block, newBlocks: resultBlocks, resolvedConflicts };
-        } else return block;
-      })
-    };
-
-    this.setState({
-      conflictData: newConflictData
-    }, () => this.checkBlockConflicts(resolvedConflicts, blockId));
-  };
-
-  applyHeadConflictValue = (blockId, appliedItemIndex) => {
-    const { conflictData } = this.state;
-var resolvedConflicts = false;
-
-    const newConflictData = {
-      ...conflictData,
-      conflictBlocks: conflictData.conflictBlocks.map(block => {
-        if (block.id === blockId) {
-          const resultBlocks = [];
-          resolvedConflicts = _isEmpty(resultBlocks) && _isEmpty(block.newBlocks)
-          block.appliedItems = block.appliedItems.concat(block.headBlocks[appliedItemIndex].items);
-          return { ...block, headBlocks: resultBlocks, resolvedConflicts };
-        } else return block;
-      })
-    };
-
-    this.setState({
-      conflictData: newConflictData
-    }, () => this.checkBlockConflicts(resolvedConflicts, blockId));
-  };
-
-  applyNewDataConflictValue = (blockId, appliedItemIndex) => {
-    const { conflictData } = this.state;
-    var resolvedConflicts = false;
-    const newConflictData = {
-      ...conflictData,
-      conflictBlocks: conflictData.conflictBlocks.map(block => {
-        if (block.id === blockId) {
-          const resultBlocks = [];
-          resolvedConflicts = _isEmpty(resultBlocks) && _isEmpty(block.headBlocks)
-          block.appliedItems = block.appliedItems.concat(block.newBlocks[appliedItemIndex].items);
-          return { ...block, newBlocks: resultBlocks, resolvedConflicts };
+          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.newBlocks);
+          return { ...block, headBlocks: resultBlocks, conflictResolved };
         } else return block;
       })
     };
@@ -133,13 +106,86 @@ var resolvedConflicts = false;
       {
         conflictData: newConflictData
       },
-      () => this.checkBlockConflicts(resolvedConflicts, blockId)
+      () => this.checkBlockConflicts(conflictResolved, blockId)
+    );
+  };
+
+  removeNewDataConflictValue = (blockId, removedItemIndex) => {
+    const { conflictData } = this.state;
+    var conflictResolved = false;
+
+    const newConflictData = {
+      ...conflictData,
+      conflictBlocks: conflictData.conflictBlocks.map(block => {
+        if (block.id === blockId) {
+          const resultBlocks = [];
+          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.headBlocks);
+          return { ...block, newBlocks: resultBlocks, conflictResolved };
+        } else return block;
+      })
+    };
+
+    this.setState(
+      {
+        conflictData: newConflictData
+      },
+      () => this.checkBlockConflicts(conflictResolved, blockId)
+    );
+  };
+
+  applyHeadConflictValue = (blockId, appliedItemIndex) => {
+    const { conflictData } = this.state;
+    var conflictResolved = false;
+
+    const newConflictData = {
+      ...conflictData,
+      conflictBlocks: conflictData.conflictBlocks.map(block => {
+        if (block.id === blockId) {
+          const resultBlocks = [];
+          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.newBlocks);
+          console.log(appliedItemIndex, block);
+          block.appliedItems = block.appliedItems.concat(block.headBlocks[appliedItemIndex].items);
+          return { ...block, headBlocks: resultBlocks, conflictResolved };
+        } else return block;
+      })
+    };
+
+    this.setState(
+      {
+        conflictData: newConflictData
+      },
+      () => this.checkBlockConflicts(conflictResolved, blockId)
+    );
+  };
+
+  applyNewDataConflictValue = (blockId, appliedItemIndex) => {
+    const { conflictData } = this.state;
+    var conflictResolved = false;
+
+    const newConflictData = {
+      ...conflictData,
+      conflictBlocks: conflictData.conflictBlocks.map(block => {
+        if (block.id === blockId) {
+          const resultBlocks = [];
+          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.headBlocks);
+          console.log(appliedItemIndex, block);
+          block.appliedItems = block.appliedItems.concat(block.newBlocks[appliedItemIndex].items);
+          return { ...block, newBlocks: resultBlocks, conflictResolved };
+        } else return block;
+      })
+    };
+
+    this.setState(
+      {
+        conflictData: newConflictData
+      },
+      () => this.checkBlockConflicts(conflictResolved, blockId)
     );
   };
 
   checkBlockConflicts = (conflictResolved, blockId) => {
     if (conflictResolved) {
-      this.applyAllChangesToData(blockId)
+      this.applyAllChangesToData(blockId);
     }
   };
 
@@ -153,16 +199,16 @@ var resolvedConflicts = false;
           var newData = block.selectedData;
           for (var itemIndex = appliedItems.length - 1; itemIndex >= 0; itemIndex--) {
             const item = appliedItems[itemIndex];
-            if (item.type === "ADDITION") {
-              const index = item.position;
+            if (item.type === 'ADDITION') {
+              const index = item.position - block.startIndex + 1;
               newData.splice(index, 0, item.value);
             }
-            if (item.type === "DELETION") {
-              const index = item.position - 1;
+            if (item.type === 'DELETION') {
+              const index = item.position - block.startIndex;
               newData.splice(index, 1);
             }
           }
-          return { ...block, content: newData.join("\n"), appliedItems: [] };
+          return { ...block, content: newData.join('\n'), appliedItems: [] };
         } else return block;
       })
     };
@@ -174,23 +220,24 @@ var resolvedConflicts = false;
   render() {
     if (_isEmpty(this.state.conflictData)) return null;
     const { conflictBlocks } = this.state.conflictData;
-    console.log("CONFLICTS", conflictBlocks);
+
+    console.log(conflictBlocks);
     return (
       <div className="container">
         <div>
           <h2>PLEASE RESOLVE CONFLICT</h2>
           {conflictBlocks.map(block => (
-            <div className="row" style={{ margin: "16px 0" }}>
+            <div className="row" style={{ margin: '16px 0' }}>
               <div className="col-xs-4">
                 <h3>Head</h3>
                 <div className="d-flex">
-                  {block.headBlocks.map(head => {
+                  {block.headBlocks.map((head, index) => {
                     return (
                       <div>
-                        {head.items.map((item, index) => (
+                        {head.items.map(item => (
                           <div className="d-flex">
                             <div className={rowClass(item.type)}>{item.value}</div>
-                            <div style={{ minWidth: "50px", marginLeft: 8 }}>
+                            <div style={{ minWidth: '50px', marginLeft: 8 }}>
                               <ButtonGroup>
                                 <Button
                                   type="primary"
@@ -226,12 +273,12 @@ var resolvedConflicts = false;
               <div className="col-xs-4">
                 <h3>New blocks</h3>
                 <div className="d-flex end-xs">
-                  {block.newBlocks.map(newBlock => {
+                  {block.newBlocks.map((newBlock, index) => {
                     return (
                       <div>
-                        {newBlock.items.map((item, index) => (
+                        {newBlock.items.map(item => (
                           <div className="d-flex">
-                            <div style={{ minWidth: "50px", marginRight: 8 }}>
+                            <div style={{ minWidth: '50px', marginRight: 8 }}>
                               <ButtonGroup>
                                 <Button
                                   type="primary"
@@ -263,9 +310,13 @@ var resolvedConflicts = false;
               </div>
             </div>
           ))}
-          <Button type="primary" onClick={() => this.resolveConflict()}>
-            {" "}
-            RESOLVE{" "}
+          <Button
+            type="primary"
+            disabled={conflictBlocks.some(block => !block.conflictResolved)}
+            onClick={() => this.resolveConflict()}
+          >
+            {' '}
+            RESOLVE{' '}
           </Button>
         </div>
       </div>
