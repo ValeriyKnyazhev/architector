@@ -20,23 +20,34 @@ public final class ProjectObjectFactory
 
     public static Project emptyProject(String author)
     {
-        return Project.constructor()
+        Project project = Project.constructor()
             .projectId(ProjectId.nextId())
             .withName("Project")
             .withDescription("Description")
             .withAuthor(author)
             .construct();
+        enrichProject(project);
+        return project;
     }
 
     public static Project projectWithFiles(String author)
     {
-        return Project.constructor()
+        Project project = Project.constructor()
             .projectId(ProjectId.nextId())
             .withName("Project")
             .withDescription("Description")
             .withAuthor(author)
             .withFile(createFile(FileId.nextId()))
             .construct();
+        enrichProject(project);
+        return project;
+    }
+
+    private static void enrichProject(Project project)
+    {
+        LocalDateTime time = LocalDateTime.now();
+        project.setCreatedDate(time);
+        project.setUpdatedDate(time);
     }
 
     public static File sampleFile()

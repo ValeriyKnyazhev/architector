@@ -83,6 +83,7 @@ public class ProjectManagementService
             Architector requestedArchitector = this.architectorRepository.findByEmail(command.architector())
                 .orElseThrow(()-> new ArchitectorNotFoundException(command.architector()));
             project.addReadAccessRights(requestedArchitector);
+            this.projectRepository.saveAndFlush(project);
         } else {
             throw new AccessRightsNotFoundException();
         }
@@ -98,6 +99,7 @@ public class ProjectManagementService
             Architector requestedArchitector = this.architectorRepository.findByEmail(command.architector())
                 .orElseThrow(()-> new ArchitectorNotFoundException(command.architector()));
             project.addWriteAccessRights(requestedArchitector);
+            this.projectRepository.saveAndFlush(project);
         } else {
             throw new AccessRightsNotFoundException();
         }
@@ -113,6 +115,7 @@ public class ProjectManagementService
             Architector requestedArchitector = this.architectorRepository.findByEmail(command.architector())
                 .orElseThrow(()-> new ArchitectorNotFoundException(command.architector()));
             project.takeAwayAccessRights(requestedArchitector);
+            this.projectRepository.saveAndFlush(project);
         } else {
             throw new AccessRightsNotFoundException();
         }

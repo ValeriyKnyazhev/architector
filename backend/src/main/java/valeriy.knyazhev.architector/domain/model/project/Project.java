@@ -66,7 +66,7 @@ public class Project
         joinColumns = @JoinColumn(name = "project_id"),
         inverseJoinColumns = @JoinColumn(name = "architector_id")
     )
-    private Set<Architector> readAccessRights = Set.of();
+    private Set<Architector> readAccessRights = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -74,7 +74,7 @@ public class Project
         joinColumns = @JoinColumn(name = "project_id"),
         inverseJoinColumns = @JoinColumn(name = "architector_id")
     )
-    private Set<Architector> writeAccessRights = Set.of();
+    private Set<Architector> writeAccessRights = new HashSet<>();
 
     @Nullable
     private Long currentCommitId;
@@ -280,12 +280,12 @@ public class Project
         }
     }
 
-    void setCreatedDate(@Nonnull LocalDateTime date)
+    public void setCreatedDate(@Nonnull LocalDateTime date)
     {
         this.createdDate = date;
     }
 
-    void setUpdatedDate(@Nonnull LocalDateTime date)
+    public void setUpdatedDate(@Nonnull LocalDateTime date)
     {
         this.updatedDate = date;
     }
