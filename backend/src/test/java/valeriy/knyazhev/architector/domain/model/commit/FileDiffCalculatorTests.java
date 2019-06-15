@@ -1,4 +1,4 @@
-package valeriy.knyazhev.architector.domain.model;
+package valeriy.knyazhev.architector.domain.model.commit;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
@@ -8,14 +8,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import valeriy.knyazhev.architector.domain.model.commit.CommitItem;
 import valeriy.knyazhev.architector.domain.model.commit.FileDiffCalculator;
+import valeriy.knyazhev.architector.domain.model.commit.FileMetadataChanges;
 import valeriy.knyazhev.architector.domain.model.project.file.FileContent;
+import valeriy.knyazhev.architector.domain.model.project.file.FileDescription;
+import valeriy.knyazhev.architector.domain.model.project.file.FileMetadata;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.ADDITION;
 import static valeriy.knyazhev.architector.domain.model.commit.ChangeType.DELETION;
 
@@ -275,6 +280,216 @@ public class FileDiffCalculatorTests
         softly.assertThat(changedItem1.type()).isEqualTo(ADDITION);
         softly.assertThat(changedItem1.position()).isEqualTo(1);
         softly.assertAll();
+    }
+
+    @Test
+    public void shouldDefineNewMetadata()
+    {
+        // given
+        FileMetadata oldMetadata = null;
+        FileMetadata newMetadata = FileMetadata.builder()
+            .name("new")
+            .authors(List.of("new"))
+            .organizations(List.of("new"))
+            .timestamp(LocalDateTime.MAX)
+            .preprocessorVersion("new")
+            .originatingSystem("new")
+            .authorization("new")
+            .build();
+
+        // when
+        FileMetadataChanges changes = FileDiffCalculator.defineMetadataChanges(oldMetadata, newMetadata);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isFalse();
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(changes.name()).isEqualTo(newMetadata.name());
+        softly.assertThat(changes.authors()).isEqualTo(newMetadata.authors());
+        softly.assertThat(changes.organizations()).isEqualTo(newMetadata.organizations());
+        softly.assertThat(changes.timestamp()).isEqualTo(newMetadata.timestamp());
+        softly.assertThat(changes.preprocessorVersion()).isEqualTo(newMetadata.preprocessorVersion());
+        softly.assertThat(changes.originatingSystem()).isEqualTo(newMetadata.originatingSystem());
+        softly.assertThat(changes.authorization()).isEqualTo(newMetadata.authorization());
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldDefineMetadataChanges()
+    {
+        // given
+        FileMetadata oldMetadata = FileMetadata.builder()
+            .name("old")
+            .authors(List.of("old"))
+            .organizations(List.of("old"))
+            .timestamp(LocalDateTime.MIN)
+            .preprocessorVersion("old")
+            .originatingSystem("old")
+            .authorization("old")
+            .build();
+        FileMetadata newMetadata = FileMetadata.builder()
+            .name("new")
+            .authors(List.of("new"))
+            .organizations(List.of("new"))
+            .timestamp(LocalDateTime.MAX)
+            .preprocessorVersion("new")
+            .originatingSystem("new")
+            .authorization("new")
+            .build();
+
+        // when
+        FileMetadataChanges changes = FileDiffCalculator.defineMetadataChanges(oldMetadata, newMetadata);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isFalse();
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(changes.name()).isEqualTo(newMetadata.name());
+        softly.assertThat(changes.authors()).isEqualTo(newMetadata.authors());
+        softly.assertThat(changes.organizations()).isEqualTo(newMetadata.organizations());
+        softly.assertThat(changes.timestamp()).isEqualTo(newMetadata.timestamp());
+        softly.assertThat(changes.preprocessorVersion()).isEqualTo(newMetadata.preprocessorVersion());
+        softly.assertThat(changes.originatingSystem()).isEqualTo(newMetadata.originatingSystem());
+        softly.assertThat(changes.authorization()).isEqualTo(newMetadata.authorization());
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldDefineEmptyMetadataChangesIfEquals()
+    {
+        // given
+        FileMetadata oldMetadata = FileMetadata.builder()
+            .name("old")
+            .authors(List.of("old"))
+            .organizations(List.of("old"))
+            .timestamp(LocalDateTime.MIN)
+            .preprocessorVersion("old")
+            .originatingSystem("old")
+            .authorization("old")
+            .build();
+        FileMetadata newMetadata = oldMetadata;
+
+        // when
+        FileMetadataChanges changes = FileDiffCalculator.defineMetadataChanges(oldMetadata, newMetadata);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldDefineEmptyMetadataChangesIfNewAbsent()
+    {
+        // given
+        FileMetadata oldMetadata = FileMetadata.builder()
+            .name("old")
+            .authors(List.of("old"))
+            .organizations(List.of("old"))
+            .timestamp(LocalDateTime.MIN)
+            .preprocessorVersion("old")
+            .originatingSystem("old")
+            .authorization("old")
+            .build();
+        FileMetadata newMetadata = null;
+
+        // when
+        FileMetadataChanges changes = FileDiffCalculator.defineMetadataChanges(oldMetadata, newMetadata);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldNotDefineMetadataChangesIfBothAbsent()
+    {
+        // given
+        FileMetadata oldMetadata = null;
+        FileMetadata newMetadata = null;
+
+        // expect
+        assertThatThrownBy(() -> FileDiffCalculator.defineMetadataChanges(oldMetadata, newMetadata))
+        .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void shouldDefineNewDescription()
+    {
+        // given
+        FileDescription oldDescription = null;
+        FileDescription newDescription = FileDescription.of(List.of("new"), "new");
+
+        // when
+        FileDescriptionChanges changes = FileDiffCalculator.defineDescriptionChanges(oldDescription, newDescription);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isFalse();
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(changes.descriptions()).isEqualTo(newDescription.descriptions());
+        softly.assertThat(changes.implementationLevel()).isEqualTo(newDescription.implementationLevel());
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldDefineDescriptionChanges()
+    {
+        // given
+        FileDescription oldDescription = FileDescription.of(List.of("old"), "old");
+        FileDescription newDescription = FileDescription.of(List.of("new"), "new");
+
+        // when
+        FileDescriptionChanges changes = FileDiffCalculator.defineDescriptionChanges(oldDescription, newDescription);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isFalse();
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(changes.descriptions()).isEqualTo(newDescription.descriptions());
+        softly.assertThat(changes.implementationLevel()).isEqualTo(newDescription.implementationLevel());
+        softly.assertAll();
+    }
+
+    @Test
+    public void shouldDefineEmptyDescriptionChangesIfEquals()
+    {
+        // given
+        FileDescription oldDescription = FileDescription.of(List.of("old"), "old");
+        FileDescription newDescription = oldDescription;
+
+        // when
+        FileDescriptionChanges changes = FileDiffCalculator.defineDescriptionChanges(oldDescription, newDescription);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldDefineEmptyDescriptionChangesIfNewAbsent()
+    {
+        // given
+        FileDescription oldDescription = FileDescription.of(List.of("old"), "old");
+        FileDescription newDescription = null;
+
+        // when
+        FileDescriptionChanges changes = FileDiffCalculator.defineDescriptionChanges(oldDescription, newDescription);
+
+        // then
+        assertThat(changes).isNotNull();
+        assertThat(changes.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldNotDefineDescriptionChangesIfBothAbsent()
+    {
+        // given
+        FileDescription oldDescription = null;
+        FileDescription newDescription = null;
+
+        // expect
+        assertThatThrownBy(() -> FileDiffCalculator.defineDescriptionChanges(oldDescription, newDescription))
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     private static FileContent sampleFileContent(List<String> content)
