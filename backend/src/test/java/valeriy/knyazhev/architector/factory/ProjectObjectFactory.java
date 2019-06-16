@@ -55,14 +55,14 @@ public final class ProjectObjectFactory
         return createFile(FileId.nextId());
     }
 
-    public static FileDescription sampleDescription()
+    public static FileDescription sampleDescription(String value)
     {
-        return createDescription();
+        return createDescription(value);
     }
 
-    public static FileMetadata sampleMetadata()
+    public static FileMetadata sampleMetadata(String value)
     {
-        return createMetadata();
+        return createMetadata(value);
     }
 
     private static File createFile(FileId fileId)
@@ -71,27 +71,27 @@ public final class ProjectObjectFactory
             .withFileId(fileId)
             .withIsoId("ISO-10303-21")
             .withSchema("IFC4")
-            .withDescription(createDescription())
-            .withMetadata(createMetadata())
+            .withDescription(createDescription("tmp"))
+            .withMetadata(createMetadata("tmp"))
             .withContent(FileContent.of(List.of()))
             .construct();
     }
 
-    private static FileDescription createDescription()
+    private static FileDescription createDescription(String value)
     {
-        return FileDescription.of(List.of(), "");
+        return FileDescription.of(List.of(value), value);
     }
 
-    private static FileMetadata createMetadata()
+    private static FileMetadata createMetadata(String value)
     {
         return FileMetadata.builder()
-            .name("name")
-            .authors(List.of("author"))
-            .organizations(List.of("organization"))
+            .name(value)
+            .authors(List.of(value))
+            .organizations(List.of(value))
             .timestamp(LocalDateTime.now())
-            .preprocessorVersion("version")
-            .originatingSystem("system")
-            .authorization("authorization")
+            .preprocessorVersion(value)
+            .originatingSystem(value)
+            .authorization(value)
             .build();
     }
 

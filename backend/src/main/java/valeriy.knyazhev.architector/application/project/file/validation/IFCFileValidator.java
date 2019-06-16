@@ -224,20 +224,6 @@ public class IFCFileValidator
         }
     }
 
-    private IfcStepSerializer defineSerializer(@Nonnull String schema)
-    {
-        if (schema.equals(Schema.IFC2X3TC1.getHeaderName()))
-        {
-            return this.IFC2X3Serializer;
-        } else if (schema.equals(Schema.IFC4.getHeaderName()))
-        {
-            return this.IFC4Serializer;
-        } else
-        {
-            throw new IllegalStateException("Unsupported IFC schema version " + schema);
-        }
-    }
-
     private static boolean isRoot(@Nonnull IdEObject value)
     {
         return value instanceof org.bimserver.models.ifc2x3tc1.impl.IfcProductImpl ||

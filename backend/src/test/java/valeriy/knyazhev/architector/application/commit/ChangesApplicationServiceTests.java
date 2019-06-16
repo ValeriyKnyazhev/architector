@@ -23,8 +23,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
-import static valeriy.knyazhev.architector.factory.CommitObjectFactory.commitWithContentChanges;
-import static valeriy.knyazhev.architector.factory.CommitObjectFactory.commitWithData;
+import static valeriy.knyazhev.architector.factory.CommitObjectFactory.*;
 
 /**
  * @author Valeriy Knyazhev
@@ -47,7 +46,106 @@ public class ChangesApplicationServiceTests
     private ProjectionConstructService projectionConstructService;
 
     @Test
-    public void shouldFetchCommitChangesIfFileExist()
+    public void shouldFetchCommitChangesIfContentAdded()
+    {
+        // given
+        ProjectId projectId = ProjectId.nextId();
+        FileId fileId = FileId.nextId();
+        long commitId = 2L;
+        long commitParentId = 1L;
+        String projectName = "project";
+        String projectDescription = "description";
+        FetchCommitChangesCommand command = new FetchCommitChangesCommand(projectId.id(), commitId);
+        List<CommitItem> items = List.of(CommitItem.addItem("new", 0));
+        when(this.commitRepository.findById(commitId))
+            .thenReturn(Optional.of(sampleCommitWithContent(
+                projectId, fileId, commitId, commitParentId, items
+            )));
+        when(this.projectionConstructService.makeProjection(projectId, commitParentId))
+            .thenReturn(Projection.of(
+                "project", "description", List.of(sampleFileProjection(fileId))
+                )
+            );
+
+        // when
+        CommitChangesData result = this.changesApplicationService.fetchCommitChanges(command);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.name()).isEqualTo(projectName);
+        assertThat(result.description()).isEqualTo(projectDescription);
+        assertThat(result.changedFiles()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldFetchCommitChangesIfContentDeleted()
+    {
+        // given
+        ProjectId projectId = ProjectId.nextId();
+        FileId fileId = FileId.nextId();
+        long commitId = 2L;
+        long commitParentId = 1L;
+        String projectName = "project";
+        String projectDescription = "description";
+        FetchCommitChangesCommand command = new FetchCommitChangesCommand(projectId.id(), commitId);
+        List<CommitItem> items = List.of(CommitItem.deleteItem("old", 1));
+        when(this.commitRepository.findById(commitId))
+            .thenReturn(Optional.of(sampleCommitWithContent(
+                projectId, fileId, commitId, commitParentId, items
+            )));
+        when(this.projectionConstructService.makeProjection(projectId, commitParentId))
+            .thenReturn(Projection.of(
+                "project", "description", List.of(sampleFileProjection(fileId))
+                )
+            );
+
+        // when
+        CommitChangesData result = this.changesApplicationService.fetchCommitChanges(command);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.name()).isEqualTo(projectName);
+        assertThat(result.description()).isEqualTo(projectDescription);
+        assertThat(result.changedFiles()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldFetchCommitChangesIfContentModified()
+    {
+        // given
+        ProjectId projectId = ProjectId.nextId();
+        FileId fileId = FileId.nextId();
+        long commitId = 2L;
+        long commitParentId = 1L;
+        String projectName = "project";
+        String projectDescription = "description";
+        FetchCommitChangesCommand command = new FetchCommitChangesCommand(projectId.id(), commitId);
+        List<CommitItem> items = List.of(
+            CommitItem.addItem("old", 0),
+            CommitItem.deleteItem("new", 1)
+        );
+        when(this.commitRepository.findById(commitId))
+            .thenReturn(Optional.of(sampleCommitWithContent(
+                projectId, fileId, commitId, commitParentId, items
+            )));
+        when(this.projectionConstructService.makeProjection(projectId, commitParentId))
+            .thenReturn(Projection.of(
+                "project", "description", List.of(sampleFileProjection(fileId))
+                )
+            );
+
+        // when
+        CommitChangesData result = this.changesApplicationService.fetchCommitChanges(command);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.name()).isEqualTo(projectName);
+        assertThat(result.description()).isEqualTo(projectDescription);
+        assertThat(result.changedFiles()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldFetchCommitChangesIfMetadataChanged()
     {
         // given
         ProjectId projectId = ProjectId.nextId();
@@ -58,7 +156,36 @@ public class ChangesApplicationServiceTests
         String projectDescription = "description";
         FetchCommitChangesCommand command = new FetchCommitChangesCommand(projectId.id(), commitId);
         when(this.commitRepository.findById(commitId))
-            .thenReturn(Optional.of(sampleCommit(projectId, fileId, commitId, commitParentId)));
+            .thenReturn(Optional.of(sampleCommitWithMetadata(projectId, fileId, commitId, commitParentId)));
+        when(this.projectionConstructService.makeProjection(projectId, commitParentId))
+            .thenReturn(Projection.of(
+                "project", "description", List.of(sampleFileProjection(fileId))
+                )
+            );
+
+        // when
+        CommitChangesData result = this.changesApplicationService.fetchCommitChanges(command);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.name()).isEqualTo(projectName);
+        assertThat(result.description()).isEqualTo(projectDescription);
+        assertThat(result.changedFiles()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldFetchCommitChangesIfDescriptionChanged()
+    {
+        // given
+        ProjectId projectId = ProjectId.nextId();
+        FileId fileId = FileId.nextId();
+        long commitId = 2L;
+        long commitParentId = 1L;
+        String projectName = "project";
+        String projectDescription = "description";
+        FetchCommitChangesCommand command = new FetchCommitChangesCommand(projectId.id(), commitId);
+        when(this.commitRepository.findById(commitId))
+            .thenReturn(Optional.of(sampleCommitWithDescription(projectId, fileId, commitId, commitParentId)));
         when(this.projectionConstructService.makeProjection(projectId, commitParentId))
             .thenReturn(Projection.of(
                 "project", "description", List.of(sampleFileProjection(fileId))
@@ -144,7 +271,8 @@ public class ChangesApplicationServiceTests
         long commitId = 2L;
         FetchCommitChangesCommand command = new FetchCommitChangesCommand(projectId.id(), commitId);
         when(this.commitRepository.findById(commitId))
-            .thenReturn(Optional.of(sampleCommit(ProjectId.nextId(), FileId.nextId(), commitId, null)));
+            .thenReturn(Optional
+                .of(sampleCommitWithContent(ProjectId.nextId(), FileId.nextId(), commitId, null, null)));
 
         // expect
         assertThatThrownBy(() -> this.changesApplicationService.fetchCommitChanges(command))
@@ -164,13 +292,33 @@ public class ChangesApplicationServiceTests
             .build();
         FileDescription description = FileDescription.of(List.of(), "");
         return Projection.FileProjection.of(
-            fileId, "ISO", "IFC4", metadata, description, List.of("1", "2", "3")
+            fileId, "ISO", "IFC4", metadata, description, List.of("old")
         );
     }
 
-    private static Commit sampleCommit(ProjectId projectId, FileId fileId, long commitId, Long parentId)
+    private static Commit sampleCommitWithContent(ProjectId projectId,
+                                                  FileId fileId,
+                                                  long commitId,
+                                                  Long parentId,
+                                                  List<CommitItem> items)
     {
-        List<CommitItem> items = List.of(CommitItem.addItem("value", 0));
+        if (items == null)
+        {
+            items = List.of(CommitItem.addItem("value", 0));
+        }
         return commitWithContentChanges(projectId, fileId, commitId, parentId, items);
     }
+
+    private static Commit sampleCommitWithMetadata(ProjectId projectId, FileId fileId, long commitId, long parentId)
+    {
+        FileMetadataChanges changes = sampleMetadataChanges("new");
+        return commitWithMetadataChanges(projectId, fileId, commitId, parentId, changes);
+    }
+
+    private static Commit sampleCommitWithDescription(ProjectId projectId, FileId fileId, long commitId, long parentId)
+    {
+        FileDescriptionChanges changes = sampleDescriptionChanges("new");
+        return commitWithDescriptionChanges(projectId, fileId, commitId, parentId, changes);
+    }
+
 }

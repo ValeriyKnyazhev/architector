@@ -4,6 +4,7 @@ import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.file.FileId;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -87,6 +88,27 @@ public final class CommitObjectFactory
             .build();
         commit.setId(commitId);
         return commit;
+    }
+
+    public static FileMetadataChanges sampleMetadataChanges(String value)
+    {
+        return FileMetadataChanges.builder()
+            .name(value)
+            .authors(List.of(value))
+            .organizations(List.of(value))
+            .timestamp(LocalDateTime.now())
+            .preprocessorVersion(value)
+            .originatingSystem(value)
+            .authorization(value)
+            .build();
+    }
+
+    public static FileDescriptionChanges sampleDescriptionChanges(String value)
+    {
+        return FileDescriptionChanges.builder()
+            .descriptions(List.of(value))
+            .implementationLevel(value)
+            .build();
     }
 
     private static CommitFileItem createFile(FileId fileId,

@@ -132,8 +132,8 @@ public class CommitResourceTests
                     fileId,
                     isoId,
                     schema,
-                    sampleMetadata(),
-                    sampleDescription(),
+                    sampleMetadata(""),
+                    sampleDescription(""),
                     List.of()
                 )
             );
@@ -187,8 +187,8 @@ public class CommitResourceTests
                     fileId,
                     isoId,
                     schema,
-                    sampleMetadata(),
-                    sampleDescription(),
+                    sampleMetadata(""),
+                    sampleDescription(""),
                     List.of()
                 )
             );
