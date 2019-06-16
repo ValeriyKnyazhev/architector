@@ -184,7 +184,7 @@ public class ProjectQueryServiceTests
         when(this.repository.findAll()).thenReturn(List.of(project));
 
         // when
-        List<ProjectData> result = this.queryService.findProjects(architector);
+        List<ProjectData> result = this.queryService.findProjects("", READ, architector);
 
         // then
         assertThat(result).hasSize(1);
@@ -199,7 +199,7 @@ public class ProjectQueryServiceTests
         when(this.repository.findAll()).thenReturn(List.of(project));
 
         // when
-        List<ProjectData> result = this.queryService.findProjects(architector);
+        List<ProjectData> result = this.queryService.findProjects("", READ, architector);
 
         // then
         assertThat(result).hasSize(1);
@@ -215,7 +215,7 @@ public class ProjectQueryServiceTests
         when(this.repository.findAll()).thenReturn(List.of(project));
 
         // when
-        List<ProjectData> result = this.queryService.findProjects(architector);
+        List<ProjectData> result = this.queryService.findProjects("", READ, architector);
 
         // then
         assertThat(result).hasSize(1);
@@ -231,7 +231,7 @@ public class ProjectQueryServiceTests
         when(this.repository.findAll()).thenReturn(List.of(project));
 
         // when
-        List<ProjectData> result = this.queryService.findProjects(architector);
+        List<ProjectData> result = this.queryService.findProjects("", READ, architector);
 
         // then
         assertThat(result).hasSize(1);
@@ -246,10 +246,83 @@ public class ProjectQueryServiceTests
         when(this.repository.findAll()).thenReturn(List.of(project));
 
         // when
-        List<ProjectData> result = this.queryService.findProjects(architector);
+        List<ProjectData> result = this.queryService.findProjects("", READ, architector);
 
         // then
         assertThat(result).hasSize(0);
+    }
+
+    @Test
+    public void shouldFilterProjectsByName()
+    {
+        // given
+        Architector architector = createArchitector("tony.stark@architector.ru");
+        Project project1 = projectWithFiles(architector.email());
+        Project project2 = projectWithFiles(architector.email());
+        project1.updateName("first");
+        project2.updateName("second");
+        String query = "irs";
+        when(this.repository.findAll()).thenReturn(List.of(project1, project2));
+
+        // when
+        List<ProjectData> result = this.queryService.findProjects(query, READ, architector);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).projectId()).isEqualTo(project1.projectId().id());
+    }
+
+    @Test
+    public void shouldFilterProjectsByReadAccess()
+    {
+        // given
+        Architector architector = createArchitector("tony.stark@architector.ru");
+        Project project1 = projectWithFiles("other@architector.ru");
+        Project project2 = projectWithFiles("other@architector.ru");
+        project1.addReadAccessRights(architector);
+        when(this.repository.findAll()).thenReturn(List.of(project1, project2));
+
+        // when
+        List<ProjectData> result = this.queryService.findProjects("", READ, architector);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).projectId()).isEqualTo(project1.projectId().id());
+    }
+
+    @Test
+    public void shouldFilterProjectsByWriteAccess()
+    {
+        // given
+        Architector architector = createArchitector("tony.stark@architector.ru");
+        Project project1 = projectWithFiles("other@architector.ru");
+        Project project2 = projectWithFiles("other@architector.ru");
+        project1.addWriteAccessRights(architector);
+        when(this.repository.findAll()).thenReturn(List.of(project1, project2));
+
+        // when
+        List<ProjectData> result = this.queryService.findProjects("", WRITE, architector);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).projectId()).isEqualTo(project1.projectId().id());
+    }
+
+    @Test
+    public void shouldFilterProjectsByOwnerAccess()
+    {
+        // given
+        Architector architector = createArchitector("tony.stark@architector.ru");
+        Project project1 = projectWithFiles(architector.email());
+        Project project2 = projectWithFiles("other@architector.ru");
+        when(this.repository.findAll()).thenReturn(List.of(project1, project2));
+
+        // when
+        List<ProjectData> result = this.queryService.findProjects("", OWNER, architector);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).projectId()).isEqualTo(project1.projectId().id());
     }
 
 }

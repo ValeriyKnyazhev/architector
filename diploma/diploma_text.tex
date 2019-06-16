@@ -11,6 +11,9 @@
 \usepackage[linesnumbered,boxed]{algorithm2e}
 \graphicspath{{./images/}}%путь к рисункам
 
+\usepackage[titletoc]{appendix}
+\usepackage{pdfpages}
+
 \makeatletter
 \renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
 \makeatother
@@ -1558,5 +1561,9 @@ JSON Web Token -- открытый стандарт (RFC 7519) для созда
 \textbf{JaCoCo documentation} // Official provider's documentation https://www.jacoco.org/jacoco/trunk/doc/
 }
 \end{thebibliography}
+
+\appendix
+\chapter{Документация API}
+\includepdf[pages=-]{api.pdf}
 
 \end{document}

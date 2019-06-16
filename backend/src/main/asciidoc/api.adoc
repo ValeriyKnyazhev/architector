@@ -1,0 +1,134 @@
+= Architector
+ifndef::sourcedir[:sourcedir: ../../../build/generated-snippets]
+
+= Projects
+
+== Create new project
+
+=== HTTP request
+
+.Request example
+include::{sourcedir}/create-project/http-request.adoc[]
+
+.Request fields description
+include::{sourcedir}/create-project/request-fields.adoc[]
+
+=== HTTP response
+
+==== Response examples
+
+.Normal behaviour
+include::{sourcedir}/create-project/http-response.adoc[]
+
+.Response parameters for /api/projects
+include::{sourcedir}/create-project/response-fields.adoc[]
+
+== Get list of projects
+
+=== HTTP request
+
+.Request example
+include::{sourcedir}/get-projects/http-request.adoc[]
+
+.Request parameters description
+include::{sourcedir}/get-projects/request-parameters.adoc[]
+
+=== HTTP response
+
+.Normal behaviour
+include::{sourcedir}/get-projects/http-response.adoc[]
+
+.Response parameters for /api/projects
+include::{sourcedir}/get-projects/response-fields.adoc[]
+
+== Get project by identifier
+
+=== HTTP request
+
+.Request example
+include::{sourcedir}/get-project/http-request.adoc[]
+
+.Path parameters of request
+include::{sourcedir}/get-project/path-parameters.adoc[]
+
+=== HTTP response
+
+.Normal behaviour
+include::{sourcedir}/get-project/http-response.adoc[]
+
+.Response parameters for /api/projects/{projectId}
+include::{sourcedir}/get-project/response-fields.adoc[]
+
+== Update project information
+
+=== HTTP request
+
+.Request example
+include::{sourcedir}/update-project/http-request.adoc[]
+
+.Path parameters of request
+include::{sourcedir}/update-project/path-parameters.adoc[]
+
+.Request fields description
+include::{sourcedir}/update-project/request-fields.adoc[]
+
+=== HTTP response
+
+==== Response examples
+
+.Normal behaviour
+include::{sourcedir}/update-project/http-response.adoc[]
+
+.Response parameters for /api/projects/{projectId}
+include::{sourcedir}/update-project/response-fields.adoc[]
+
+== Grant user's access rights to project
+
+This endpoint allowed only for project owner.
+
+=== HTTP request
+
+.Request example
+include::{sourcedir}/grant-project-access-rights/http-request.adoc[]
+
+.Path parameters of request
+include::{sourcedir}/grant-project-access-rights/path-parameters.adoc[]
+
+.Request fields description
+include::{sourcedir}/grant-project-access-rights/request-fields.adoc[]
+
+=== HTTP response
+
+==== Response examples
+
+.Normal behaviour
+include::{sourcedir}/grant-project-access-rights/http-response.adoc[]
+
+.Response parameters for /api/projects/{projectId}
+include::{sourcedir}/grant-project-access-rights/response-fields.adoc[]
+
+== Take away user's access rights to project
+
+This endpoint allowed only for project owner.
+
+=== HTTP request
+
+.Request example
+include::{sourcedir}/take-away-project-access-rights/http-request.adoc[]
+
+.Path parameters of request
+include::{sourcedir}/take-away-project-access-rights/path-parameters.adoc[]
+
+.Request fields description
+include::{sourcedir}/take-away-project-access-rights/request-fields.adoc[]
+
+=== HTTP response
+
+==== Response examples
+
+.Normal behaviour
+include::{sourcedir}/take-away-project-access-rights/http-response.adoc[]
+
+.Response parameters for /api/projects/{projectId}
+include::{sourcedir}/take-away-project-access-rights/response-fields.adoc[]
+

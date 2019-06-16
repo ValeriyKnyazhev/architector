@@ -67,7 +67,8 @@ public final class ProjectObjectFactory
 
     private static File createFile(FileId fileId)
     {
-        return File.constructor()
+        LocalDateTime now = LocalDateTime.now();
+        File file = File.constructor()
             .withFileId(fileId)
             .withIsoId("ISO-10303-21")
             .withSchema("IFC4")
@@ -75,6 +76,9 @@ public final class ProjectObjectFactory
             .withMetadata(createMetadata("tmp"))
             .withContent(FileContent.of(List.of()))
             .construct();
+        file.setCreatedDate(now);
+        file.setUpdatedDate(now);
+        return file;
     }
 
     private static FileDescription createDescription(String value)

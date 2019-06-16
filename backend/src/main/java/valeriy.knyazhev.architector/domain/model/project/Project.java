@@ -89,10 +89,10 @@ public class Project
                     @Nonnull String description,
                     @Nonnull List<File> files)
     {
-        this.projectId = projectId;
-        this.name = name;
-        this.author = author;
-        this.description = description;
+        this.projectId = Args.notNull(projectId, "Project identifier is required.");
+        this.name = Args.notNull(name, "Project name is required.");
+        this.author = Args.notNull(author, "Project author is required.");
+        this.description = Args.notNull(description, "Project description is required.");
         this.files = files;
     }
 

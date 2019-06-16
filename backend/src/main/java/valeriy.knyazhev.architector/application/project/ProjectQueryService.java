@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.OWNER;
@@ -47,12 +48,34 @@ public class ProjectQueryService
     }
 
     @Nonnull
-    public List<ProjectData> findProjects(@Nonnull Architector architector)
+    public List<ProjectData> findProjects(@Nonnull String query,
+                                          @Nonnull ProjectAccessRights accessType,
+                                          @Nonnull Architector architector)
     {
-        return this.repository.findAll()
-            .stream()
-            .filter(project -> project.canBeRead(architector))
-            .map(project -> buildProjectData(project, architector))
+        Stream<Project> projects = this.repository.findAll().stream()
+            .filter(project -> project.name().contains(query));
+        switch (accessType)
+        {
+            case READ:
+            {
+                projects = projects.filter(project -> project.canBeRead(architector));
+                break;
+            }
+            case WRITE:
+            {
+                projects = projects.filter(project -> project.canBeUpdated(architector));
+                break;
+            }
+            case OWNER:
+            {
+                projects = projects.filter(project -> project.author().equals(architector.email()));
+                break;
+            }
+            default:
+            {
+            }
+        }
+        return projects.map(project -> buildProjectData(project, architector))
             .collect(toList());
     }
 

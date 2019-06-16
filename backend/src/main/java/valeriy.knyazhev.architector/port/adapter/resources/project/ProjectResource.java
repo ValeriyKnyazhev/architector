@@ -8,6 +8,7 @@ import valeriy.knyazhev.architector.application.project.ProjectManagementService
 import valeriy.knyazhev.architector.application.project.ProjectQueryService;
 import valeriy.knyazhev.architector.application.project.command.*;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
+import valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights;
 import valeriy.knyazhev.architector.domain.model.user.Architector;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectDescriptorModel;
 import valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectMapper;
@@ -26,6 +27,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.READ;
 import static valeriy.knyazhev.architector.port.adapter.resources.project.model.ProjectMapper.buildProject;
 
 /**
@@ -53,7 +55,7 @@ public class ProjectResource
                                                 @Nonnull Architector architector)
     {
         ProjectId projectId = this.managementService.createProject(
-            new CreateProjectCommand(request.name(), architector.email(), request.description())
+            new CreateProjectCommand(request.getName(), architector.email(), request.getDescription())
         );
         return ResponseEntity.ok()
             .body(
@@ -62,9 +64,11 @@ public class ProjectResource
     }
 
     @GetMapping(value = "/api/projects", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> findProjects(@Nonnull Architector architector)
+    public ResponseEntity<Object> findProjects(@RequestParam(defaultValue = "") String query,
+                                               @RequestParam(defaultValue = "READ") ProjectAccessRights accessType,
+                                               @Nonnull Architector architector)
     {
-        List<ProjectDescriptorModel> projects = this.queryService.findProjects(architector).stream()
+        List<ProjectDescriptorModel> projects = this.queryService.findProjects(query, accessType, architector).stream()
             .map(ProjectMapper::buildProject)
             .collect(toList());
         return ResponseEntity.ok(Collections.singletonMap("projects", projects));

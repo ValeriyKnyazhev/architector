@@ -147,12 +147,12 @@ public class File
         this.content = content;
     }
 
-    void setCreatedDate(@Nonnull LocalDateTime date)
+    public void setCreatedDate(@Nonnull LocalDateTime date)
     {
         this.createdDate = date;
     }
 
-    void setUpdatedDate(@Nonnull LocalDateTime date)
+    public void setUpdatedDate(@Nonnull LocalDateTime date)
     {
         this.updatedDate = date;
     }

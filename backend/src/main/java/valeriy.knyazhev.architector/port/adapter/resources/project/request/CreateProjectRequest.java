@@ -1,6 +1,8 @@
 package valeriy.knyazhev.architector.port.adapter.resources.project.request;
 
+import lombok.Data;
 import org.apache.http.util.Args;
+import org.junit.Test;
 
 import javax.annotation.Nonnull;
 import javax.validation.constraints.NotNull;
@@ -9,6 +11,7 @@ import javax.validation.constraints.Size;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
+@Data
 public class CreateProjectRequest
 {
 
@@ -18,27 +21,5 @@ public class CreateProjectRequest
 
     @NotNull(message = "Project name is required.")
     private String description;
-
-    public void setName(@Nonnull String name)
-    {
-        this.name = Args.notBlank(name, "Project name is required.");
-    }
-
-    public void setDescription(@Nonnull String description)
-    {
-        this.description = Args.notNull(description, "Project description is required.");
-    }
-
-    @Nonnull
-    public String name()
-    {
-        return this.name;
-    }
-
-    @Nonnull
-    public String description()
-    {
-        return this.description;
-    }
 
 }
