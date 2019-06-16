@@ -11,7 +11,6 @@ import javax.validation.constraints.Size;
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
-@Data
 public class CreateProjectRequest
 {
 
@@ -21,5 +20,27 @@ public class CreateProjectRequest
 
     @NotNull(message = "Project name is required.")
     private String description;
+
+    public void setName(@Nonnull String name)
+    {
+        this.name = name;
+    }
+
+    public void setDescription(@Nonnull String description)
+    {
+        this.description = description;
+    }
+
+    @Nonnull
+    public String name()
+    {
+        return this.name;
+    }
+
+    @Nonnull
+    public String description()
+    {
+        return this.description;
+    }
 
 }

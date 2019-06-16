@@ -15,7 +15,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static java.util.Collections.emptyList;
 import static lombok.AccessLevel.PROTECTED;
 import static valeriy.knyazhev.architector.domain.model.project.file.ProjectAccessRights.*;
 
@@ -351,7 +350,10 @@ public class Project
         @Nonnull
         public Project construct()
         {
-            List<File> files = Optional.ofNullable(this.file).map(List::of).orElse(emptyList());
+            List<File> files = Optional.ofNullable(this.file)
+                .map(List::of)
+                .map(ArrayList::new)
+                .orElse(new ArrayList<>());
             return new Project(
                 this.projectId, this.projectName, this.author, this.description, files
             );

@@ -55,7 +55,7 @@ public class ProjectResource
                                                 @Nonnull Architector architector)
     {
         ProjectId projectId = this.managementService.createProject(
-            new CreateProjectCommand(request.getName(), architector.email(), request.getDescription())
+            new CreateProjectCommand(request.name(), architector.email(), request.description())
         );
         return ResponseEntity.ok()
             .body(

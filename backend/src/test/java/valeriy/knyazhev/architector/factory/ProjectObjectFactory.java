@@ -74,7 +74,7 @@ public final class ProjectObjectFactory
             .withSchema("IFC4")
             .withDescription(createDescription("tmp"))
             .withMetadata(createMetadata("tmp"))
-            .withContent(FileContent.of(List.of()))
+            .withContent(FileContent.of(List.of("tmp")))
             .construct();
         file.setCreatedDate(now);
         file.setUpdatedDate(now);
