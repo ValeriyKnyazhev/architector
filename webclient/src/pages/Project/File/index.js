@@ -150,7 +150,7 @@ export default class File extends Component {
         if (response.data.conflictBlocks) {
           this.props.history.push({
             pathname: '/conflict',
-            state: { conflictData: response.data, projectId: projectId, file: fileId }
+            state: { conflictData: response.data, projectId: projectId, fileId: fileId }
           });
         } else {
           this.fetchFileInfo();
