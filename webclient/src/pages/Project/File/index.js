@@ -1,34 +1,33 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import debounce from 'lodash/debounce';
-import { Link } from 'react-router-dom';
-import _isEmpty from 'lodash/isEmpty';
-import { Button, Icon, Spin, Table } from 'antd';
-import CodeEditor from 'components/CodeEditor';
-import HistoryChanges from 'components/HistoryChanges';
-import FileMetadata from './FileMetadata';
-import FileDescription from './FileDescription';
-import './File.sass';
+import React, { Component } from "react";
+import axios from "axios";
+import debounce from "lodash/debounce";
+import { Link } from "react-router-dom";
+import { Button, Icon, Modal, Spin, Table } from "antd";
+import CodeEditor from "components/CodeEditor";
+import HistoryChanges from "components/HistoryChanges";
+import FileMetadata from "./FileMetadata";
+import FileDescription from "./FileDescription";
+import "./File.sass";
 
 const mainInfoColumns = [
   {
-    title: 'Created',
-    dataIndex: 'created',
-    key: 'created',
+    title: "Created",
+    dataIndex: "created",
+    key: "created",
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: 'Updated',
-    dataIndex: 'updated',
-    key: 'updated',
+    title: "Updated",
+    dataIndex: "updated",
+    key: "updated",
     width: 4,
     render: date => <div>{date && new Date(date).toLocaleDateString()}</div>
   },
   {
-    title: 'Schema',
-    dataIndex: 'schema',
-    key: 'schema',
+    title: "Schema",
+    dataIndex: "schema",
+    key: "schema",
     width: 4
   }
 ];
@@ -39,9 +38,9 @@ export default class File extends Component {
     isContentShow: false,
     fileDataLoaded: false,
     file: {
-      createdDate: '',
-      updatedDate: '',
-      schema: '',
+      createdDate: "",
+      updatedDate: "",
+      schema: "",
       metadata: {
         authors: [],
         organizations: []
@@ -52,10 +51,15 @@ export default class File extends Component {
       currentCommitId: 0
     },
     historyChanges: [],
-    content: '',
+    content: "",
     contentReadOnly: true,
-    updatedContent: ''
+    updatedContent: ""
   };
+  onUpdateContent = debounce(contentState => {
+    this.setState({
+      updatedContent: String(contentState)
+    });
+  }, 1000);
 
   async componentDidMount() {
     this.fetchFileInfo();
@@ -142,29 +146,53 @@ export default class File extends Component {
 
     axios
       .put(`/api/projects/${projectId}/files/${fileId}/content`, {
-        commitMessage: 'update file',
+        commitMessage: "update file",
         content: this.state.updatedContent,
         headCommitId: currentCommitId
       })
       .then(response => {
         if (response.data.conflictBlocks) {
           this.props.history.push({
-            pathname: '/conflict',
+            pathname: "/conflict",
             state: { conflictData: response.data, projectId: projectId, fileId: fileId }
           });
+        } else if (response.data.invalidEntities) {
+          Modal.error({
+            title: "Your changes affected the following objects. Please, fix.",
+            content: (
+              <div>
+                {response.data.invalidEntities.map(item => {
+                  return (
+                    <div>
+                      #{item.id} {item.name}
+                    </div>
+                  );
+                })}
+              </div>
+            )
+          });
         } else {
+          const { updatedRoots } = response.data;
           this.fetchFileInfo();
           this.fetchFileHistoryChanges();
           this.onEditContent();
+          Modal.success({
+            title: "Your changes are applied. And the following root entities affected.",
+            content: (
+              <div>
+                {updatedRoots.map(root => {
+                  return (
+                    <div>
+                      #{root.id} {root.name}
+                    </div>
+                  );
+                })}
+              </div>
+            )
+          });
         }
       });
   };
-
-  onUpdateContent = debounce(contentState => {
-    this.setState({
-      updatedContent: String(contentState)
-    });
-  }, 1000);
 
   render() {
     const {
@@ -184,14 +212,14 @@ export default class File extends Component {
 
     const mainInfoData = [
       {
-        key: '1',
+        key: "1",
         created: file.createdDate,
         updated: file.updatedDate,
         schema: file.schema
       }
     ];
 
-    const readOnly = !(file.accessRights === 'OWNER' || file.accessRights === 'WRITE');
+    const readOnly = !(file.accessRights === "OWNER" || file.accessRights === "WRITE");
 
     return fileDataLoaded ? (
       <div className="container">
@@ -224,42 +252,42 @@ export default class File extends Component {
             />
             <div className="file__file-content">
               <div className="file__file-show-content" onClick={this.onToggleShowContent}>
-                <b>Content</b> <Icon type={isContentShow ? 'up' : 'down'} />{' '}
+                <b>Content</b> <Icon type={isContentShow ? "up" : "down"}/>{" "}
               </div>
               <div
                 className="file__file-content-edit"
                 style={{
-                  visibility: isContentShow ? 'visible' : 'hidden'
+                  visibility: isContentShow ? "visible" : "hidden"
                 }}
               >
                 {!readOnly && (
                   <Button
                     type="primary"
-                    style={{ marginBottom: 16, alignContent: 'right' }}
+                    style={{ marginBottom: 16, alignContent: "right" }}
                     onClick={this.onEditContent}
                   >
-                    <Icon type={contentReadOnly ? 'edit' : 'close'} />
+                    <Icon type={contentReadOnly ? "edit" : "close"}/>
                   </Button>
                 )}
               </div>
               <div
                 className="file__file-content-save"
                 style={{
-                  visibility: isContentShow && !contentReadOnly ? 'visible' : 'hidden'
+                  visibility: isContentShow && !contentReadOnly ? "visible" : "hidden"
                 }}
               >
                 <Button
                   type="primary"
-                  style={{ marginBottom: 16, alignContent: 'right' }}
+                  style={{ marginBottom: 16, alignContent: "right" }}
                   onClick={() => this.onSaveContent()}
                 >
-                  <Icon type={'save'} />
+                  <Icon type={"save"}/>
                 </Button>
               </div>
               <div
                 className="file__file-content-info"
                 style={{
-                  visibility: isContentShow ? 'visible' : 'hidden'
+                  visibility: isContentShow ? "visible" : "hidden"
                 }}
               >
                 {isContentLoaded ? (
@@ -270,7 +298,7 @@ export default class File extends Component {
                   />
                 ) : (
                   <div className="file__file-content-loader">
-                    <Spin size="large" />
+                    <Spin size="large"/>
                   </div>
                 )}
               </div>
@@ -278,7 +306,7 @@ export default class File extends Component {
             <div className="file__changes">
               <div
                 className="row file__changes-header"
-                style={{ textAlign: 'left', marginBottom: '4px' }}
+                style={{ textAlign: "left", marginBottom: "4px" }}
               >
                 <div className="file__changes-header-title col-xs-3 start-xs">
                   <b>Last changes</b>
@@ -287,7 +315,7 @@ export default class File extends Component {
                   <Button
                     className="file__changes-show-more "
                     type="primary"
-                    style={{ marginLeft: 8, alignContent: 'right' }}
+                    style={{ marginLeft: 8, alignContent: "right" }}
                   >
                     <Link
                       to={{
@@ -299,13 +327,13 @@ export default class File extends Component {
                   </Button>
                 </div>
               </div>
-              <HistoryChanges commits={historyChanges} />
+              <HistoryChanges commits={historyChanges}/>
             </div>
           </div>
         </div>
       </div>
     ) : (
-      <Spin />
+      <Spin/>
     );
   }
 }

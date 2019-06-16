@@ -20,6 +20,7 @@ import valeriy.knyazhev.architector.application.project.file.conflict.exception.
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileDescriptionConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileMetadataConflictException;
 import valeriy.knyazhev.architector.application.project.file.validation.IFCFileValidator;
+import valeriy.knyazhev.architector.application.project.file.validation.InvalidFileContentException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
 import valeriy.knyazhev.architector.domain.model.project.ProjectRepository;
@@ -248,7 +249,33 @@ public class FileResourceTests
             .content(command)
             .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.updatedRoots").exists());
+            .andExpect(jsonPath("$.updatedRoots").isArray());
+    }
+
+    @Test
+    @WithMockUser(USER_EMAIL)
+    public void shouldNotUpdateFileContentIfInvalid()
+        throws Exception
+    {
+        // given
+        String newContent = "";
+        String commitMessage = "File content updated";
+        String command = "{" +
+                         "\"content\": \"" + newContent + "\"," +
+                         "\"commitMessage\": \"" + commitMessage + "\"," +
+                         "\"headCommitId\": \"" + 2L + "\"" +
+                         "}";
+        ProjectId projectId = ProjectId.nextId();
+        FileId fileId = FileId.nextId();
+        when(this.managementService.updateFileContent(any(UpdateFileContentCommand.class)))
+            .thenThrow(new InvalidFileContentException(List.of()));
+
+        // expect
+        this.mockMvc.perform(put("/api/projects/{projectId}/files/{fileId}/content", projectId.id(), fileId.id())
+            .content(command)
+            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.invalidEntities").isArray());
     }
 
     @Test

@@ -15,7 +15,7 @@ import valeriy.knyazhev.architector.application.project.file.conflict.data.Metad
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileContentConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileDescriptionConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileMetadataConflictException;
-import valeriy.knyazhev.architector.application.project.file.validation.ChangedRootEntity;
+import valeriy.knyazhev.architector.application.project.file.validation.ChangedEntity;
 import valeriy.knyazhev.architector.application.project.file.validation.IFCFileValidator;
 import valeriy.knyazhev.architector.application.project.file.validation.IFCFileValidator.ValidationType;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
@@ -102,7 +102,7 @@ public class FileManagementService
             newFile);
     }
 
-    public List<ChangedRootEntity> updateFileContent(@Nonnull UpdateFileContentCommand command)
+    public List<ChangedEntity> updateFileContent(@Nonnull UpdateFileContentCommand command)
         throws FileContentConflictException
     {
         Args.notNull(command, "Update file content command is required.");
@@ -117,7 +117,7 @@ public class FileManagementService
         {
             throw new IllegalStateException("Project must have some changes.");
         }
-        List<ChangedRootEntity> changedRootEntities = new ArrayList<>();
+        List<ChangedEntity> changedRootEntities = new ArrayList<>();
         FileContent newContent = FileContent.of(command.content());
         CommitDescription commitData = null;
         if (projectCommitId == command.headCommitId())

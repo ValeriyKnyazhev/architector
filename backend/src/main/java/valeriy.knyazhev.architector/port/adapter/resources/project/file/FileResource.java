@@ -12,7 +12,7 @@ import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileContentConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileDescriptionConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileMetadataConflictException;
-import valeriy.knyazhev.architector.application.project.file.validation.ChangedRootEntity;
+import valeriy.knyazhev.architector.application.project.file.validation.ChangedEntity;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
@@ -150,7 +150,7 @@ public class FileResource
                                                 @RequestBody UpdateFileContentRequest request,
                                                 @Nonnull Architector architector)
     {
-        List<ChangedRootEntity> changedRootEntities = List.of();
+        List<ChangedEntity> changedRootEntities = List.of();
         try
         {
             changedRootEntities = this.managementService.updateFileContent(

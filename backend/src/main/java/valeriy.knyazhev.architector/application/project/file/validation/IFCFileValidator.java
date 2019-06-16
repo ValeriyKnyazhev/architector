@@ -29,6 +29,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 import static valeriy.knyazhev.architector.application.project.file.validation.IFCFileValidator.ValidationType.NONE;
@@ -61,10 +62,10 @@ public class IFCFileValidator
         this.IFC4Deserializer.init(packageMetaDataIFC4);
     }
 
-    public List<ChangedRootEntity> validateContent(@Nonnull ValidationType type,
-                                                   @Nonnull String schema,
-                                                   @Nonnull List<String> fileContent,
-                                                   @Nonnull List<CommitItem> changes)
+    public List<ChangedEntity> validateContent(@Nonnull ValidationType type,
+                                               @Nonnull String schema,
+                                               @Nonnull List<String> fileContent,
+                                               @Nonnull List<CommitItem> changes)
     {
         Args.notNull(type, "Validation type is required.");
         Args.notNull(schema, "File schema is required.");
@@ -95,9 +96,9 @@ public class IFCFileValidator
         }
     }
 
-    private List<ChangedRootEntity> validateReferences(@Nonnull String schema,
-                                                       @Nonnull List<String> content,
-                                                       @Nonnull List<CommitItem> changes)
+    private List<ChangedEntity> validateReferences(@Nonnull String schema,
+                                                   @Nonnull List<String> content,
+                                                   @Nonnull List<CommitItem> changes)
     {
         IfcStepDeserializer deserializer = defineDeserializer(schema);
         byte[] fileData = prepareData(schema, content);
@@ -139,8 +140,9 @@ public class IFCFileValidator
                     Set<Integer> parents = itemsWithParents.get(child);
                     if (parents == null)
                     {
-
                         notValidReferences.add(expressId);
+                        Set<Integer> newParents = Stream.of(expressId).collect(toSet());
+                        itemsWithParents.put(child, newParents);
                     } else
                     {
                         parents.add(expressId);
@@ -151,7 +153,12 @@ public class IFCFileValidator
 
         if (!notValidReferences.isEmpty())
         {
-            throw new InvalidFileContentException(notValidReferences);
+            throw new InvalidFileContentException(
+                notValidReferences.stream()
+                    .map(modelValues::get)
+                    .map(value -> new ChangedEntity(value.getExpressId(), extractSimpleName(value)))
+                    .collect(toList())
+            );
         }
 
         Set<Integer> visitedIdentifiers = new HashSet<>(initialCapacity);
@@ -167,7 +174,7 @@ public class IFCFileValidator
                 visitors.add(expressId);
             } else
             {
-                Set<Integer> parents = extractParameters(change.value())
+                Set<Integer> parents = itemsWithParents.getOrDefault(expressId, Set.of())
                     .stream()
                     .filter(id -> !changedIdentifiers.contains(id))
                     .collect(Collectors.toUnmodifiableSet());
@@ -199,7 +206,7 @@ public class IFCFileValidator
         }
 
         return foundRoots.stream()
-            .map(rootId -> new ChangedRootEntity(rootId, rootEntities.get(rootId)))
+            .map(rootId -> new ChangedEntity(rootId, rootEntities.get(rootId)))
             .collect(toList());
     }
 

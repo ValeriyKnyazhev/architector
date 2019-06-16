@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ChangedRootEntity
+public class ChangedEntity
 {
 
     private int id;
@@ -19,8 +19,8 @@ public class ChangedRootEntity
     @Nonnull
     private String name;
 
-    public ChangedRootEntity(int id,
-                             @Nonnull String name)
+    public ChangedEntity(int id,
+                         @Nonnull String name)
     {
         this.id = id;
         this.name = name;
