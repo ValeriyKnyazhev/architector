@@ -1,0 +1,25 @@
+apply plugin: "org.asciidoctor.convert"
+
+ext["snippetsDir"] = "$buildDir/generated-snippets"
+
+asciidoctorj {
+    version = "1.5.4"
+}
+
+asciidoctor {
+    dependsOn test
+    sourceDir "src/main/asciidoc"
+    outputDir "$buildDir/asciidoc/guides"
+    attributes 'source-highlighter': 'prettify', 'toc': 'left', 'snippets': snippetsDir
+    inputs.dir snippetsDir
+}
+
+sourceSets {
+    main {
+        output.dir("$buildDir/asciidoc")
+    }
+}
+
+bootJar {
+    dependsOn asciidoctor
+}

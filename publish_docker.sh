@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #TODO paste version here
-version=4
+version=5
 
 DOCKER_NAME=architector
 IMAGE_NAME=valeriyknyazhev/architector:${version}

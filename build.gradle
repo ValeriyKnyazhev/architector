@@ -10,6 +10,10 @@ buildscript {
     }
 }
 
+plugins{
+    id "org.asciidoctor.convert" version "1.5.3" apply false
+}
+
 group = "valeriy.knyazhev"
 version '0.0.1-SNAPSHOT'
 
@@ -31,6 +35,10 @@ subprojects {
         tasks.withType(JavaCompile) {
             options.compilerArgs += "-Xlint:deprecation"
             options.encoding = "UTF-8"
+        }
+
+        jacoco {
+            toolVersion = "0.8.4"
         }
 
         tasks.withType(Test) {
