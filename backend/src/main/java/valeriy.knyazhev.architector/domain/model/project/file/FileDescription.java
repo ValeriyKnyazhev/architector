@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Collections.emptyList;
 
@@ -47,7 +48,7 @@ public class FileDescription
     // TODO remove later
     private static List<String> checkAndMapList(@Nonnull List<String> items)
     {
-        return items.stream().anyMatch(item -> !item.isEmpty())
+        return items.stream().filter(Objects::nonNull).anyMatch(item -> !item.isEmpty())
                ? items
                : emptyList();
     }

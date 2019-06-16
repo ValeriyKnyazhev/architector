@@ -15,6 +15,9 @@ import valeriy.knyazhev.architector.application.project.file.conflict.data.Metad
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileContentConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileDescriptionConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileMetadataConflictException;
+import valeriy.knyazhev.architector.application.project.file.validation.ChangedRootEntity;
+import valeriy.knyazhev.architector.application.project.file.validation.IFCFileValidator;
+import valeriy.knyazhev.architector.application.project.file.validation.IFCFileValidator.ValidationType;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.commit.*;
 import valeriy.knyazhev.architector.domain.model.commit.projection.Projection;
@@ -30,11 +33,13 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static valeriy.knyazhev.architector.application.project.file.validation.IFCFileValidator.ValidationType.REFERENCES;
 
 /**
  * @author Valeriy Knyazhev <valeriy.knyazhev@yandex.ru>
@@ -50,6 +55,8 @@ public class FileManagementService
     private final ProjectionConstructService projectionConstructService;
 
     private final IFCFileReader fileReader;
+
+    private final IFCFileValidator validator;
 
     private final CommitRepository commitRepository;
 
@@ -95,10 +102,11 @@ public class FileManagementService
             newFile);
     }
 
-    public boolean updateFileContent(@Nonnull UpdateFileContentCommand command)
+    public List<ChangedRootEntity> updateFileContent(@Nonnull UpdateFileContentCommand command)
         throws FileContentConflictException
     {
         Args.notNull(command, "Update file content command is required.");
+        ValidationType validationType = REFERENCES;
         ProjectId projectId = command.projectId();
         Architector architector = command.architector();
         FileId fileId = command.fileId();
@@ -109,12 +117,16 @@ public class FileManagementService
         {
             throw new IllegalStateException("Project must have some changes.");
         }
+        List<ChangedRootEntity> changedRootEntities = new ArrayList<>();
         FileContent newContent = FileContent.of(command.content());
         CommitDescription commitData = null;
         if (projectCommitId == command.headCommitId())
         {
             List<CommitItem> commitItems = FileDiffCalculator.calculateDiff(
                 foundFile.content(), newContent
+            );
+            changedRootEntities = this.validator.validateContent(
+                validationType, foundFile.schema(), newContent.items(), commitItems
             );
             commitData = CommitDescription.builder()
                 .files(
@@ -148,6 +160,9 @@ public class FileManagementService
                 List<String> mergedContent = ContentMerger.applyChanges(oldContent.items(), mergedCommitItems);
                 List<CommitItem> diffItems = FileDiffCalculator
                     .calculateDiff(foundFile.content(), FileContent.of(mergedContent));
+                changedRootEntities = this.validator.validateContent(
+                    validationType, foundFile.schema(), mergedContent, diffItems
+                );
                 commitData = CommitDescription.builder()
                     .files(
                         singletonList(
@@ -179,7 +194,7 @@ public class FileManagementService
         project.updateFile(fileId, newContent);
         project.updateCurrentCommitId(commitId);
         this.projectRepository.saveAndFlush(project);
-        return true;
+        return changedRootEntities;
     }
 
     public boolean updateFileMetadata(@Nonnull UpdateFileMetadataCommand command)

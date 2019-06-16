@@ -12,6 +12,7 @@ import valeriy.knyazhev.architector.application.project.file.command.*;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileContentConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileDescriptionConflictException;
 import valeriy.knyazhev.architector.application.project.file.conflict.exception.FileMetadataConflictException;
+import valeriy.knyazhev.architector.application.project.file.validation.ChangedRootEntity;
 import valeriy.knyazhev.architector.domain.model.AccessRightsNotFoundException;
 import valeriy.knyazhev.architector.domain.model.project.Project;
 import valeriy.knyazhev.architector.domain.model.project.ProjectId;
@@ -30,6 +31,8 @@ import valeriy.knyazhev.architector.port.adapter.util.ResponseMessage;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.MediaType.*;
 import static valeriy.knyazhev.architector.port.adapter.resources.project.file.model.FileMapper.buildFile;
@@ -147,10 +150,10 @@ public class FileResource
                                                 @RequestBody UpdateFileContentRequest request,
                                                 @Nonnull Architector architector)
     {
-        boolean updated = false;
+        List<ChangedRootEntity> changedRootEntities = List.of();
         try
         {
-            updated = this.managementService.updateFileContent(
+            changedRootEntities = this.managementService.updateFileContent(
                 new UpdateFileContentCommand(
                     qProjectId, qFileId, architector, request.content(), request.commitMessage(), request.headCommitId()
                 )
@@ -166,15 +169,7 @@ public class FileResource
                 )
             );
         }
-        return updated
-               ? ResponseEntity.ok()
-                   .body(
-                       new ResponseMessage().info("File " + qFileId + " content was updated.")
-                   )
-               : ResponseEntity.badRequest()
-                   .body(
-                       new ResponseMessage().error("Unable to update file " + qFileId + " content.")
-                   );
+        return ResponseEntity.ok().body(Map.of("updatedRoots", changedRootEntities));
     }
 
     @PutMapping(value = "/api/projects/{qProjectId}/files/{qFileId}/description",
