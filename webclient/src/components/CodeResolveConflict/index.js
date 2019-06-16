@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import axios from 'axios';
 import { Button } from 'antd';
 import _isEmpty from 'lodash/isEmpty';
-import debounce from 'lodash/debounce';
+import _uniqBy from 'lodash/uniqBy';
 import CodeEditor from 'components/CodeEditor';
 import cn from 'classnames';
 import './CodeResolveConflict.sass';
@@ -15,6 +15,21 @@ const rowClass = type =>
     'code-conflict__row--add': type === 'ADDITION',
     'code-conflict__row--delete': type === 'DELETION'
   });
+
+function compareItems(item1, item2) {
+  const positionDiff = item1.position - item2.position;
+  if (positionDiff === 0) {
+    if (item1.type === item2.type) {
+      return 0;
+    } else if (item1.type === 'DELETION') {
+      return -1;
+    } else {
+      return 1;
+    }
+  } else {
+    return positionDiff;
+  }
+}
 
 export default class CodeResolveConflict extends PureComponent {
   state = { conflictData: {} };
@@ -120,9 +135,9 @@ export default class CodeResolveConflict extends PureComponent {
       ...conflictData,
       conflictBlocks: conflictData.conflictBlocks.map(block => {
         if (block.id === blockId) {
-          const resultBlocks = [];
-          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.newBlocks);
-          return { ...block, headBlocks: resultBlocks, conflictResolved };
+          block.headBlocks.splice(removedItemIndex, 1);
+          conflictResolved = _isEmpty(block.headBlocks) && _isEmpty(block.newBlocks);
+          return { ...block, conflictResolved };
         } else return block;
       })
     };
@@ -143,9 +158,9 @@ export default class CodeResolveConflict extends PureComponent {
       ...conflictData,
       conflictBlocks: conflictData.conflictBlocks.map(block => {
         if (block.id === blockId) {
-          const resultBlocks = [];
-          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.headBlocks);
-          return { ...block, newBlocks: resultBlocks, conflictResolved };
+          block.newBlocks.splice(removedItemIndex, 1);
+          conflictResolved = _isEmpty(block.newBlocks) && _isEmpty(block.headBlocks);
+          return { ...block, conflictResolved };
         } else return block;
       })
     };
@@ -166,11 +181,10 @@ export default class CodeResolveConflict extends PureComponent {
       ...conflictData,
       conflictBlocks: conflictData.conflictBlocks.map(block => {
         if (block.id === blockId) {
-          const resultBlocks = [];
-          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.newBlocks);
-          console.log(appliedItemIndex, block);
           block.appliedItems = block.appliedItems.concat(block.headBlocks[appliedItemIndex].items);
-          return { ...block, headBlocks: resultBlocks, conflictResolved };
+          block.headBlocks.splice(appliedItemIndex, 1);
+          conflictResolved = _isEmpty(block.headBlocks) && _isEmpty(block.newBlocks);
+          return { ...block, conflictResolved };
         } else return block;
       })
     };
@@ -191,11 +205,10 @@ export default class CodeResolveConflict extends PureComponent {
       ...conflictData,
       conflictBlocks: conflictData.conflictBlocks.map(block => {
         if (block.id === blockId) {
-          const resultBlocks = [];
-          conflictResolved = _isEmpty(resultBlocks) && _isEmpty(block.headBlocks);
-          console.log(appliedItemIndex, block);
           block.appliedItems = block.appliedItems.concat(block.newBlocks[appliedItemIndex].items);
-          return { ...block, newBlocks: resultBlocks, conflictResolved };
+          block.newBlocks.splice(appliedItemIndex, 1);
+          conflictResolved = _isEmpty(block.newBlocks) && _isEmpty(block.headBlocks);
+          return { ...block, conflictResolved };
         } else return block;
       })
     };
@@ -220,7 +233,9 @@ export default class CodeResolveConflict extends PureComponent {
       ...conflictData,
       conflictBlocks: conflictData.conflictBlocks.map(block => {
         if (block.id === blockId) {
-          const appliedItems = block.appliedItems.sort();
+          const appliedItems = _uniqBy(block.appliedItems, item =>
+            [item.position, item.type, item.value].join()
+          ).sort(compareItems);
           var newData = block.selectedData;
           for (var itemIndex = appliedItems.length - 1; itemIndex >= 0; itemIndex--) {
             const item = appliedItems[itemIndex];
@@ -246,7 +261,6 @@ export default class CodeResolveConflict extends PureComponent {
     if (_isEmpty(this.state.conflictData)) return null;
     const { conflictBlocks } = this.state.conflictData;
 
-    console.log(conflictBlocks);
     return (
       <div className="container">
         <div>
