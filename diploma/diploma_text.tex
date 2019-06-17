@@ -1496,7 +1496,7 @@ Docker-контейнер -- то, что в итоге эксплуатируе
 \label{test-coverage}
 \end{figure}
 
-Сгенерированный отчет показал качество покрытия инструкций кода, равное 67\%, а качество покрытия логических ветвлений, равное 55\%.
+Сгенерированный отчет показал качество покрытия инструкций кода, равное 81\%, а качество покрытия логических ветвлений, равное 72\%.
 
 \subsubsection{Безопасность}
 
@@ -1562,8 +1562,50 @@ JSON Web Token -- открытый стандарт (RFC 7519) для созда
 }
 \end{thebibliography}
 
-\appendix
-\chapter{Документация API}
-\includepdf[pages=-]{api.pdf}
+\begin{appendices}
+
+\chapter{Веб-интерфейс системы}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{projects-page.png}}
+\caption{Страница доступных пользователю проектов}
+\label{projects-page}
+\end{figure}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{project-page.png}}
+\caption{Страница информации о проекте}
+\label{project-page}
+\end{figure}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{file-page.png}}
+\caption{Страница с данными файла проекта}
+\label{file-page}
+\end{figure}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{validation-content.png}}
+\caption{Валидация при изменении контента файла}
+\label{validation-content}
+\end{figure}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{roots-updated.png}}
+\caption{Информация об измененных объектам BIM}
+\label{roots-updated}
+\end{figure}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{resolve-conflict.png}}
+\caption{Страница разрешения конфликтов, возникших при изменении контента}
+\label{resolve-content}
+\end{figure}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{resolved-conflict.png}}
+\caption{Разрешенные конфликты контента файла}
+\label{resolved-conflict}
+\end{figure}
+\begin{figure}[H]
+\center{\includegraphics[width=0.8\textwidth]{content-diff.png}}
+\caption{Страница детализированного описания изменения проекта}
+\label{content-diff}
+\end{figure}
+
+\end{appendices}
 
 \end{document}
